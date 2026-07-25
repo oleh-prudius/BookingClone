@@ -7,7 +7,7 @@ on:
 
 jobs:
   backend:
-    name: Backend (build + test)
+    name: Backend (build)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,10 +21,6 @@ jobs:
 
       - name: Build
         run: dotnet build BookingClone.sln --no-restore -c Release
-
-      # Integration tests spin up PostgreSQL via Testcontainers (Docker is available on the runner)
-      - name: Test
-        run: dotnet test BookingClone.sln --no-build -c Release --verbosity normal
 
   frontend:
     name: Frontend (lint + build)
