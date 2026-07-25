@@ -1,0 +1,9 @@
+**/bin/
+**/obj/
+**/logs/
+**/*.user
+**/appsettings.Local.json
+**/appsettings.*.Local.json
+.vs/
+.git/
+Tests/
