@@ -3,36 +3,32 @@ using Application;
 using Domain.Interfaces;
 using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
-
-//using Microsoft.OpenApi;
 using Serilog;
-using System.Reflection;
 using System.Text;
 
 Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(new ConfigurationBuilder()
-        .AddJsonFile("appsettings.json")
-        .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
-        .AddJsonFile("appsettings.Local.json", optional: true)
-        .AddEnvironmentVariables()
-        .Build())
-    .Enrich.FromLogContext()
-    .CreateLogger();
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
 try
 {
     Log.Information("Starting BookingClone API");
 
     var builder = WebApplication.CreateBuilder(args);
-    builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
-    builder.Host.UseSerilog();
+    // Local overrides sit below environment variables so env vars (e.g. from Docker/.env) always win.
+    builder.Configuration
+        .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true)
+        .AddEnvironmentVariables();
+
+    builder.Host.UseSerilog((context, config) =>
+        config.ReadFrom.Configuration(context.Configuration)
+              .Enrich.FromLogContext());
 
     builder.Services.AddInfrastructure(builder.Configuration);
     builder.Services.AddApplication();
-
+    
     var jwtKey = builder.Configuration["Jwt:Key"]
         ?? throw new InvalidOperationException("Jwt:Key is not configured");
 
@@ -56,7 +52,6 @@ try
             };
         });
 
-    //builder.Services.AddAuthorization();
     builder.Services.AddControllers()
         .AddJsonOptions(options =>
             options.JsonSerializerOptions.ReferenceHandler =
@@ -130,7 +125,6 @@ try
     app.UseSerilogRequestLogging();
     app.UseCors("FrontendPolicy");
     app.UseStaticFiles();
-    //app.UseHttpsRedirection();
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();

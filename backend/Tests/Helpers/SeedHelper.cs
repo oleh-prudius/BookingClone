@@ -30,29 +30,34 @@ public static class SeedHelper
         ctx.HotelCategories.Add(category);
         await ctx.SaveChangesAsync();
 
+        var customerUserName = $"testuser_{Guid.NewGuid()}";
+        var customerEmail = $"test_{Guid.NewGuid()}@test.com";
         var customer = new Customer
         {
             FirstName = "Test",
             LastName = "User",
-            Email = $"test_{Guid.NewGuid()}@test.com",
-            UserName = $"testuser_{Guid.NewGuid()}",
+            Email = customerEmail,
+            UserName = customerUserName,
             Photo = "default.jpg",
-            NormalizedEmail = "TEST@TEST.COM",
-            NormalizedUserName = "TESTUSER",
+            // Must stay unique per seed: AspNetUsers has a unique index on NormalizedUserName
+            NormalizedEmail = customerEmail.ToUpperInvariant(),
+            NormalizedUserName = customerUserName.ToUpperInvariant(),
             SecurityStamp = Guid.NewGuid().ToString()
         };
         ctx.Customers.Add(customer);
         await ctx.SaveChangesAsync();
 
+        var realtorUserName = $"realtor_{Guid.NewGuid()}";
+        var realtorEmail = $"realtor_{Guid.NewGuid()}@test.com";
         var realtor = new Realtor
         {
             FirstName = "Realtor",
             LastName = "Test",
-            Email = $"realtor_{Guid.NewGuid()}@test.com",
-            UserName = $"realtor_{Guid.NewGuid()}",
+            Email = realtorEmail,
+            UserName = realtorUserName,
             Photo = "default.jpg",
-            NormalizedEmail = "REALTOR@TEST.COM",
-            NormalizedUserName = "REALTOR",
+            NormalizedEmail = realtorEmail.ToUpperInvariant(),
+            NormalizedUserName = realtorUserName.ToUpperInvariant(),
             SecurityStamp = Guid.NewGuid().ToString()
         };
         ctx.Realtors.Add(realtor);
