@@ -16,12 +16,14 @@ export function Header() {
       gap: 16,
       alignItems: 'center',
       padding: '12px 24px',
-      borderBottom: '1px solid var(--border)',
+      borderBottom: '1px solid var(--border)', 
+        background: 'var(--triply-navyDarkest)',
+        color: 'white'
     }}>
       <Link to="/" style={{ fontWeight: 700, textDecoration: 'none', color: 'inherit' }}>
         BookingClone
       </Link>
-      <Link to="/hotels">Hotels</Link>
+      <Link to="/hotels" style={{color: 'inherit', textDecoration: 'none' }}>Hotels</Link>
       <div style={{ marginLeft: 'auto', display: 'flex', gap: 12, alignItems: 'center' }}>
         {isAuthenticated ? (
           <>
@@ -37,8 +39,8 @@ export function Header() {
           </>
         ) : (
           <>
-            <Link to="/login">Sign in</Link>
-            <Link to="/register">Register</Link>
+            <Link to="/login" style={{color: 'inherit', textDecoration: 'none' }}>Sign in</Link>
+            <Link to="/register" style={{color: 'inherit', textDecoration: 'none' }}>Register</Link>
           </>
         )}
       </div>
