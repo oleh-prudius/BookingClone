@@ -15,7 +15,7 @@ export function Header() {
   
   const iconStyle = { fontSize: 18 as const, cursor: 'pointer' as const};
   const navLinkStyle = ({isActive}: {isActive:boolean} )=> ({
-          color: isActive ? 'var(--triply-primary)' : 'inherit' as const,
+          color: isActive ? 'var(--triply-blue)' : 'inherit' as const,
           textDecoration: 'none' as const
       });  
   
@@ -26,23 +26,22 @@ export function Header() {
       alignItems: 'center',
       padding: '12px 24px',
       borderBottom: '1px solid var(--border)', 
-        background: 'var(--triply-navyDarkest)',
+        background: 'var(--triply-primary)',
         color: 'white'
     }}>
         <NavLink to="/" style={{textDecoration: 'none'}}>
             <Logo/>
         </NavLink>
+        <nav style={{display: 'flex', gap:24, flex: 1, justifyContent: 'center'}}>
         <NavLink to="/" end style={navLinkStyle}>Main</NavLink>
         <NavLink to="/hotels" style={navLinkStyle}>Hotels</NavLink>
         <NavLink to="/tickets" style={navLinkStyle}>Tickets</NavLink>
         <NavLink to="/transport" style={navLinkStyle}>Transport</NavLink>
         <NavLink to="/nearby" style={navLinkStyle}>Nearby</NavLink>
-        
+        </nav>
         
       <div style={{ marginLeft: 'auto', display: 'flex', gap: 12, alignItems: 'center' }}>
-          <SendOutlined style={iconStyle}/>
-          <BellOutlined style={iconStyle}/>
-          <UserOutlined style={iconStyle}/>
+          <Button ghost shape="round" href="/register">Registration</Button>
           
           {isAuthenticated ? (
           <>
@@ -58,10 +57,12 @@ export function Header() {
           </>
         ) : (
           <>
-            <NavLink to="/login" style={navLinkStyle}>Sign in</NavLink>
-            <Button type="primary" href="/register">Registration</Button>  
+              <Button ghost shape="round" href="/login">Sign in</Button>
           </>
         )}
+          <SendOutlined style={iconStyle}/>
+          <BellOutlined style={iconStyle}/>
+          <UserOutlined style={iconStyle}/>
       </div>
     </header>
   );
