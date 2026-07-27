@@ -1,8 +1,9 @@
 import { NavLink, useNavigate } from 'react-router-dom';
+import { useState } from "react";
 import { useAuth } from '@features/auth';
 import { Logo } from "@shared/ui/Logo";
-import { Button } from "antd";
-import { BellOutlined, UserOutlined, SendOutlined } from '@ant-design/icons';
+import { Drawer, Button } from "antd";
+import { BellOutlined, UserOutlined, SendOutlined, MenuOutlined } from '@ant-design/icons';
 
 
 export function Header() {
@@ -18,8 +19,11 @@ export function Header() {
           color: isActive ? 'var(--triply-blue)' : 'inherit' as const,
           textDecoration: 'none' as const
       });  
+  const [isOpen, setIsOpen] = useState(false);
+  
   
   return (
+      <>
     <header style={{
       display: 'flex',
       gap: 16,
@@ -32,15 +36,23 @@ export function Header() {
         <NavLink to="/" style={{textDecoration: 'none'}}>
             <Logo/>
         </NavLink>
-        <nav style={{display: 'flex', gap:24, flex: 1, justifyContent: 'center'}}>
-        <NavLink to="/" end style={navLinkStyle}>Main</NavLink>
-        <NavLink to="/hotels" style={navLinkStyle}>Hotels</NavLink>
-        <NavLink to="/tickets" style={navLinkStyle}>Tickets</NavLink>
-        <NavLink to="/transport" style={navLinkStyle}>Transport</NavLink>
-        <NavLink to="/nearby" style={navLinkStyle}>Nearby</NavLink>
+        
+        <nav className="desktop-nav" style={{ gap:24, flex: 1, justifyContent: 'center'}}>
+            <NavLink to="/" end style={navLinkStyle}>Main</NavLink>
+            <NavLink to="/hotels" style={navLinkStyle}>Hotels</NavLink>
+            <NavLink to="/tickets" style={navLinkStyle}>Tickets</NavLink>
+            <NavLink to="/transport" style={navLinkStyle}>Transport</NavLink>
+            <NavLink to="/nearby" style={navLinkStyle}>Nearby</NavLink>
         </nav>
         
-      <div style={{ marginLeft: 'auto', display: 'flex', gap: 12, alignItems: 'center' }}>
+        <MenuOutlined 
+            className="burger-btn"
+            style={{ fontSize:22, cursor: 'pointer', marginLeft: 'auto'}}
+            onClick={() => setIsOpen(true)
+            }
+        />
+        
+      <div className='desktop-nav' style={{ marginLeft: 'auto', gap: 12, alignItems: 'center' }}>
           <Button ghost shape="round" href="/register">Registration</Button>
           
           {isAuthenticated ? (
@@ -65,5 +77,26 @@ export function Header() {
           <UserOutlined style={iconStyle}/>
       </div>
     </header>
+          
+    <Drawer open={isOpen} onClose={()=> setIsOpen(false)} placement="left">
+        <nav style={{display: 'flex', flexDirection: "column", gap:24, flex: 1, justifyContent: 'center'}}>
+            <NavLink to="/" end style={navLinkStyle}>Main</NavLink>
+            <NavLink to="/hotels" style={navLinkStyle}>Hotels</NavLink>
+            <NavLink to="/tickets" style={navLinkStyle}>Tickets</NavLink>
+            <NavLink to="/transport" style={navLinkStyle}>Transport</NavLink>
+            <NavLink to="/nearby" style={navLinkStyle}>Nearby</NavLink>
+        </nav>
+        <div style={{marginTop:24, display:'flex', flexDirection:'column', gap:12}}>
+            {isAuthenticated ? (
+                <button onClick={handleLogout}>Sign out</button>    
+            ) : (
+                <>
+                <Button href='/login'>Sign in</Button>
+                <Button type = 'primary' href="/register">Registration</Button>
+                </>
+            )}
+        </div>
+    </Drawer>
+</>
   );
 }
