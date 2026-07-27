@@ -12,7 +12,7 @@ import { ResetPasswordPage } from '@pages/reset-password';
 import { ResendConfirmationPage } from '@pages/resend-confirmation';
 import { AdminApp } from '@pages/admin';
 import { Page404 } from '@pages/Page404';
-
+import { UiKitPage } from '@pages/ui-kit';
 export default function App() {
   return (
     <BrowserRouter>
@@ -34,6 +34,7 @@ export default function App() {
                   <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                   <Route path="/reset-password" element={<ResetPasswordPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/ui-kit" element={<UiKitPage />} />
                   <Route path="*" element={<Page404 />} />
                 </Routes>
               </main>
