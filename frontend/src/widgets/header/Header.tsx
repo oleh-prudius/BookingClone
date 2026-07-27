@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@features/auth';
+import {Logo} from "@shared/ui/Logo";
 
 export function Header() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -20,9 +21,9 @@ export function Header() {
         background: 'var(--triply-navyDarkest)',
         color: 'white'
     }}>
-      <Link to="/" style={{ fontWeight: 700, textDecoration: 'none', color: 'inherit' }}>
-        BookingClone
-      </Link>
+        <Link to="/" style={{textDecoration: 'none'}}>
+            <Logo/>
+        </Link>
       <Link to="/hotels" style={{color: 'inherit', textDecoration: 'none' }}>Hotels</Link>
       <div style={{ marginLeft: 'auto', display: 'flex', gap: 12, alignItems: 'center' }}>
         {isAuthenticated ? (
