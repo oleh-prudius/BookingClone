@@ -1,8 +1,10 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '@features/auth';
 import { Logo } from "@shared/ui/Logo";
 import { Button } from "antd";
 import { BellOutlined, UserOutlined, SendOutlined } from '@ant-design/icons';
+
+
 export function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
@@ -11,8 +13,11 @@ export function Header() {
     navigate('/');
   };
   
-  const navLinkStyle = { color: 'inherit' as const, textDecoration: 'none' as const};
   const iconStyle = { fontSize: 18 as const, cursor: 'pointer' as const};
+  const navLinkStyle = ({isActive}: {isActive:boolean} )=> ({
+          color: isActive ? 'var(--triply-primary)' : 'inherit' as const,
+          textDecoration: 'none' as const
+      });  
   
   return (
     <header style={{
@@ -24,14 +29,14 @@ export function Header() {
         background: 'var(--triply-navyDarkest)',
         color: 'white'
     }}>
-        <Link to="/" style={{textDecoration: 'none'}}>
+        <NavLink to="/" style={{textDecoration: 'none'}}>
             <Logo/>
-        </Link>
-        <Link to="/" style={navLinkStyle}>Main</Link>
-        <Link to="/hotels" style={navLinkStyle}>Hotels</Link>
-        <Link to="/tickets" style={navLinkStyle}>Tickets</Link>
-        <Link to="/transport" style={navLinkStyle}>Transport</Link>
-        <Link to="/nearby" style={navLinkStyle}>Nearby</Link>
+        </NavLink>
+        <NavLink to="/" end style={navLinkStyle}>Main</NavLink>
+        <NavLink to="/hotels" style={navLinkStyle}>Hotels</NavLink>
+        <NavLink to="/tickets" style={navLinkStyle}>Tickets</NavLink>
+        <NavLink to="/transport" style={navLinkStyle}>Transport</NavLink>
+        <NavLink to="/nearby" style={navLinkStyle}>Nearby</NavLink>
         
         
       <div style={{ marginLeft: 'auto', display: 'flex', gap: 12, alignItems: 'center' }}>
@@ -41,9 +46,9 @@ export function Header() {
           
           {isAuthenticated ? (
           <>
-            <Link to="/profile" style={navLinkStyle}>
+            <NavLink to="/profile" style={navLinkStyle}>
               {user!.firstName} {user!.lastName}
-            </Link>
+            </NavLink>
             <button
               onClick={handleLogout}
               style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 4, padding: '4px 10px', cursor: 'pointer' }}
@@ -53,7 +58,7 @@ export function Header() {
           </>
         ) : (
           <>
-            <Link to="/login" style={navLinkStyle}>Sign in</Link>
+            <NavLink to="/login" style={navLinkStyle}>Sign in</NavLink>
             <Button type="primary" href="/register">Registration</Button>  
           </>
         )}
