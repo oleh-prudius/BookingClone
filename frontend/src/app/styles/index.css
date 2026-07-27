@@ -17,7 +17,7 @@
 
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
-  color-scheme: light dark;
+  color-scheme: light;
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
@@ -104,4 +104,11 @@ code {
   line-height: 135%;
   padding: 4px 8px;
   background: var(--code-bg);
+}
+
+.desktop-nav {display: flex; }
+.burger-btn {display: none; }
+@media (max-width: 768px){
+  .desktop-nav {display: none; }
+  .burger-btn {display: block; }
 }
