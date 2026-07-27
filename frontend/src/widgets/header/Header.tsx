@@ -1,16 +1,18 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@features/auth';
-import {Logo} from "@shared/ui/Logo";
+import { Logo } from "@shared/ui/Logo";
+import { Button } from "antd";
 
 export function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
-
   const handleLogout = () => {
     logout();
     navigate('/');
   };
-
+  
+  const navLinkStyle = { color: 'inherit' as const, textDecoration: 'none' as const};
+  
   return (
     <header style={{
       display: 'flex',
@@ -24,11 +26,15 @@ export function Header() {
         <Link to="/" style={{textDecoration: 'none'}}>
             <Logo/>
         </Link>
-      <Link to="/hotels" style={{color: 'inherit', textDecoration: 'none' }}>Hotels</Link>
+        <Link to="/" style={navLinkStyle}>Main</Link>
+        <Link to="/hotels" style={navLinkStyle}>Hotels</Link>
+        <Link to="/tickets" style={navLinkStyle}>Tickets</Link>
+        <Link to="/transport" style={navLinkStyle}>Transport</Link>
+        <Link to="/nearby" style={navLinkStyle}>Nearby</Link>
       <div style={{ marginLeft: 'auto', display: 'flex', gap: 12, alignItems: 'center' }}>
         {isAuthenticated ? (
           <>
-            <Link to="/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Link to="/profile" style={navLinkStyle}>
               {user!.firstName} {user!.lastName}
             </Link>
             <button
@@ -40,8 +46,8 @@ export function Header() {
           </>
         ) : (
           <>
-            <Link to="/login" style={{color: 'inherit', textDecoration: 'none' }}>Sign in</Link>
-            <Link to="/register" style={{color: 'inherit', textDecoration: 'none' }}>Register</Link>
+            <Link to="/login" style={navLinkStyle}>Sign in</Link>
+            <Button type="primary" href="/register">Registration</Button>  
           </>
         )}
       </div>
