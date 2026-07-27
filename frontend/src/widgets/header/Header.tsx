@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@features/auth';
 import { Logo } from "@shared/ui/Logo";
 import { Button } from "antd";
-
+import { BellOutlined, UserOutlined, SendOutlined } from '@ant-design/icons';
 export function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
@@ -12,6 +12,7 @@ export function Header() {
   };
   
   const navLinkStyle = { color: 'inherit' as const, textDecoration: 'none' as const};
+  const iconStyle = { fontSize: 18 as const, cursor: 'pointer' as const};
   
   return (
     <header style={{
@@ -31,8 +32,14 @@ export function Header() {
         <Link to="/tickets" style={navLinkStyle}>Tickets</Link>
         <Link to="/transport" style={navLinkStyle}>Transport</Link>
         <Link to="/nearby" style={navLinkStyle}>Nearby</Link>
+        
+        
       <div style={{ marginLeft: 'auto', display: 'flex', gap: 12, alignItems: 'center' }}>
-        {isAuthenticated ? (
+          <SendOutlined style={iconStyle}/>
+          <BellOutlined style={iconStyle}/>
+          <UserOutlined style={iconStyle}/>
+          
+          {isAuthenticated ? (
           <>
             <Link to="/profile" style={navLinkStyle}>
               {user!.firstName} {user!.lastName}
