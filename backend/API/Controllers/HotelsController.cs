@@ -40,6 +40,7 @@ public class HotelsController(IMediator mediator) : ControllerBase
             CityName: city,
             PriceMin: priceMin,
             PriceMax: priceMax,
+            SortBy: sortBy,
             CategoryIds: categoryIds), ct)).ToActionResult();
 
     [HttpGet("{id:int}")]
