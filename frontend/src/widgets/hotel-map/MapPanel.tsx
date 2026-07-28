@@ -51,9 +51,12 @@ function FitBounds({ positions }: { positions: LatLngExpression[] }) {
 interface Props {
   hotels: Hotel[];
   hoveredHotelId?: number | null;
+  /** Overrides the default sticky results-page sizing — pass a fixed height for inline use (e.g. hotel detail page). */
+  height?: string;
+  sticky?: boolean;
 }
 
-export function MapPanel({ hotels, hoveredHotelId }: Props) {
+export function MapPanel({ hotels, hoveredHotelId, height, sticky = true }: Props) {
   const located = useMemo(
     () => hotels.filter((h): h is Hotel & { latitude: number; longitude: number } =>
       h.latitude != null && h.longitude != null),
@@ -66,9 +69,9 @@ export function MapPanel({ hotels, hoveredHotelId }: Props) {
   );
 
   const containerStyle = {
-    position: 'sticky' as const,
-    top: 88,
-    height: 'calc(100vh - 120px)',
+    position: sticky ? 'sticky' as const : undefined,
+    top: sticky ? 88 : undefined,
+    height: height ?? 'calc(100vh - 120px)',
     borderRadius: 8,
     overflow: 'hidden' as const,
     border: '1px solid var(--border)',

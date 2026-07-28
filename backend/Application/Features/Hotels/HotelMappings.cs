@@ -30,6 +30,9 @@ internal static class HotelMappings
             .SelectMany(r => r.RoomVariants)
             .Select(rv => (decimal?)rv.Price)
             .Min(),
-        Rating = null
+        Rating = null,
+        Amenities = h.HotelHotelAmenities?
+            .Select(hha => hha.HotelAmenity.Name)
+            .ToList() ?? new List<string>()
     };
 }
