@@ -28,18 +28,19 @@ public class HotelRepository(AppDbContext context) : IHotelRepository
     }
 
     public async Task<(IReadOnlyList<Hotel> Items, int TotalCount)> GetFilteredAsync(
-        string? name, 
-        long? categoryId, 
+        string? name,
+        long? categoryId,
         string? cityName,
         decimal? priceMin,
-        decimal? pricaMax,
+        decimal? priceMax,
         string? sortBy,
         DateOnly? checkIn,
         DateOnly? checkOut,
         int? adults,
         int? children,
-        int page, 
-        int pageSize, 
+        IReadOnlyList<long>? categoryIds,
+        int page,
+        int pageSize,
         CancellationToken ct = default)
     {
         var query = WithIncludes().AsNoTracking().Where(h => !h.IsArchived);
@@ -50,14 +51,19 @@ public class HotelRepository(AppDbContext context) : IHotelRepository
         if (categoryId.HasValue)
             query = query.Where(h => h.HotelCategoryId == categoryId.Value);
 
+        if (categoryIds is { Count: > 0 })
+            query = query.Where(h => categoryIds.Contains(h.HotelCategoryId));
+
         if (!string.IsNullOrWhiteSpace(cityName))
             query = query.Where(h => h.Address.City.Name.ToLower() == cityName.ToLower());
 
-        if (priceMin.HasValue)
+        if (priceMin.HasValue || priceMax.HasValue)
             query = query.Where(h => h.Rooms
                 .SelectMany(r => r.RoomVariants)
-                .Any(rv => rv.Price <= pricaMax.Value));
-        
+                .Any(rv =>
+                    (!priceMin.HasValue || rv.Price >= priceMin.Value) &&
+                    (!priceMax.HasValue || rv.Price <= priceMax.Value)));
+
         query = sortBy switch
         {
             "price" => query.OrderBy(h => h.Rooms

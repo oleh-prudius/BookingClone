@@ -3,15 +3,37 @@ import { useSearchParams } from 'react-router-dom';
 import { Row, Col, Typography, Pagination, Empty, Spin, Alert } from 'antd';
 import { hotelApi, HotelCard } from '@entities/hotel';
 import type { Hotel } from '@shared/types';
-import { FiltersSidebar } from './FiltersSidebar';
+import { FiltersSidebar, type HotelFilters } from './FiltersSidebar';
 import { SortTabs } from './SortTabs';
 import { MapPanel } from './MapPanel';
 
 const PAGE_SIZE = 10;
+const PRICE_MIN = 0;
+const PRICE_MAX = 1000;
+const FILTERS_DEBOUNCE_MS = 400;
+
+function parseNumberList(raw: string | null): number[] {
+  if (!raw) return [];
+  return raw.split(',').map(Number).filter((n) => !Number.isNaN(n));
+}
+
+function readFiltersFromParams(searchParams: URLSearchParams): HotelFilters {
+  return {
+    priceRange: [
+      Number(searchParams.get('priceMin')) || PRICE_MIN,
+      Number(searchParams.get('priceMax')) || PRICE_MAX,
+    ],
+    stars: parseNumberList(searchParams.get('stars')),
+    categoryIds: parseNumberList(searchParams.get('categoryIds')),
+  };
+}
 
 export function HotelsPage() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const destination = searchParams.get('destination') || undefined;
+
+  const [filters, setFilters] = useState<HotelFilters>(() => readFiltersFromParams(searchParams));
+  const [debouncedFilters, setDebouncedFilters] = useState<HotelFilters>(filters);
 
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [total, setTotal] = useState(0);
@@ -19,14 +41,38 @@ export function HotelsPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Debounce filter changes before they hit the URL/API
+  useEffect(() => {
+    const timeout = setTimeout(() => setDebouncedFilters(filters), FILTERS_DEBOUNCE_MS);
+    return () => clearTimeout(timeout);
+  }, [filters]);
+
+  // Reflect the committed filters (+ destination) in the URL so results are shareable/refreshable
+  useEffect(() => {
+    const next = new URLSearchParams();
+    if (destination) next.set('destination', destination);
+    if (debouncedFilters.priceRange[0] > PRICE_MIN) next.set('priceMin', String(debouncedFilters.priceRange[0]));
+    if (debouncedFilters.priceRange[1] < PRICE_MAX) next.set('priceMax', String(debouncedFilters.priceRange[1]));
+    if (debouncedFilters.stars.length) next.set('stars', debouncedFilters.stars.join(','));
+    if (debouncedFilters.categoryIds.length) next.set('categoryIds', debouncedFilters.categoryIds.join(','));
+    setSearchParams(next, { replace: true });
+  }, [debouncedFilters, destination, setSearchParams]);
+
   useEffect(() => {
     setPage(1);
-  }, [destination]);
+  }, [debouncedFilters, destination]);
 
   useEffect(() => {
     setLoading(true);
     setError(null);
-    hotelApi.getAllPaged({ page, pageSize: PAGE_SIZE, city: destination })
+    hotelApi.getAllPaged({
+      page,
+      pageSize: PAGE_SIZE,
+      city: destination,
+      priceMin: debouncedFilters.priceRange[0] > PRICE_MIN ? debouncedFilters.priceRange[0] : undefined,
+      priceMax: debouncedFilters.priceRange[1] < PRICE_MAX ? debouncedFilters.priceRange[1] : undefined,
+      categoryIds: debouncedFilters.categoryIds.length ? debouncedFilters.categoryIds : undefined,
+    })
       .then(({ items, totalCount }) => {
         setHotels(items);
         setTotal(totalCount);
@@ -36,13 +82,13 @@ export function HotelsPage() {
         setError(axiosErr.response?.data?.error ?? axiosErr.message ?? 'Failed to load hotels');
       })
       .finally(() => setLoading(false));
-  }, [page, destination]);
+  }, [page, destination, debouncedFilters]);
 
   return (
     <section style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
       <Row gutter={24}>
         <Col xs={24} lg={6}>
-          <FiltersSidebar />
+          <FiltersSidebar value={filters} onChange={setFilters} />
         </Col>
 
         <Col xs={24} lg={12}>
