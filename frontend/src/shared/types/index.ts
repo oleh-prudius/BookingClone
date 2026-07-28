@@ -32,6 +32,8 @@ export interface Hotel {
   coverPhotoUrl?: string | null;
   rating?: number | null;
   pricePerNight?: number | null;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 export type BookingStatus = 'Pending' | 'Confirmed' | 'Cancelled' | 'Completed';

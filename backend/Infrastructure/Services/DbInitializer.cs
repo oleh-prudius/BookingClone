@@ -323,7 +323,9 @@ public class DbInitializer(
 		{
 			Street      = "Khreshchatyk",
 			HouseNumber = "1",
-			CityId      = kyiv.Id
+			CityId      = kyiv.Id,
+			Latitude    = 50.4501,
+			Longitude   = 30.5234
 		};
 		await context.Addresses.AddAsync(address, ct);
 		await context.SaveChangesAsync(ct);

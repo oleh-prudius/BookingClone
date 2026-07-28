@@ -11,6 +11,10 @@ public class Address {
 
 	public string? ApartmentNumber { get; set; }
 
+	public double? Latitude { get; set; }
+
+	public double? Longitude { get; set; }
+
 	public long CityId { get; set; }
 	public City City { get; set; } = null!;
 
