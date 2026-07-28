@@ -20,6 +20,14 @@ internal static class HotelMappings
         ArrivalTimeUtcFrom = h.ArrivalTimeUtcFrom,
         ArrivalTimeUtcTo = h.ArrivalTimeUtcTo,
         DepartureTimeUtcFrom = h.DepartureTimeUtcFrom,
-        DepartureTimeUtcTo = h.DepartureTimeUtcTo
+        DepartureTimeUtcTo = h.DepartureTimeUtcTo,
+        CoverPhotoUrl = h.Photos?
+            .OrderBy(p => p.Priority)
+            .FirstOrDefault()?.Name,
+        PricePerNight = h.Rooms
+            .SelectMany(r => r.RoomVariants)
+            .Select(rv => (decimal?)rv.Price)
+            .Min(),
+        Rating = null
     };
 }

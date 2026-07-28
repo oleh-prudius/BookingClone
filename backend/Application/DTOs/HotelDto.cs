@@ -12,6 +12,9 @@ public class HotelDto
     public string HotelCategoryName { get; set; } = string.Empty;
     public long RealtorId { get; set; }
     public bool IsArchived { get; set; }
+    public string? CoverPhotoUrl { get; set; }
+    public double? Rating { get; set; }
+    public decimal? PricePerNight { get; set; }
     public DateTimeOffset ArrivalTimeUtcFrom { get; set; }
     public DateTimeOffset ArrivalTimeUtcTo { get; set; }
     public DateTimeOffset DepartureTimeUtcFrom { get; set; }

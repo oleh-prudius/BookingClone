@@ -9,9 +9,12 @@ public class HotelRepository(AppDbContext context) : IHotelRepository
 {
     private IQueryable<Hotel> WithIncludes() => context.Hotels
         .Include(h => h.Address)
-            .ThenInclude(a => a.City)
-                .ThenInclude(c => c.Country)
-        .Include(h => h.HotelCategory);
+        .ThenInclude(a => a.City)
+        .ThenInclude(c => c.Country)
+        .Include(h => h.HotelCategory)
+        .Include(h => h.Photos)
+        .Include(h => h.Rooms)
+        .ThenInclude(r => r.RoomVariants);
 
     public async Task<IReadOnlyList<Hotel>> GetAllAsync(CancellationToken ct = default) =>
         (await WithIncludes().AsNoTracking().ToListAsync(ct)).AsReadOnly();
