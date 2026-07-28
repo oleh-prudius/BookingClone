@@ -22,16 +22,25 @@ public class HotelsController(IMediator mediator) : ControllerBase
         [FromQuery] int pageSize = 20,
         [FromQuery] string? name = null,
         [FromQuery] long? categoryId = null,
+        [FromQuery] long[]? categoryIds = null,
         [FromQuery] string? city = null,
         [FromQuery] decimal? priceMin = null,
-        [FromQuery] decimal? pricaMax = null,
+        [FromQuery] decimal? priceMax = null,
         [FromQuery] string? sortBy = null,
         [FromQuery] DateOnly? checkIn = null,
         [FromQuery] DateOnly? checkOut = null,
         [FromQuery] int? adults = null,
         [FromQuery] int? children = null,
         CancellationToken ct = default)
-        => (await mediator.Send(new GetAllHotelsQuery(page, pageSize, name, categoryId, city), ct)).ToActionResult();
+        => (await mediator.Send(new GetAllHotelsQuery(
+            Page: page,
+            PageSize: pageSize,
+            Name: name,
+            CategoryId: categoryId,
+            CityName: city,
+            PriceMin: priceMin,
+            PriceMax: priceMax,
+            CategoryIds: categoryIds), ct)).ToActionResult();
 
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetHotel(int id, CancellationToken ct)

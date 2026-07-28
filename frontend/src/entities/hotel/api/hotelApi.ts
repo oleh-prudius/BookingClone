@@ -1,11 +1,22 @@
 import { httpClient } from '@shared/api/httpClient';
 import type { Hotel, PagedResult } from '@shared/types';
 
+export interface HotelSearchParams {
+  page?: number;
+  pageSize?: number;
+  name?: string;
+  categoryId?: number;
+  categoryIds?: number[];
+  city?: string;
+  priceMin?: number;
+  priceMax?: number;
+}
+
 export const hotelApi = {
-  getAll: (params?: { page?: number; pageSize?: number; name?: string; categoryId?: number; city?: string }): Promise<Hotel[]> =>
+  getAll: (params?: HotelSearchParams): Promise<Hotel[]> =>
     httpClient.get<PagedResult<Hotel>>('/hotels', { params }).then((r) => r.data.items ?? (r.data as unknown as Hotel[])),
 
-  getAllPaged: (params?: { page?: number; pageSize?: number; name?: string; categoryId?: number; city?: string }): Promise<PagedResult<Hotel>> =>
+  getAllPaged: (params?: HotelSearchParams): Promise<PagedResult<Hotel>> =>
     httpClient.get<PagedResult<Hotel>>('/hotels', { params }).then((r) => r.data),
 
   getById: (id: number): Promise<Hotel> =>
