@@ -14,6 +14,8 @@ public class HotelRepository(AppDbContext context) : IHotelRepository
         .ThenInclude(c => c.Country)
         .Include(h => h.HotelCategory)
         .Include(h => h.Photos)
+        .Include(h => h.HotelHotelAmenities)
+        .ThenInclude(hha => hha.HotelAmenity)
         .Include(h => h.Rooms)
         .ThenInclude(r => r.RoomVariants);
 

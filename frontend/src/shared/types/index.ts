@@ -34,6 +34,7 @@ export interface Hotel {
   pricePerNight?: number | null;
   latitude?: number | null;
   longitude?: number | null;
+  amenities?: string[];
 }
 
 export type BookingStatus = 'Pending' | 'Confirmed' | 'Cancelled' | 'Completed';

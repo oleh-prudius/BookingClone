@@ -17,6 +17,7 @@ public class HotelDto
     public decimal? PricePerNight { get; set; }
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
+    public IReadOnlyList<string> Amenities { get; set; } = new List<string>();
     public DateTimeOffset ArrivalTimeUtcFrom { get; set; }
     public DateTimeOffset ArrivalTimeUtcTo { get; set; }
     public DateTimeOffset DepartureTimeUtcFrom { get; set; }

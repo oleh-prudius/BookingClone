@@ -5,7 +5,7 @@ import { hotelApi, HotelCard } from '@entities/hotel';
 import type { Hotel } from '@shared/types';
 import { FiltersSidebar, type HotelFilters } from './FiltersSidebar';
 import { SortTabs, type SortBy } from './SortTabs';
-import { MapPanel } from './MapPanel';
+import { MapPanel } from '@widgets/hotel-map';
 
 const PAGE_SIZE = 10;
 const PRICE_MIN = 0;
