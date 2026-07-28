@@ -28,6 +28,52 @@ Services:
 The API applies EF Core migrations and seeds roles + the admin account
 (`ADMIN_EMAIL` / `ADMIN_PASSWORD`) automatically on startup.
 
+## Running without Docker
+
+Useful for faster iteration, or when you'd rather not spin up an unused local
+Postgres just to point at a shared remote database.
+
+**Backend:**
+
+```bash
+dotnet run --project backend/API
+```
+
+Config is read from `backend/API/appsettings.Local.json` (gitignored, not
+committed — same purpose as `.env`/`DATABASE_CONNECTION_STRING` in the Docker
+path, but consumed directly by `dotnet run` instead of via compose env vars).
+Create it yourself with at least:
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "<your Postgres or shared/remote connection string>"
+  },
+  "Jwt": { "Key": "<32+ char signing key>" }
+}
+```
+
+No manual migration step is needed — the API applies pending EF Core
+migrations and seeds roles/admin automatically on every startup, the same as
+in Docker (`ScopeCoveredDbInicializer` runs in `Program.cs`).
+
+**Frontend:**
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Defaults to `http://localhost:5134/api` for the backend if `VITE_API_BASE_URL`
+isn't set (see `shared/config/env.ts`), so no extra config is needed if the
+backend is running on its default port.
+
+**Sharing data with collaborators (non-Docker path):** put the shared/remote
+connection string directly in `backend/API/appsettings.Local.json`'s
+`ConnectionStrings:DefaultConnection` — same remote database, different
+config file than the Docker path above.
+
 ## Notes
 
 - **Config via env vars.** ASP.NET reads `Section__Key` env vars, so
