@@ -1,5 +1,7 @@
 import { useNavigate, Navigate } from 'react-router-dom';
+import { Typography, Divider } from 'antd';
 import { useAuth, ProfileForm } from '@features/auth';
+import { MyBookingsSection } from './MyBookingsSection';
 
 export function ProfilePage() {
   const { isAuthenticated, user } = useAuth();
@@ -14,6 +16,11 @@ export function ProfilePage() {
         {user!.roles.join(', ')}
       </p>
       <ProfileForm onSuccess={() => navigate('/profile')} />
+
+      <Divider />
+
+      <Typography.Title level={4}>My Bookings</Typography.Title>
+      <MyBookingsSection />
     </section>
   );
 }

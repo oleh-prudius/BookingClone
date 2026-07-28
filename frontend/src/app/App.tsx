@@ -4,6 +4,7 @@ import { Header } from '@widgets/header';
 import { HomePage } from '@pages/home';
 import { HotelsPage } from '@pages/hotels';
 import { HotelDetailPage } from '@pages/hotel';
+import { BookingPage } from '@pages/booking';
 import { LoginPage } from '@pages/login';
 import { RegisterPage } from '@pages/register';
 import { ProfilePage } from '@pages/profile';
@@ -29,6 +30,7 @@ export default function App() {
                   <Route path="/" element={<HomePage />} />
                   <Route path="/hotels" element={<HotelsPage />} />
                   <Route path="/hotels/:id" element={<HotelDetailPage />} />
+                  <Route path="/hotels/:id/book" element={<BookingPage />} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/register" element={<RegisterPage />} />
                   <Route path="/confirm-email" element={<ConfirmEmailPage />} />
