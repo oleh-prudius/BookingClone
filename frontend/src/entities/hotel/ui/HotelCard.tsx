@@ -1,26 +1,54 @@
+import { Card, Rate, Tag } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import { EnvironmentOutlined } from '@ant-design/icons';
 import type { Hotel } from '@shared/types';
+import { AppButton } from '@shared/ui';
 
 interface Props {
   hotel: Hotel;
 }
 
 export function HotelCard({ hotel }: Props) {
+  const navigate = useNavigate();
+
   return (
-    <article style={{
-      border: '1px solid var(--border)',
-      borderRadius: 8,
-      padding: 16,
-      marginBottom: 12,
-      textAlign: 'left',
-    }}>
-      <h3 style={{ margin: '0 0 4px' }}>{hotel.name}</h3>
-      <p style={{ margin: '0 0 4px', color: 'var(--text)' }}>
-        {hotel.cityName}, {hotel.countryName}
-      </p>
-      {hotel.description && (
-        <p style={{ margin: '0 0 8px' }}>{hotel.description}</p>
-      )}
-      <span style={{ fontSize: 13, color: 'var(--text)' }}>{hotel.hotelCategoryName}</span>
-    </article>
+    <Card
+      hoverable
+      cover={
+        <img
+          src={hotel.coverPhotoUrl ?? 'https://placehold.co/400x200?text=No+Photo'}
+          alt={hotel.name}
+          style={{ height: 200, objectFit: 'cover' }}
+        />
+      }
+      style={{ width: 320 }}
+    >
+      <Card.Meta
+        title={hotel.name}
+        description={
+          <span>
+            <EnvironmentOutlined /> {hotel.cityName}, {hotel.countryName}
+          </span>
+        }
+      />
+
+      <div style={{ marginTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        {hotel.rating != null
+          ? <Rate disabled allowHalf defaultValue={hotel.rating} style={{ fontSize: 14 }} />
+          : <Tag>No reviews yet</Tag>
+        }
+        {hotel.pricePerNight != null && (
+          <span style={{ fontWeight: 600, color: 'var(--triply-primary)' }}>
+            from ${hotel.pricePerNight}/night
+          </span>
+        )}
+      </div>
+
+      <div style={{ marginTop: 12 }}>
+        <AppButton variant="primary" onClick={() => navigate(`/hotels/${hotel.id}`)}>
+          Details
+        </AppButton>
+      </div>
+    </Card>
   );
 }

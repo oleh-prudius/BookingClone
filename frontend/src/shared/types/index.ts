@@ -29,6 +29,9 @@ export interface Hotel {
   arrivalTimeUtcTo: string;
   departureTimeUtcFrom: string;
   departureTimeUtcTo: string;
+  coverPhotoUrl?: string | null;
+  rating?: number | null;
+  pricePerNight?: number | null;
 }
 
 export type BookingStatus = 'Pending' | 'Confirmed' | 'Cancelled' | 'Completed';
