@@ -4,13 +4,20 @@ import { Row, Col, Typography, Pagination, Empty, Spin, Alert } from 'antd';
 import { hotelApi, HotelCard } from '@entities/hotel';
 import type { Hotel } from '@shared/types';
 import { FiltersSidebar, type HotelFilters } from './FiltersSidebar';
-import { SortTabs } from './SortTabs';
+import { SortTabs, type SortBy } from './SortTabs';
 import { MapPanel } from './MapPanel';
 
 const PAGE_SIZE = 10;
 const PRICE_MIN = 0;
 const PRICE_MAX = 1000;
 const FILTERS_DEBOUNCE_MS = 400;
+const DEFAULT_SORT: SortBy = 'popular';
+const VALID_SORTS: SortBy[] = ['popular', 'price', 'rating'];
+
+function readSortFromParams(searchParams: URLSearchParams): SortBy {
+  const raw = searchParams.get('sortBy');
+  return (VALID_SORTS as string[]).includes(raw ?? '') ? (raw as SortBy) : DEFAULT_SORT;
+}
 
 function parseNumberList(raw: string | null): number[] {
   if (!raw) return [];
@@ -34,10 +41,11 @@ export function HotelsPage() {
 
   const [filters, setFilters] = useState<HotelFilters>(() => readFiltersFromParams(searchParams));
   const [debouncedFilters, setDebouncedFilters] = useState<HotelFilters>(filters);
+  const [sortBy, setSortBy] = useState<SortBy>(() => readSortFromParams(searchParams));
 
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(() => Number(searchParams.get('page')) || 1);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -55,12 +63,14 @@ export function HotelsPage() {
     if (debouncedFilters.priceRange[1] < PRICE_MAX) next.set('priceMax', String(debouncedFilters.priceRange[1]));
     if (debouncedFilters.stars.length) next.set('stars', debouncedFilters.stars.join(','));
     if (debouncedFilters.categoryIds.length) next.set('categoryIds', debouncedFilters.categoryIds.join(','));
+    if (sortBy !== DEFAULT_SORT) next.set('sortBy', sortBy);
+    if (page > 1) next.set('page', String(page));
     setSearchParams(next, { replace: true });
-  }, [debouncedFilters, destination, setSearchParams]);
+  }, [debouncedFilters, destination, sortBy, page, setSearchParams]);
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedFilters, destination]);
+  }, [debouncedFilters, destination, sortBy]);
 
   useEffect(() => {
     setLoading(true);
@@ -72,6 +82,7 @@ export function HotelsPage() {
       priceMin: debouncedFilters.priceRange[0] > PRICE_MIN ? debouncedFilters.priceRange[0] : undefined,
       priceMax: debouncedFilters.priceRange[1] < PRICE_MAX ? debouncedFilters.priceRange[1] : undefined,
       categoryIds: debouncedFilters.categoryIds.length ? debouncedFilters.categoryIds : undefined,
+      sortBy,
     })
       .then(({ items, totalCount }) => {
         setHotels(items);
@@ -82,7 +93,7 @@ export function HotelsPage() {
         setError(axiosErr.response?.data?.error ?? axiosErr.message ?? 'Failed to load hotels');
       })
       .finally(() => setLoading(false));
-  }, [page, destination, debouncedFilters]);
+  }, [page, destination, debouncedFilters, sortBy]);
 
   return (
     <section style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
@@ -103,7 +114,7 @@ export function HotelsPage() {
             <Typography.Title level={3} style={{ margin: 0 }}>
               {destination ? `Hotels in ${destination}` : 'Hotels'}
             </Typography.Title>
-            <SortTabs />
+            <SortTabs value={sortBy} onChange={setSortBy} />
           </div>
 
           {loading && <Spin style={{ display: 'block', margin: '48px auto' }} />}

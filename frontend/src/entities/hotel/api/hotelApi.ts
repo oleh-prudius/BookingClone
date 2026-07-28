@@ -10,6 +10,7 @@ export interface HotelSearchParams {
   city?: string;
   priceMin?: number;
   priceMax?: number;
+  sortBy?: string;
 }
 
 export const hotelApi = {

@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Domain.Enums;
 using Domain.Interfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -68,7 +69,12 @@ public class HotelRepository(AppDbContext context) : IHotelRepository
         {
             "price" => query.OrderBy(h => h.Rooms
                 .SelectMany(r => r.RoomVariants)
+                .Select(rv => (decimal?)rv.Price)
                 .Min()),
+            "popular" => query.OrderByDescending(h => h.Rooms
+                .SelectMany(r => r.RoomVariants)
+                .SelectMany(rv => rv.BookingRoomVariants)
+                .Count(brv => brv.Booking.Status != BookingStatus.Cancelled)),
             _ => query.OrderBy(h => h.Name)
         };
         var totalCount = await query.CountAsync(ct);
