@@ -20,7 +20,7 @@ public class HotelFilterTests(DatabaseFixture fixture) : IAsyncLifetime
         await SeedHelper.SeedBookingChainAsync(_ctx);
         var repo = new HotelRepository(_ctx);
 
-        var (items, _) = await repo.GetFilteredAsync("Test Hotel", null, null, 1, 20);
+        var (items, _) = await repo.GetFilteredAsync("Test Hotel", null, null, null, null, null, null, null, null, null, 1, 20);
 
         items.Should().NotBeEmpty();
         items.Should().AllSatisfy(h => h.Name.Should().Contain("Test Hotel"));
@@ -32,7 +32,7 @@ public class HotelFilterTests(DatabaseFixture fixture) : IAsyncLifetime
         await SeedHelper.SeedBookingChainAsync(_ctx);
         var repo = new HotelRepository(_ctx);
 
-        var (items, _) = await repo.GetFilteredAsync(null, null, "TestCity", 1, 20);
+        var (items, _) = await repo.GetFilteredAsync(null, null, "TestCity", null, null, null, null, null, null, null, 1, 20);
 
         items.Should().NotBeEmpty();
         items.Should().AllSatisfy(h => h.Address.City.Name.Should().Be("TestCity"));
@@ -50,7 +50,7 @@ public class HotelFilterTests(DatabaseFixture fixture) : IAsyncLifetime
         }
 
         var repo = new HotelRepository(_ctx);
-        var (items, _) = await repo.GetFilteredAsync(null, null, null, 1, 100);
+        var (items, _) = await repo.GetFilteredAsync(null, null, null, null, null, null, null, null, null, null, 1, 100);
 
         items.Should().NotContain(h => h.IsArchived);
     }
@@ -60,7 +60,7 @@ public class HotelFilterTests(DatabaseFixture fixture) : IAsyncLifetime
     {
         var repo = new HotelRepository(_ctx);
 
-        var (items, total) = await repo.GetFilteredAsync(null, null, "CityThatDoesNotExist_xyz", 1, 20);
+        var (items, total) = await repo.GetFilteredAsync(null, null, "CityThatDoesNotExist_xyz", null, null, null, null, null, null, null, 1, 20);
 
         items.Should().BeEmpty();
         total.Should().Be(0);
