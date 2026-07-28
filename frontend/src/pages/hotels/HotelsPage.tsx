@@ -48,6 +48,7 @@ export function HotelsPage() {
   const [page, setPage] = useState(() => Number(searchParams.get('page')) || 1);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hoveredHotelId, setHoveredHotelId] = useState<number | null>(null);
 
   // Debounce filter changes before they hit the URL/API
   useEffect(() => {
@@ -129,7 +130,15 @@ export function HotelsPage() {
             overflowY: 'auto',
             paddingRight: 4,
           }}>
-            {hotels.map((h) => <HotelCard key={h.id} hotel={h} />)}
+            {hotels.map((h) => (
+              <div
+                key={h.id}
+                onMouseEnter={() => setHoveredHotelId(h.id)}
+                onMouseLeave={() => setHoveredHotelId((id) => (id === h.id ? null : id))}
+              >
+                <HotelCard hotel={h} />
+              </div>
+            ))}
           </div>
 
           {total > PAGE_SIZE && (
@@ -146,7 +155,7 @@ export function HotelsPage() {
         </Col>
 
         <Col xs={0} lg={6}>
-          <MapPanel />
+          <MapPanel hotels={hotels} hoveredHotelId={hoveredHotelId} />
         </Col>
       </Row>
     </section>
