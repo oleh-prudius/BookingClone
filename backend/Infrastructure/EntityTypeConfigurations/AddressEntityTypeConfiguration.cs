@@ -22,5 +22,11 @@ internal class AddressEntityTypeConfiguration : IEntityTypeConfiguration<Address
 		builder.Property(a => a.ApartmentNumber)
 			.HasMaxLength(20)
 			.IsRequired(false);
+
+		builder.Property(a => a.Latitude)
+			.IsRequired(false);
+
+		builder.Property(a => a.Longitude)
+			.IsRequired(false);
 	}
 }

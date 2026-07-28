@@ -15,6 +15,8 @@ public class HotelDto
     public string? CoverPhotoUrl { get; set; }
     public double? Rating { get; set; }
     public decimal? PricePerNight { get; set; }
+    public double? Latitude { get; set; }
+    public double? Longitude { get; set; }
     public DateTimeOffset ArrivalTimeUtcFrom { get; set; }
     public DateTimeOffset ArrivalTimeUtcTo { get; set; }
     public DateTimeOffset DepartureTimeUtcFrom { get; set; }
