@@ -23,6 +23,13 @@ public class HotelsController(IMediator mediator) : ControllerBase
         [FromQuery] string? name = null,
         [FromQuery] long? categoryId = null,
         [FromQuery] string? city = null,
+        [FromQuery] decimal? priceMin = null,
+        [FromQuery] decimal? pricaMax = null,
+        [FromQuery] string? sortBy = null,
+        [FromQuery] DateOnly? checkIn = null,
+        [FromQuery] DateOnly? checkOut = null,
+        [FromQuery] int? adults = null,
+        [FromQuery] int? children = null,
         CancellationToken ct = default)
         => (await mediator.Send(new GetAllHotelsQuery(page, pageSize, name, categoryId, city), ct)).ToActionResult();
 

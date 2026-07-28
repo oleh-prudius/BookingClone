@@ -9,5 +9,12 @@ public record GetAllHotelsQuery(
     int PageSize,
     string? Name = null,
     long? CategoryId = null,
-    string? CityName = null
+    string? CityName = null,
+    decimal? PriceMin = null,
+    decimal? PriceMax = null,
+    string? SortBy = null,
+    DateOnly? CheckIn = null,
+    DateOnly? CheckOut = null,
+    int? Adults = null,
+    int? Children = null
 ) : IRequest<Result<PagedResult<HotelDto>>>;

@@ -28,7 +28,19 @@ public class HotelRepository(AppDbContext context) : IHotelRepository
     }
 
     public async Task<(IReadOnlyList<Hotel> Items, int TotalCount)> GetFilteredAsync(
-        string? name, long? categoryId, string? cityName, int page, int pageSize, CancellationToken ct = default)
+        string? name, 
+        long? categoryId, 
+        string? cityName,
+        decimal? priceMin,
+        decimal? pricaMax,
+        string? sortBy,
+        DateOnly? checkIn,
+        DateOnly? checkOut,
+        int? adults,
+        int? children,
+        int page, 
+        int pageSize, 
+        CancellationToken ct = default)
     {
         var query = WithIncludes().AsNoTracking().Where(h => !h.IsArchived);
 
@@ -41,6 +53,18 @@ public class HotelRepository(AppDbContext context) : IHotelRepository
         if (!string.IsNullOrWhiteSpace(cityName))
             query = query.Where(h => h.Address.City.Name.ToLower() == cityName.ToLower());
 
+        if (priceMin.HasValue)
+            query = query.Where(h => h.Rooms
+                .SelectMany(r => r.RoomVariants)
+                .Any(rv => rv.Price <= pricaMax.Value));
+        
+        query = sortBy switch
+        {
+            "price" => query.OrderBy(h => h.Rooms
+                .SelectMany(r => r.RoomVariants)
+                .Min()),
+            _ => query.OrderBy(h => h.Name)
+        };
         var totalCount = await query.CountAsync(ct);
         var items = (await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(ct)).AsReadOnly();
         return (items, totalCount);
