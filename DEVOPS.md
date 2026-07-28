@@ -33,6 +33,12 @@ The API applies EF Core migrations and seeds roles + the admin account
 - **Config via env vars.** ASP.NET reads `Section__Key` env vars, so
   `ConnectionStrings__DefaultConnection`, `Jwt__Key`, etc. are injected by compose.
   Inside the network the DB host is `db`.
+- **Sharing data with collaborators.** By default `api` connects to the local `db`
+  container — a fresh, empty database per machine. To have everyone see the same
+  users/admins/objects, set `DATABASE_CONNECTION_STRING` in `.env` to a shared/remote
+  Postgres connection string (e.g. Neon); `api` will use it instead. The local `db`
+  container still starts but is unused — skip it with `docker compose up api frontend`.
+  After changing `.env`, recreate the container: `docker compose up -d --build api`.
 - **Secrets.** `.env` and `appsettings.Local.json` are gitignored — never commit real
   credentials. `JWT_KEY` must be at least 32 characters.
 - **Frontend API URL is build-time.** Vite inlines `VITE_API_BASE_URL` during
