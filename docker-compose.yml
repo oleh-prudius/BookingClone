@@ -27,7 +27,8 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       # Config keys use "__" as the section separator (ConnectionStrings:DefaultConnection -> ConnectionStrings__DefaultConnection)
-      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=${POSTGRES_DB:-bookingclone};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}"
+      # Set DATABASE_CONNECTION_STRING in .env to point at a shared/remote Postgres instead of the local `db` container.
+      ConnectionStrings__DefaultConnection: ${DATABASE_CONNECTION_STRING:-Host=db;Port=5432;Database=bookingclone;Username=postgres;Password=postgres}
       Jwt__Key: ${JWT_KEY}
       Frontend__Url: ${FRONTEND_URL:-http://localhost:5173}
       ServerRunUrl: ${SERVER_RUN_URL:-http://localhost:5134}
