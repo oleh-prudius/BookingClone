@@ -89,6 +89,8 @@ public class DbInitializer(
 		await SeedCountriesAndCitiesAsync(ct);
 		await SeedLookupTablesAsync(ct);
 		await SeedTestHotelAsync(ct);
+		await SeedGrandKyivPhotosAsync(ct);
+		await SeedMoreHotelsAsync(ct);
 	}
 
 	private async Task SeedCountriesAndCitiesAsync(CancellationToken ct)
@@ -392,5 +394,201 @@ public class DbInitializer(
 			},
 		], ct);
 		await context.SaveChangesAsync(ct);
+	}
+
+	// Real landmark photos per city (sourced from Wikimedia Commons), reused for every
+	// hotel in that city so a new hotel spec only needs to name its city, not its own photos.
+	private static readonly Dictionary<string, string[]> CityPhotos = new()
+	{
+		["Kyiv"] =
+		[
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/%D0%91%D1%83%D0%B4%D0%B8%D0%BD%D0%BE%D0%BA_%D0%B7_%D1%85%D0%B8%D0%BC%D0%B5%D1%80%D0%B0%D0%BC%D0%B8%2C_%D1%81%D0%B5%D1%80%D0%BF%D0%B5%D0%BD%D1%8C_2019.jpg/3840px-%D0%91%D1%83%D0%B4%D0%B8%D0%BD%D0%BE%D0%BA_%D0%B7_%D1%85%D0%B8%D0%BC%D0%B5%D1%80%D0%B0%D0%BC%D0%B8%2C_%D1%81%D0%B5%D1%80%D0%BF%D0%B5%D0%BD%D1%8C_2019.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/80-391-0151_Kyiv_St.Sophia%27s_Cathedral_RB_18_2_%28cropped%29.jpg/3840px-80-391-0151_Kyiv_St.Sophia%27s_Cathedral_RB_18_2_%28cropped%29.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Maidan_Nezalezhnosti_view.jpg/3840px-Maidan_Nezalezhnosti_view.jpg",
+		],
+		["Lviv"] = ["https://upload.wikimedia.org/wikipedia/commons/1/16/%D0%9B%D0%B0%D1%82%D0%B8%D0%BD%D1%81%D1%8C%D0%BA%D0%B8%D0%B9_%D0%BA%D0%B0%D1%84%D0%B5%D0%B4%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%B8%D0%B9_%D1%81%D0%BE%D0%B1%D0%BE%D1%80_%28%D0%9B%D1%8C%D0%B2%D1%96%D0%B2%29_16.jpg"],
+		["Paris"] =
+		[
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/La_Tour_Eiffel_vue_de_la_Tour_Saint-Jacques%2C_Paris_ao%C3%BBt_2014_%282%29.jpg/3840px-La_Tour_Eiffel_vue_de_la_Tour_Saint-Jacques%2C_Paris_ao%C3%BBt_2014_%282%29.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Louvre_Museum_Wikimedia_Commons.jpg/3840px-Louvre_Museum_Wikimedia_Commons.jpg",
+		],
+		["Rome"] =
+		[
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Colosseo_2020.jpg/3840px-Colosseo_2020.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/7/7e/Trevi_Fountain%2C_Rome%2C_Italy_2_-_May_2007.jpg",
+		],
+		["Barcelona"] =
+		[
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Evening_light_over_Barcelona.jpg/3840px-Evening_light_over_Barcelona.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/e/ef/SF_maig_2_cropped.jpg",
+		],
+		["Istanbul"] =
+		[
+			"https://upload.wikimedia.org/wikipedia/commons/c/cb/Historical_peninsula_and_modern_skyline_of_Istanbul.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/4/4a/Hagia_Sophia_%28228968325%29.jpeg",
+		],
+		["Dubai"] =
+		[
+			"https://upload.wikimedia.org/wikipedia/en/thumb/c/c7/Burj_Khalifa_2021.jpg/3840px-Burj_Khalifa_2021.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Burj_Khalifa_%28worlds_tallest_building%29_and_the_Dubai_skyline_%2825781049892%29.jpg/3840px-Burj_Khalifa_%28worlds_tallest_building%29_and_the_Dubai_skyline_%2825781049892%29.jpg",
+		],
+		["Bangkok"] =
+		[
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/%E0%B9%80%E0%B8%88%E0%B8%94%E0%B8%B5%E0%B8%A2%E0%B9%8C%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%98%E0%B8%B2%E0%B8%99%E0%B8%97%E0%B8%A3%E0%B8%87%E0%B8%9B%E0%B8%A3%E0%B8%B2%E0%B8%87%E0%B8%84%E0%B9%8C%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%AD%E0%B8%A3%E0%B8%B8%E0%B8%932.jpg/3840px-%E0%B9%80%E0%B8%88%E0%B8%94%E0%B8%B5%E0%B8%A2%E0%B9%8C%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%98%E0%B8%B2%E0%B8%99%E0%B8%97%E0%B8%A3%E0%B8%87%E0%B8%9B%E0%B8%A3%E0%B8%B2%E0%B8%87%E0%B8%84%E0%B9%8C%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%AD%E0%B8%A3%E0%B8%B8%E0%B8%932.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/7/7d/4Y1A1159_Bangkok_%2833536795515%29.jpg",
+		],
+		["Santorini"] = ["https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Oia_sunset_-_panoramio_%282%29.jpg/3840px-Oia_sunset_-_panoramio_%282%29.jpg"],
+		["Dubrovnik"] = ["https://upload.wikimedia.org/wikipedia/commons/6/67/The_walls_of_the_fortress_and_View_of_the_old_city._panorama.jpg"],
+	};
+
+	private static IEnumerable<HotelPhoto> BuildPhotos(string cityName, long hotelId) =>
+		CityPhotos.TryGetValue(cityName, out var urls)
+			? urls.Select((url, i) => new HotelPhoto { Name = url, Priority = i, HotelId = hotelId })
+			: [];
+
+	private async Task SeedGrandKyivPhotosAsync(CancellationToken ct)
+	{
+		var hotel = await context.Hotels.FirstOrDefaultAsync(h => h.Name == "Grand Kyiv Hotel", ct);
+		if (hotel is null) return;
+
+		if (await context.HotelPhotos.AnyAsync(p => p.HotelId == hotel.Id, ct)) return;
+
+		await context.HotelPhotos.AddRangeAsync(BuildPhotos("Kyiv", hotel.Id), ct);
+		await context.SaveChangesAsync(ct);
+	}
+
+	private record HotelSeedSpec(
+		string HotelName,
+		string CityName,
+		string CategoryName,
+		string Description,
+		string[] AmenityNames,
+		(string RoomName, string RoomTypeName, int Quantity, (decimal Price, decimal? DiscountPrice, int Adults, int Children) Variant)[] Rooms);
+
+	private async Task SeedMoreHotelsAsync(CancellationToken ct)
+	{
+		HotelSeedSpec[] specs =
+		[
+			new("Lviv Old Town Boutique Hotel", "Lviv", "Hotel",
+				"A charming boutique hotel steps away from Lviv's historic old town.",
+				["Wi-Fi", "Restaurant", "Air Conditioning"], 
+				[("Standard Room", "Standard", 8, (55m, null, 2, 0)), ("Suite", "Suite", 3, (110m, 95m, 2, 1))]),
+
+			new("Le Marais Suites", "Paris", "Apartment",
+				"Stylish apartments in the heart of Paris' Le Marais district.",
+				["Wi-Fi", "Air Conditioning", "Pet Friendly"], 
+				[("Studio", "Standard", 6, (140m, null, 2, 0)), ("One-Bedroom Suite", "Suite", 4, (210m, 180m, 2, 2))]),
+
+			new("Roma Colosseo Hotel", "Rome", "Hotel",
+				"Elegant hotel with views of the Colosseum and classic Roman hospitality.",
+				["Wi-Fi", "Pool", "Restaurant", "Gym"], 
+				[("Superior Room", "Superior", 10, (130m, null, 2, 1)), ("Deluxe Room", "Deluxe", 5, (190m, 160m, 2, 1))]),
+
+			new("Barcelona Beachfront Resort", "Barcelona", "Resort",
+				"A relaxed beachfront resort with direct access to the Mediterranean coast.",
+				["Pool", "Beach Access", "Spa", "Restaurant"], 
+				[("Sea View Room", "Superior", 12, (160m, 140m, 2, 2)), ("Family Suite", "Suite", 4, (240m, null, 4, 2))]),
+
+			new("Bosphorus View Hotel", "Istanbul", "Hotel",
+				"Modern hotel overlooking the Bosphorus, minutes from Istanbul's old city.",
+				["Wi-Fi", "Restaurant", "Airport Shuttle"], 
+				[("Standard Room", "Standard", 10, (70m, null, 2, 0)), ("Deluxe Room", "Deluxe", 6, (115m, 95m, 2, 1))]),
+
+			new("Dubai Marina Towers", "Dubai", "Resort",
+				"Luxury high-rise resort in Dubai Marina with skyline and sea views.",
+				["Pool", "Spa", "Gym", "Air Conditioning", "Airport Shuttle"], 
+				[("Deluxe Room", "Deluxe", 8, (220m, null, 2, 1)), ("Executive Suite", "Suite", 3, (380m, 340m, 2, 2))]),
+
+			new("Bangkok Riverside Hostel", "Bangkok", "Hostel",
+				"Budget-friendly hostel on the Chao Phraya riverside, popular with backpackers.",
+				["Wi-Fi", "Air Conditioning"], 
+				[("Economy Room", "Economy", 15, (25m, null, 1, 0)), ("Standard Room", "Standard", 8, (40m, 35m, 2, 0))]),
+
+			new("Santorini Cliffside Villas", "Santorini", "Villa",
+				"Whitewashed cliffside villas overlooking the Aegean Sea and caldera sunsets.",
+				["Pool", "Beach Access", "Wi-Fi", "Spa"], 
+				[("Caldera View Villa", "Deluxe", 4, (280m, 250m, 2, 2)), ("Honeymoon Suite", "Suite", 2, (350m, null, 2, 0))]),
+
+			new("Dubrovnik Old City Hotel", "Dubrovnik", "Hotel",
+				"Historic hotel within Dubrovnik's ancient city walls, near the Adriatic coast.",
+				["Wi-Fi", "Restaurant", "Air Conditioning"], 
+				[("Standard Room", "Standard", 9, (90m, null, 2, 0)), ("Superior Room", "Superior", 5, (130m, 115m, 2, 1))]),
+		];
+
+		var realtor = await userManager.FindByEmailAsync("realtor@booking.test")
+			?? throw new Exception("Test realtor must be seeded before additional hotels.");
+
+		foreach (var spec in specs)
+		{
+			if (await context.Hotels.AnyAsync(h => h.Name == spec.HotelName, ct))
+				continue;
+
+			var city = await context.Cities.FirstAsync(c => c.Name == spec.CityName, ct);
+			var category = await context.HotelCategories.FirstAsync(c => c.Name == spec.CategoryName, ct);
+
+			var address = new Address
+			{
+				Street = $"{spec.CityName} Central Street",
+				HouseNumber = "1",
+				CityId = city.Id,
+				Latitude = city.Latitude,
+				Longitude = city.Longitude
+			};
+			await context.Addresses.AddAsync(address, ct);
+			await context.SaveChangesAsync(ct);
+
+			var hotel = new Hotel
+			{
+				Name = spec.HotelName,
+				Description = spec.Description,
+				ArrivalTimeUtcFrom = new DateTimeOffset(2000, 1, 1, 14, 0, 0, TimeSpan.Zero),
+				ArrivalTimeUtcTo = new DateTimeOffset(2000, 1, 1, 22, 0, 0, TimeSpan.Zero),
+				DepartureTimeUtcFrom = new DateTimeOffset(2000, 1, 1, 7, 0, 0, TimeSpan.Zero),
+				DepartureTimeUtcTo = new DateTimeOffset(2000, 1, 1, 12, 0, 0, TimeSpan.Zero),
+				IsArchived = false,
+				AddressId = address.Id,
+				HotelCategoryId = category.Id,
+				RealtorId = realtor.Id
+			};
+			await context.Hotels.AddAsync(hotel, ct);
+			await context.SaveChangesAsync(ct);
+
+			foreach (var amenityName in spec.AmenityNames)
+			{
+				var amenity = await context.HotelAmenities.FirstAsync(a => a.Name == amenityName, ct);
+				await context.HotelHotelAmenities.AddAsync(new HotelHotelAmenity { HotelId = hotel.Id, HotelAmenityId = amenity.Id }, ct);
+			}
+			await context.SaveChangesAsync(ct);
+
+			foreach (var roomSpec in spec.Rooms)
+			{
+				var roomType = await context.RoomTypes.FirstAsync(rt => rt.Name == roomSpec.RoomTypeName, ct);
+				var room = new Room
+				{
+					Name = roomSpec.RoomName,
+					Area = 20,
+					NumberOfRooms = 1,
+					Quantity = roomSpec.Quantity,
+					HotelId = hotel.Id,
+					RoomTypeId = roomType.Id
+				};
+				await context.Rooms.AddAsync(room, ct);
+				await context.SaveChangesAsync(ct);
+
+				var (price, discountPrice, adults, children) = roomSpec.Variant;
+				await context.RoomVariants.AddAsync(new RoomVariant
+				{
+					Price = price,
+					DiscountPrice = discountPrice,
+					RoomId = room.Id,
+					GuestInfo = new GuestInfo { AdultCount = adults, ChildCount = children },
+					BedInfo = new BedInfo { DoubleBedCount = 1 }
+				}, ct);
+			}
+			await context.SaveChangesAsync(ct);
+
+			await context.HotelPhotos.AddRangeAsync(BuildPhotos(spec.CityName, hotel.Id), ct);
+			await context.SaveChangesAsync(ct);
+		}
 	}
 }
