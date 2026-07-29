@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Row, Col, Typography, Pagination, Empty, Spin, Alert } from 'antd';
+import { Row, Col, Typography, Pagination, Empty, Spin, Alert, Segmented } from 'antd';
+import { AppstoreOutlined, BarsOutlined } from '@ant-design/icons';
 import { hotelApi, HotelCard } from '@entities/hotel';
 import type { Hotel } from '@shared/types';
 import { FiltersSidebar, type HotelFilters } from './FiltersSidebar';
@@ -13,10 +14,16 @@ const PRICE_MAX = 1000;
 const FILTERS_DEBOUNCE_MS = 400;
 const DEFAULT_SORT: SortBy = 'popular';
 const VALID_SORTS: SortBy[] = ['popular', 'price', 'rating'];
+type ViewMode = 'grid' | 'list';
+const DEFAULT_VIEW: ViewMode = 'grid';
 
 function readSortFromParams(searchParams: URLSearchParams): SortBy {
   const raw = searchParams.get('sortBy');
   return (VALID_SORTS as string[]).includes(raw ?? '') ? (raw as SortBy) : DEFAULT_SORT;
+}
+
+function readViewFromParams(searchParams: URLSearchParams): ViewMode {
+  return searchParams.get('view') === 'list' ? 'list' : DEFAULT_VIEW;
 }
 
 function parseNumberList(raw: string | null): number[] {
@@ -42,6 +49,7 @@ export function HotelsPage() {
   const [filters, setFilters] = useState<HotelFilters>(() => readFiltersFromParams(searchParams));
   const [debouncedFilters, setDebouncedFilters] = useState<HotelFilters>(filters);
   const [sortBy, setSortBy] = useState<SortBy>(() => readSortFromParams(searchParams));
+  const [view, setView] = useState<ViewMode>(() => readViewFromParams(searchParams));
 
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [total, setTotal] = useState(0);
@@ -65,9 +73,10 @@ export function HotelsPage() {
     if (debouncedFilters.stars.length) next.set('stars', debouncedFilters.stars.join(','));
     if (debouncedFilters.categoryIds.length) next.set('categoryIds', debouncedFilters.categoryIds.join(','));
     if (sortBy !== DEFAULT_SORT) next.set('sortBy', sortBy);
+    if (view !== DEFAULT_VIEW) next.set('view', view);
     if (page > 1) next.set('page', String(page));
     setSearchParams(next, { replace: true });
-  }, [debouncedFilters, destination, sortBy, page, setSearchParams]);
+  }, [debouncedFilters, destination, sortBy, view, page, setSearchParams]);
 
   useEffect(() => {
     setPage(1);
@@ -116,27 +125,51 @@ export function HotelsPage() {
             <Typography.Title level={3} style={{ margin: 0 }}>
               {destination ? `Hotels in ${destination}` : 'Hotels'}
             </Typography.Title>
-            <SortTabs value={sortBy} onChange={setSortBy} />
+            <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+              <SortTabs value={sortBy} onChange={setSortBy} />
+              <Segmented
+                value={view}
+                onChange={(v) => setView(v as ViewMode)}
+                options={[
+                  { label: 'Grid', value: 'grid', icon: <AppstoreOutlined /> },
+                  { label: 'List', value: 'list', icon: <BarsOutlined /> },
+                ]}
+              />
+            </div>
           </div>
 
           {loading && <Spin style={{ display: 'block', margin: '48px auto' }} />}
           {error && <Alert type="error" message={error} style={{ marginBottom: 16 }} />}
           {!loading && !error && hotels.length === 0 && <Empty description="No hotels found" />}
 
-          <Row gutter={[16, 16]}>
-            {hotels.map((h) => (
-              <Col
-                key={h.id}
-                xs={24}
-                sm={12}
-                lg={8}
-                onMouseEnter={() => setHoveredHotelId(h.id)}
-                onMouseLeave={() => setHoveredHotelId((id) => (id === h.id ? null : id))}
-              >
-                <HotelCard hotel={h} />
-              </Col>
-            ))}
-          </Row>
+          {view === 'grid' ? (
+            <Row gutter={[16, 16]}>
+              {hotels.map((h) => (
+                <Col
+                  key={h.id}
+                  xs={24}
+                  sm={12}
+                  lg={8}
+                  onMouseEnter={() => setHoveredHotelId(h.id)}
+                  onMouseLeave={() => setHoveredHotelId((id) => (id === h.id ? null : id))}
+                >
+                  <HotelCard hotel={h} variant="grid" />
+                </Col>
+              ))}
+            </Row>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {hotels.map((h) => (
+                <div
+                  key={h.id}
+                  onMouseEnter={() => setHoveredHotelId(h.id)}
+                  onMouseLeave={() => setHoveredHotelId((id) => (id === h.id ? null : id))}
+                >
+                  <HotelCard hotel={h} variant="list" />
+                </div>
+              ))}
+            </div>
+          )}
 
           {total > PAGE_SIZE && (
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: 24 }}>
