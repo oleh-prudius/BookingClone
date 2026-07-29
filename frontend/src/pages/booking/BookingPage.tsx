@@ -99,7 +99,7 @@ export function BookingPage() {
         status="success"
         title="Booking created"
         subTitle={`Your stay at ${hotel.name} has been requested and is pending confirmation.`}
-        extra={<AppButton variant="primary" onClick={() => navigate('/profile')}>View my bookings</AppButton>}
+        extra={<AppButton variant="primary" onClick={() => navigate('/my-bookings')}>View my bookings</AppButton>}
       />
     );
   }
