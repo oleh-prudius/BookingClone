@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { applyCssTokens } from "./styles/applyCssTokens";
-import { ConfigProvider, theme } from "antd";
+import { App as AntApp, ConfigProvider, theme } from "antd";
 import { colors } from "./styles/tokens";
 import './styles/index.css';
 import App from './App';
@@ -15,7 +15,9 @@ createRoot(document.getElementById('root')!).render(
           algorithm: theme.defaultAlgorithm,
           token:  {colorPrimary: colors.primary}
       }}>
-    <App />
+        <AntApp>
+          <App />
+        </AntApp>
       </ConfigProvider>
   </StrictMode>,
 );

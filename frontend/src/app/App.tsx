@@ -8,6 +8,7 @@ import { BookingPage } from '@pages/booking';
 import { LoginPage } from '@pages/login';
 import { RegisterPage } from '@pages/register';
 import { ProfilePage } from '@pages/profile';
+import { MyBookingsPage } from '@pages/my-bookings';
 import { ConfirmEmailPage } from '@pages/confirm-email';
 import { ForgotPasswordPage } from '@pages/forgot-password';
 import { ResetPasswordPage } from '@pages/reset-password';
@@ -38,6 +39,7 @@ export default function App() {
                   <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                   <Route path="/reset-password" element={<ResetPasswordPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/my-bookings" element={<MyBookingsPage />} />
                   <Route path="/ui-kit" element={<UiKitPage />} />
                   <Route path="*" element={<Page404 />} />
                 </Routes>

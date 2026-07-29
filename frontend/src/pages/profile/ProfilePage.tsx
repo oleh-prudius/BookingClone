@@ -1,7 +1,7 @@
 import { useNavigate, Navigate } from 'react-router-dom';
 import { Typography, Divider } from 'antd';
 import { useAuth, ProfileForm } from '@features/auth';
-import { MyBookingsSection } from './MyBookingsSection';
+import { AppButton } from '@shared/ui';
 
 export function ProfilePage() {
   const { isAuthenticated, user } = useAuth();
@@ -20,7 +20,9 @@ export function ProfilePage() {
       <Divider />
 
       <Typography.Title level={4}>My Bookings</Typography.Title>
-      <MyBookingsSection />
+      <AppButton variant="secondary" onClick={() => navigate('/my-bookings')}>
+        View my bookings
+      </AppButton>
     </section>
   );
 }
