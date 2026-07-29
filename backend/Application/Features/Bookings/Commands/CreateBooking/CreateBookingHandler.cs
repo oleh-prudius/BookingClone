@@ -41,7 +41,8 @@ public class CreateBookingHandler(IBookingRepository bookingRepository)
             }
         };
 
-        var created = await bookingRepository.AddAsync(booking);
-        return BookingMappings.MapToDto(created);
+        var created = await bookingRepository.AddAsync(booking, ct);
+        var withIncludes = await bookingRepository.GetByIdAsync(created.Id, ct);
+        return BookingMappings.MapToDto(withIncludes!);
     }
 }
