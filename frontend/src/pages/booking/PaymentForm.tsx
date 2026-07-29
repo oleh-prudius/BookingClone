@@ -1,6 +1,9 @@
-import { useState } from 'react';
-import { Card, Typography, Input, Alert, Divider } from 'antd';
+import { useEffect, useState } from 'react';
+import { Card, Typography, Input, Alert, Divider, Radio } from 'antd';
 import { AppButton } from '@shared/ui';
+import { formatCardNumber, formatExpiry, luhnCheck, maskCardNumber } from '@shared/lib/cardFormat';
+import { useAuth } from '@features/auth';
+import { bankCardApi, type BankCard } from '@entities/bank-card';
 
 interface OrderSummary {
   hotelName: string;
@@ -18,42 +21,57 @@ interface PaymentFormProps {
   onPay: () => Promise<void>;
 }
 
-function formatCardNumber(value: string) {
-  const digits = value.replace(/\D/g, '').slice(0, 16);
-  return digits.replace(/(.{4})/g, '$1 ').trim();
-}
-
-function formatExpiry(value: string) {
-  const digits = value.replace(/\D/g, '').slice(0, 4);
-  if (digits.length <= 2) return digits;
-  return `${digits.slice(0, 2)}/${digits.slice(2)}`;
-}
-
-function luhnCheck(cardNumber: string) {
-  const digits = cardNumber.replace(/\D/g, '');
-  if (digits.length < 13) return false;
-
-  let sum = 0;
-  let shouldDouble = false;
-  for (let i = digits.length - 1; i >= 0; i--) {
-    let digit = Number(digits[i]);
-    if (shouldDouble) {
-      digit *= 2;
-      if (digit > 9) digit -= 9;
-    }
-    sum += digit;
-    shouldDouble = !shouldDouble;
-  }
-  return sum % 10 === 0;
+function dateOnlyToExpiry(dateOnly: string): string {
+  const [year, month] = dateOnly.split('-');
+  return `${month}/${year.slice(2)}`;
 }
 
 export function PaymentForm({ order, onBack, onPay }: PaymentFormProps) {
+  const { user } = useAuth();
+  const [savedCards, setSavedCards] = useState<BankCard[]>([]);
+  const [selectedCardId, setSelectedCardId] = useState<number | 'new'>('new');
+
   const [cardNumber, setCardNumber] = useState('');
   const [cardName, setCardName] = useState('');
   const [expiry, setExpiry] = useState('');
   const [cvv, setCvv] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    bankCardApi.getByCustomerId(user.id)
+      .then((cards) => {
+        setSavedCards(cards);
+        if (cards.length > 0) {
+          setSelectedCardId(cards[0].id);
+          setCardNumber(formatCardNumber(cards[0].number));
+          setCardName(cards[0].ownerFullName);
+          setExpiry(dateOnlyToExpiry(cards[0].expirationDate));
+        }
+      })
+      .catch(() => setSavedCards([]));
+  }, [user]);
+
+  const selectSavedCard = (card: BankCard) => {
+    setSelectedCardId(card.id);
+    setCardNumber(formatCardNumber(card.number));
+    setCardName(card.ownerFullName);
+    setExpiry(dateOnlyToExpiry(card.expirationDate));
+    setCvv('');
+    setError(null);
+  };
+
+  const selectNewCard = () => {
+    setSelectedCardId('new');
+    setCardNumber('');
+    setCardName('');
+    setExpiry('');
+    setCvv('');
+    setError(null);
+  };
+
+  const usingSavedCard = selectedCardId !== 'new';
 
   const handleSubmit = async () => {
     setError(null);
@@ -119,12 +137,29 @@ export function PaymentForm({ order, onBack, onPay }: PaymentFormProps) {
         This is a demo checkout — no real card data is sent or stored.
       </Typography.Text>
 
+      {savedCards.length > 0 && (
+        <Radio.Group
+          value={selectedCardId}
+          style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}
+        >
+          {savedCards.map((c) => (
+            <Radio key={c.id} value={c.id} onClick={() => selectSavedCard(c)}>
+              {maskCardNumber(c.number)} · {c.ownerFullName} · exp {dateOnlyToExpiry(c.expirationDate)}
+            </Radio>
+          ))}
+          <Radio value="new" onClick={selectNewCard}>
+            Use a new card
+          </Radio>
+        </Radio.Group>
+      )}
+
       <Typography.Text strong>Card number</Typography.Text>
       <Input
         value={cardNumber}
         onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
         placeholder="4242 4242 4242 4242"
         maxLength={19}
+        disabled={usingSavedCard}
         style={{ marginTop: 8, marginBottom: 16 }}
       />
 
@@ -133,6 +168,7 @@ export function PaymentForm({ order, onBack, onPay }: PaymentFormProps) {
         value={cardName}
         onChange={(e) => setCardName(e.target.value)}
         placeholder="Jane Doe"
+        disabled={usingSavedCard}
         style={{ marginTop: 8, marginBottom: 16 }}
       />
 
@@ -144,6 +180,7 @@ export function PaymentForm({ order, onBack, onPay }: PaymentFormProps) {
             onChange={(e) => setExpiry(formatExpiry(e.target.value))}
             placeholder="MM/YY"
             maxLength={5}
+            disabled={usingSavedCard}
             style={{ marginTop: 8 }}
           />
         </div>
