@@ -1,26 +1,24 @@
+import { Form, Input, Alert, Row, Col } from 'antd';
+import { MailOutlined, UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useState } from 'react';
-import type { FormEvent } from 'react';
 import { useAuth } from '../model/AuthContext';
 import type { RegisterDto } from '../api/authApi';
+import { AppButton } from '@shared/ui';
 
 interface Props {
   onSuccess?: (message: string) => void;
 }
 
-const initial: RegisterDto = { email: '', userName: '', password: '', firstName: '', lastName: '' };
-
 export function RegisterForm({ onSuccess }: Props) {
   const { register } = useAuth();
-  const [form, setForm] = useState<RegisterDto>(initial);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const onSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  const onFinish = async (values: RegisterDto) => {
     setError(null);
     setBusy(true);
     try {
-      const message = await register(form);
+      const message = await register(values);
       onSuccess?.(message);
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: { error?: string; errors?: string[]; title?: string } } };
@@ -36,19 +34,60 @@ export function RegisterForm({ onSuccess }: Props) {
     }
   };
 
-  const upd = (k: keyof RegisterDto) => (e: React.ChangeEvent<HTMLInputElement>) =>
-    setForm({ ...form, [k]: e.target.value });
-
   return (
-    <form onSubmit={onSubmit} style={{ display: 'grid', gap: 8, maxWidth: 320 }}>
-      <h2>Create account</h2>
-      <input placeholder="Email" type="email" value={form.email} onChange={upd('email')} required />
-      <input placeholder="Username" value={form.userName} onChange={upd('userName')} required minLength={3} maxLength={64} />
-      <input placeholder="First name" value={form.firstName} onChange={upd('firstName')} required maxLength={100} />
-      <input placeholder="Last name" value={form.lastName} onChange={upd('lastName')} required maxLength={100} />
-      <input placeholder="Password" type="password" value={form.password} onChange={upd('password')} required minLength={8} />
-      {error && <div style={{ color: 'crimson' }}>{error}</div>}
-      <button type="submit" disabled={busy}>{busy ? '…' : 'Register'}</button>
-    </form>
+    <Form layout="vertical" onFinish={onFinish} requiredMark={false} autoComplete="on">
+      {error && <Alert type="error" message={error} showIcon style={{ marginBottom: 16 }} />}
+
+      <Form.Item
+        label="Email"
+        name="email"
+        rules={[{ required: true, message: 'Please enter your email' }, { type: 'email', message: 'Enter a valid email' }]}
+      >
+        <Input prefix={<MailOutlined />} placeholder="Email" size="large" />
+      </Form.Item>
+
+      <Form.Item
+        label="Username"
+        name="userName"
+        rules={[{ required: true, message: 'Please choose a username' }, { min: 3, max: 64, message: 'Must be 3-64 characters' }]}
+      >
+        <Input prefix={<UserOutlined />} placeholder="Username" size="large" />
+      </Form.Item>
+
+      <Row gutter={12}>
+        <Col span={12}>
+          <Form.Item
+            label="First name"
+            name="firstName"
+            rules={[{ required: true, message: 'Required' }, { max: 100 }]}
+          >
+            <Input placeholder="First name" size="large" />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item
+            label="Last name"
+            name="lastName"
+            rules={[{ required: true, message: 'Required' }, { max: 100 }]}
+          >
+            <Input placeholder="Last name" size="large" />
+          </Form.Item>
+        </Col>
+      </Row>
+
+      <Form.Item
+        label="Password"
+        name="password"
+        rules={[{ required: true, message: 'Please enter a password' }, { min: 8, message: 'At least 8 characters' }]}
+      >
+        <Input.Password prefix={<LockOutlined />} placeholder="Password" size="large" />
+      </Form.Item>
+
+      <Form.Item style={{ marginBottom: 0 }}>
+        <AppButton variant="primary" htmlType="submit" loading={busy} block size="large">
+          Create account
+        </AppButton>
+      </Form.Item>
+    </Form>
   );
 }
