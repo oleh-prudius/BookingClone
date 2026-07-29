@@ -3,10 +3,13 @@ using Application;
 using Domain.Interfaces;
 using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Serilog;
+using System.Globalization;
 using System.Text;
+using System.Threading.RateLimiting;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -115,6 +118,34 @@ try
                   .AllowAnyMethod());
     });
 
+    var authRateLimitPermitLimit = builder.Configuration.GetValue("RateLimiting:Auth:PermitLimit", 5);
+    var authRateLimitWindowSeconds = builder.Configuration.GetValue("RateLimiting:Auth:WindowSeconds", 60);
+    var authRateLimitQueueLimit = builder.Configuration.GetValue("RateLimiting:Auth:QueueLimit", 0);
+
+    builder.Services.AddRateLimiter(options =>
+    {
+        options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+        options.OnRejected = async (context, cancellationToken) =>
+        {
+            context.HttpContext.Response.Headers.RetryAfter =
+                authRateLimitWindowSeconds.ToString(CultureInfo.InvariantCulture);
+            await context.HttpContext.Response.WriteAsJsonAsync(
+                new { message = "Too many requests. Please try again later." },
+                cancellationToken);
+        };
+
+        options.AddPolicy("auth", context =>
+            RateLimitPartition.GetFixedWindowLimiter(
+                partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                factory: _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = authRateLimitPermitLimit,
+                    Window = TimeSpan.FromSeconds(authRateLimitWindowSeconds),
+                    QueueLimit = authRateLimitQueueLimit,
+                }));
+    });
+
     var app = builder.Build();
 
     app.MapOpenApi();
@@ -131,6 +162,7 @@ try
     app.UseStaticFiles();
     app.UseAuthentication();
     app.UseAuthorization();
+    app.UseRateLimiter();
     app.MapControllers();
 
     await app.Services.GetRequiredService<IScopeCoveredDbInicializer>().InitializeAsync();
