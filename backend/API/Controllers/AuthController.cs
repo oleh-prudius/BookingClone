@@ -14,6 +14,7 @@ using Application.Features.Auth.Queries.GetCurrentUser;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace API.Controllers;
 
@@ -23,11 +24,13 @@ public class AuthController(IMediator mediator) : ControllerBase
 {
     [HttpPost("register")]
     [AllowAnonymous]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto, CancellationToken ct)
         => (await mediator.Send(new RegisterCommand(dto), ct)).ToActionResult();
 
     [HttpPost("login")]
     [AllowAnonymous]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> Login([FromBody] LoginDto dto, CancellationToken ct)
         => (await mediator.Send(new LoginCommand(dto), ct)).ToActionResult();
 
@@ -70,11 +73,13 @@ public class AuthController(IMediator mediator) : ControllerBase
 
     [HttpPost("resend-confirmation")]
     [AllowAnonymous]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> ResendConfirmation([FromBody] EmailRequest request, CancellationToken ct)
         => (await mediator.Send(new ResendConfirmationEmailCommand(request.Email), ct)).ToActionResult();
 
     [HttpPost("forgot-password")]
     [AllowAnonymous]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> ForgotPassword([FromBody] EmailRequest request, CancellationToken ct)
         => (await mediator.Send(new ForgotPasswordCommand(request.Email), ct)).ToActionResult();
 
