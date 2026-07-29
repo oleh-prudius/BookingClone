@@ -2,6 +2,7 @@
 using Domain.Entities;
 using Infrastructure.Data;
 using Domain.Entities.Identity;
+using Domain.Enums;
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -93,6 +94,51 @@ public class DbInitializer(
 		await SeedGrandKyivPhotosAsync(ct);
 		await SeedMoreHotelsAsync(ct);
 		await SeedPlacesAsync(ct);
+		await SeedTransportRoutesAsync(ct);
+	}
+
+	private async Task SeedTransportRoutesAsync(CancellationToken ct)
+	{
+		if (await context.TransportRoutes.AnyAsync(ct))
+			return;
+
+		var kyiv = await context.Cities.FirstOrDefaultAsync(c => c.Name == "Kyiv", ct);
+		var lviv = await context.Cities.FirstOrDefaultAsync(c => c.Name == "Lviv", ct);
+		var paris = await context.Cities.FirstOrDefaultAsync(c => c.Name == "Paris", ct);
+		var rome = await context.Cities.FirstOrDefaultAsync(c => c.Name == "Rome", ct);
+
+		if (kyiv is null || lviv is null || paris is null || rome is null)
+			return;
+
+		var today = new DateTimeOffset(DateTime.UtcNow.Date, TimeSpan.Zero);
+
+		await context.TransportRoutes.AddRangeAsync([
+			new TransportRoute
+			{
+				Type = TransportType.Train, FromCityId = kyiv.Id, ToCityId = lviv.Id,
+				DepartureUtc = today.AddDays(1).AddHours(8), ArrivalUtc = today.AddDays(1).AddHours(14),
+				Price = 25, TotalSeats = 40
+			},
+			new TransportRoute
+			{
+				Type = TransportType.Bus, FromCityId = kyiv.Id, ToCityId = lviv.Id,
+				DepartureUtc = today.AddDays(1).AddHours(9), ArrivalUtc = today.AddDays(1).AddHours(17),
+				Price = 12, TotalSeats = 50
+			},
+			new TransportRoute
+			{
+				Type = TransportType.Plane, FromCityId = kyiv.Id, ToCityId = paris.Id,
+				DepartureUtc = today.AddDays(2).AddHours(10), ArrivalUtc = today.AddDays(2).AddHours(13),
+				Price = 150, TotalSeats = 180
+			},
+			new TransportRoute
+			{
+				Type = TransportType.Plane, FromCityId = paris.Id, ToCityId = rome.Id,
+				DepartureUtc = today.AddDays(3).AddHours(11), ArrivalUtc = today.AddDays(3).AddHours(13),
+				Price = 90, TotalSeats = 150
+			},
+		], ct);
+		await context.SaveChangesAsync(ct);
 	}
 
 	private async Task SeedPlacesAsync(CancellationToken ct)

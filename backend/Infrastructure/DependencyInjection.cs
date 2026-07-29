@@ -46,6 +46,8 @@ public static class DependencyInjection
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<IPlaceRepository, PlaceRepository>();
         services.AddScoped<IHotelBreakfastRepository, HotelBreakfastRepository>();
+        services.AddScoped<ITransportRouteRepository, TransportRouteRepository>();
+        services.AddScoped<ITicketRepository, TicketRepository>();
         services.AddScoped<IBankCardRepository, BankCardRepository>();
         services.AddScoped<IChatRepository, ChatRepository>();
         services.AddScoped<IHotelPhotoRepository, HotelPhotoRepository>();
