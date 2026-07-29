@@ -87,6 +87,8 @@ and optional SMTP settings for outgoing email.
 ```bash
 cd backend && dotnet test          # xUnit, uses Testcontainers (needs Docker)
 cd frontend && npm run lint        # ESLint
+cd frontend && npm run test        # Vitest + React Testing Library
+cd frontend && npm run test:e2e    # Playwright (needs the app running, see docker-compose.yml)
 ```
 
 ## More docs

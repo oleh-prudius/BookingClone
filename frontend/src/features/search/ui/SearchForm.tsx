@@ -7,7 +7,7 @@ import { cityApi, type City } from '@entities/city';
 
 const DESTINATION_DEBOUNCE_MS = 250;
 
-function GuestCounter({
+export function GuestCounter({
   label,
   description,
   value,

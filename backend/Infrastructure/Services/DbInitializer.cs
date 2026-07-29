@@ -65,7 +65,8 @@ public class DbInitializer(
 			Email = configuration["Admin:Email"]
 				?? throw new NullReferenceException("You need to set up Admin:Email in your configuration"),
 			UserName = "admin",
-			Photo = "default.jpg"
+			Photo = "default.jpg",
+			EmailConfirmed = true
 			//Photo = await imageService.SaveImageAsync(defaultBase64Image)
 		};
 

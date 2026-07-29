@@ -24,4 +24,10 @@ export default defineConfig({
       '@shared': path.resolve(__dirname, './src/shared'),
     },
   },
+  test: {
+    environment: 'jsdom',
+    setupFiles: './src/test/setup.ts',
+    globals: true,
+    exclude: ['**/node_modules/**', '**/e2e/**'],
+  },
 })
