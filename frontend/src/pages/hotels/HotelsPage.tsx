@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Row, Col, Typography, Pagination, Empty, Spin, Alert, Segmented } from 'antd';
 import { AppstoreOutlined, BarsOutlined } from '@ant-design/icons';
 import { hotelApi, HotelCard } from '@entities/hotel';
@@ -45,6 +46,7 @@ function readFiltersFromParams(searchParams: URLSearchParams): HotelFilters {
 }
 
 export function HotelsPage() {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const destination = searchParams.get('destination') || undefined;
 
@@ -105,7 +107,7 @@ export function HotelsPage() {
       })
       .catch((err: unknown) => {
         const axiosErr = err as { response?: { data?: { error?: string } }; message?: string };
-        setError(axiosErr.response?.data?.error ?? axiosErr.message ?? 'Failed to load hotels');
+        setError(axiosErr.response?.data?.error ?? axiosErr.message ?? t('hotels.loadError'));
       })
       .finally(() => setLoading(false));
   }, [page, destination, debouncedFilters, sortBy]);
@@ -127,7 +129,7 @@ export function HotelsPage() {
             gap: 12,
           }}>
             <Typography.Title level={3} style={{ margin: 0 }}>
-              {destination ? `Hotels in ${destination}` : 'Hotels'}
+              {destination ? t('hotels.titleInDestination', { destination }) : t('hotels.title')}
             </Typography.Title>
             <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
               <SortTabs value={sortBy} onChange={setSortBy} />
@@ -135,8 +137,8 @@ export function HotelsPage() {
                 value={view}
                 onChange={(v) => setView(v as ViewMode)}
                 options={[
-                  { label: 'Grid', value: 'grid', icon: <AppstoreOutlined /> },
-                  { label: 'List', value: 'list', icon: <BarsOutlined /> },
+                  { label: t('hotels.gridView'), value: 'grid', icon: <AppstoreOutlined /> },
+                  { label: t('hotels.listView'), value: 'list', icon: <BarsOutlined /> },
                 ]}
               />
             </div>
@@ -144,7 +146,7 @@ export function HotelsPage() {
 
           {loading && <Spin style={{ display: 'block', margin: '48px auto' }} />}
           {error && <Alert type="error" message={error} style={{ marginBottom: 16 }} />}
-          {!loading && !error && hotels.length === 0 && <Empty description="No hotels found" />}
+          {!loading && !error && hotels.length === 0 && <Empty description={t('hotels.noResults')} />}
 
           {view === 'grid' ? (
             <Row gutter={[16, 16]}>

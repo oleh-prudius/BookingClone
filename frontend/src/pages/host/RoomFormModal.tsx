@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Modal, Form, Input, InputNumber, Select, Row, Col, message } from 'antd';
 import { roomTypeApi, type RoomType } from '@entities/room-type';
 import { roomApi, type Room } from '@entities/room';
@@ -20,6 +21,7 @@ interface Props {
 }
 
 export function RoomFormModal({ open, onClose, onSaved, hotelId, editingRoom }: Props) {
+  const { t } = useTranslation();
   const [form] = Form.useForm<FormValues>();
   const [roomTypes, setRoomTypes] = useState<RoomType[]>([]);
   const [saving, setSaving] = useState(false);
@@ -65,12 +67,12 @@ export function RoomFormModal({ open, onClose, onSaved, hotelId, editingRoom }: 
         await roomApi.create(dto);
       }
 
-      message.success(editingRoom ? 'Room updated' : 'Room added');
+      message.success(editingRoom ? t('host.roomForm.roomUpdated') : t('host.roomForm.roomAdded'));
       onSaved();
       onClose();
     } catch (err: unknown) {
       if (err && typeof err === 'object' && 'errorFields' in err) return;
-      message.error('Could not save the room. Please check the form and try again.');
+      message.error(t('host.roomForm.saveError'));
     } finally {
       setSaving(false);
     }
@@ -79,33 +81,33 @@ export function RoomFormModal({ open, onClose, onSaved, hotelId, editingRoom }: 
   return (
     <Modal
       open={open}
-      title={editingRoom ? 'Edit room' : 'Add a room'}
+      title={editingRoom ? t('host.roomForm.editRoom') : t('host.roomForm.addRoom')}
       onCancel={onClose}
       onOk={handleOk}
       confirmLoading={saving}
-      okText={editingRoom ? 'Save' : 'Add'}
+      okText={editingRoom ? t('common.save') : t('common.add')}
       destroyOnHidden
     >
       <Form form={form} layout="vertical">
-        <Form.Item label="Name" name="name" rules={[{ required: true }]}>
-          <Input placeholder="e.g. Standard Room" />
+        <Form.Item label={t('host.roomForm.name')} name="name" rules={[{ required: true }]}>
+          <Input placeholder={t('host.roomForm.namePlaceholder')} />
         </Form.Item>
-        <Form.Item label="Room type" name="roomTypeId" rules={[{ required: true, message: 'Please select a room type' }]}>
-          <Select placeholder="Select a room type" options={roomTypes.map((t) => ({ value: t.id, label: t.name }))} />
+        <Form.Item label={t('host.roomForm.roomType')} name="roomTypeId" rules={[{ required: true, message: t('host.roomForm.selectRoomType') }]}>
+          <Select placeholder={t('host.roomForm.selectRoomType')} options={roomTypes.map((rt) => ({ value: rt.id, label: rt.name }))} />
         </Form.Item>
         <Row gutter={12}>
           <Col span={8}>
-            <Form.Item label="Area (m²)" name="area" rules={[{ required: true }]}>
+            <Form.Item label={t('host.roomForm.areaSqm')} name="area" rules={[{ required: true }]}>
               <InputNumber min={1} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item label="Rooms" name="numberOfRooms" rules={[{ required: true }]}>
+            <Form.Item label={t('host.roomForm.rooms')} name="numberOfRooms" rules={[{ required: true }]}>
               <InputNumber min={1} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item label="Quantity" name="quantity" rules={[{ required: true }]}>
+            <Form.Item label={t('host.roomForm.quantity')} name="quantity" rules={[{ required: true }]}>
               <InputNumber min={1} style={{ width: '100%' }} />
             </Form.Item>
           </Col>

@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Card, Typography, Alert } from 'antd';
 import { RegisterForm } from '@features/auth';
 import { Logo } from '@shared/ui';
 
 export function RegisterPage() {
+  const { t } = useTranslation();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   return (
@@ -33,8 +35,8 @@ export function RegisterPage() {
           >
             <Logo />
           </div>
-          <Typography.Title level={3} style={{ margin: 0 }}>Create your account</Typography.Title>
-          <Typography.Text type="secondary">Join Triply to start booking</Typography.Text>
+          <Typography.Title level={3} style={{ margin: 0 }}>{t('auth.register.createYourAccount')}</Typography.Title>
+          <Typography.Text type="secondary">{t('auth.register.joinToStartBooking')}</Typography.Text>
         </div>
 
         {successMessage ? (
@@ -42,21 +44,21 @@ export function RegisterPage() {
             <Alert
               type="success"
               showIcon
-              message="Almost there!"
+              message={t('auth.register.almostThere')}
               description={successMessage}
               style={{ marginBottom: 16 }}
             />
             <div style={{ textAlign: 'center' }}>
-              <Typography.Text type="secondary">Didn't receive it? </Typography.Text>
-              <Link to="/resend-confirmation">Resend confirmation email</Link>
+              <Typography.Text type="secondary">{t('auth.register.didntReceiveIt')} </Typography.Text>
+              <Link to="/resend-confirmation">{t('auth.register.resendConfirmationEmail')}</Link>
             </div>
           </>
         ) : (
           <>
             <RegisterForm onSuccess={(msg) => setSuccessMessage(msg)} />
             <div style={{ textAlign: 'center', marginTop: 16 }}>
-              <Typography.Text type="secondary">Already have an account? </Typography.Text>
-              <Link to="/login">Sign in</Link>
+              <Typography.Text type="secondary">{t('auth.register.alreadyHaveAccount')} </Typography.Text>
+              <Link to="/login">{t('auth.login.signIn')}</Link>
             </div>
           </>
         )}

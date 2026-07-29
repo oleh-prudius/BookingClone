@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AutoComplete, Input, DatePicker, Popover, Button } from 'antd';
 import { AppButton } from '@shared/ui';
 import { SearchOutlined, UserOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
@@ -20,6 +21,8 @@ export function GuestCounter({
   min: number;
   onChange: (val: number) => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
       <div>
@@ -31,7 +34,7 @@ export function GuestCounter({
           icon={<MinusOutlined />}
           shape="circle"
           size="small"
-          aria-label={`Decrease ${label.toLowerCase()}`}
+          aria-label={t('search.decreaseGuest', { label: label.toLowerCase() })}
           disabled={value <= min}
           onClick={() => onChange(value - 1)}
         />
@@ -40,7 +43,7 @@ export function GuestCounter({
           icon={<PlusOutlined />}
           shape="circle"
           size="small"
-          aria-label={`Increase ${label.toLowerCase()}`}
+          aria-label={t('search.increaseGuest', { label: label.toLowerCase() })}
           onClick={() => onChange(value + 1)}
         />
       </div>
@@ -49,6 +52,7 @@ export function GuestCounter({
 }
 
 export function SearchForm() {
+  const { t } = useTranslation();
   const [destination, setDestination] = useState('');
   const [destinationQuery, setDestinationQuery] = useState('');
   const [cities, setCities] = useState<City[]>([]);
@@ -77,8 +81,8 @@ export function SearchForm() {
   }, [cities, destinationQuery]);
 
   const guestLabel = children > 0
-    ? `${adults} adult${adults > 1 ? 's' : ''} · ${children} child${children > 1 ? 'ren' : ''}`
-    : `${adults} adult${adults > 1 ? 's' : ''}`;
+    ? `${t('search.adultsCount', { count: adults })} · ${t('search.childrenCount', { count: children })}`
+    : t('search.adultsCount', { count: adults });
 
   const handleSearch = () => {
     if (!destination) return;
@@ -88,21 +92,21 @@ export function SearchForm() {
   const guestPopover = (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: 260 }}>
       <GuestCounter
-        label="Adults"
-        description="Ages 18+"
+        label={t('search.adults')}
+        description={t('search.adultsDescription')}
         value={adults}
         min={1}
         onChange={setAdults}
       />
       <GuestCounter
-        label="Children"
-        description="Ages 0–17"
+        label={t('search.children')}
+        description={t('search.childrenDescription')}
         value={children}
         min={0}
         onChange={setChildren}
       />
       <AppButton variant="primary" onClick={() => setGuestOpen(false)}>
-        Done
+        {t('common.done')}
       </AppButton>
     </div>
   );
@@ -126,11 +130,11 @@ export function SearchForm() {
         onSelect={setDestination}
         style={{ flex: 2, minWidth: 200 }}
       >
-        <Input placeholder="Where are you going?" prefix={<SearchOutlined />} />
+        <Input placeholder={t('search.destinationPlaceholder')} prefix={<SearchOutlined />} />
       </AutoComplete>
       <DatePicker.RangePicker
         style={{ flex: 2, minWidth: 240 }}
-        placeholder={['Check-in', 'Check-out']}
+        placeholder={[t('search.checkIn'), t('search.checkOut')]}
       />
       <Popover
         content={guestPopover}
@@ -147,7 +151,7 @@ export function SearchForm() {
         </Button>
       </Popover>
       <AppButton variant="primary" onClick={handleSearch}>
-        Search
+        {t('search.searchButton')}
       </AppButton>
     </div>
   );

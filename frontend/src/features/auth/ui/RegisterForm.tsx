@@ -1,6 +1,7 @@
 import { Form, Input, Alert, Row, Col, Segmented } from 'antd';
 import { MailOutlined, UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../model/AuthContext';
 import type { RegisterDto } from '../api/authApi';
 import { AppButton } from '@shared/ui';
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function RegisterForm({ onSuccess }: Props) {
+  const { t } = useTranslation();
   const { register } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -27,7 +29,7 @@ export function RegisterForm({ onSuccess }: Props) {
         d?.error ??
         (Array.isArray(d?.errors) ? d.errors.join('; ') : null) ??
         d?.title ??
-        'Registration failed',
+        t('auth.register.registrationFailed'),
       );
     } finally {
       setBusy(false);
@@ -44,65 +46,65 @@ export function RegisterForm({ onSuccess }: Props) {
     >
       {error && <Alert type="error" message={error} showIcon style={{ marginBottom: 16 }} />}
 
-      <Form.Item label="I want to" name="accountType">
+      <Form.Item label={t('auth.register.iWantTo')} name="accountType">
         <Segmented
           block
           size="large"
           options={[
-            { label: 'Book stays', value: 'Customer' },
-            { label: 'List my property', value: 'Realtor' },
+            { label: t('auth.register.bookStays'), value: 'Customer' },
+            { label: t('auth.register.listMyProperty'), value: 'Realtor' },
           ]}
         />
       </Form.Item>
 
       <Form.Item
-        label="Email"
+        label={t('auth.email')}
         name="email"
-        rules={[{ required: true, message: 'Please enter your email' }, { type: 'email', message: 'Enter a valid email' }]}
+        rules={[{ required: true, message: t('auth.register.emailRequired') }, { type: 'email', message: t('auth.register.emailInvalid') }]}
       >
-        <Input prefix={<MailOutlined />} placeholder="Email" size="large" />
+        <Input prefix={<MailOutlined />} placeholder={t('auth.email')} size="large" />
       </Form.Item>
 
       <Form.Item
-        label="Username"
+        label={t('auth.register.username')}
         name="userName"
-        rules={[{ required: true, message: 'Please choose a username' }, { min: 3, max: 64, message: 'Must be 3-64 characters' }]}
+        rules={[{ required: true, message: t('auth.register.usernameRequired') }, { min: 3, max: 64, message: t('auth.register.usernameLength') }]}
       >
-        <Input prefix={<UserOutlined />} placeholder="Username" size="large" />
+        <Input prefix={<UserOutlined />} placeholder={t('auth.register.username')} size="large" />
       </Form.Item>
 
       <Row gutter={12}>
         <Col span={12}>
           <Form.Item
-            label="First name"
+            label={t('auth.register.firstName')}
             name="firstName"
-            rules={[{ required: true, message: 'Required' }, { max: 100 }]}
+            rules={[{ required: true, message: t('auth.register.required') }, { max: 100 }]}
           >
-            <Input placeholder="First name" size="large" />
+            <Input placeholder={t('auth.register.firstName')} size="large" />
           </Form.Item>
         </Col>
         <Col span={12}>
           <Form.Item
-            label="Last name"
+            label={t('auth.register.lastName')}
             name="lastName"
-            rules={[{ required: true, message: 'Required' }, { max: 100 }]}
+            rules={[{ required: true, message: t('auth.register.required') }, { max: 100 }]}
           >
-            <Input placeholder="Last name" size="large" />
+            <Input placeholder={t('auth.register.lastName')} size="large" />
           </Form.Item>
         </Col>
       </Row>
 
       <Form.Item
-        label="Password"
+        label={t('auth.password')}
         name="password"
-        rules={[{ required: true, message: 'Please enter a password' }, { min: 8, message: 'At least 8 characters' }]}
+        rules={[{ required: true, message: t('auth.register.passwordRequired') }, { min: 8, message: t('auth.register.passwordLength') }]}
       >
-        <Input.Password prefix={<LockOutlined />} placeholder="Password" size="large" />
+        <Input.Password prefix={<LockOutlined />} placeholder={t('auth.password')} size="large" />
       </Form.Item>
 
       <Form.Item style={{ marginBottom: 0 }}>
         <AppButton variant="primary" htmlType="submit" loading={busy} block size="large">
-          Create account
+          {t('auth.register.createAccount')}
         </AppButton>
       </Form.Item>
     </Form>

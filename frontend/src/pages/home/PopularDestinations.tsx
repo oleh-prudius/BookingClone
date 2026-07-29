@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Typography, Skeleton } from 'antd';
 import { hotelApi } from '@entities/hotel';
 import type { Hotel } from '@shared/types';
@@ -32,6 +33,7 @@ function buildDestinations(hotels: Hotel[]): Destination[] {
 
 export function PopularDestinations() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -47,7 +49,7 @@ export function PopularDestinations() {
 
   return (
     <section style={{ padding: '32px 24px', maxWidth: 1200, margin: '0 auto' }}>
-      <Typography.Title level={3}>Popular destinations</Typography.Title>
+      <Typography.Title level={3}>{t('home.popularDestinations')}</Typography.Title>
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
@@ -58,7 +60,7 @@ export function PopularDestinations() {
             key={d.cityName}
             role="button"
             tabIndex={0}
-            aria-label={`Search hotels in ${d.cityName}`}
+            aria-label={t('home.searchHotelsIn', { city: d.cityName })}
             onClick={() => navigate(`/hotels?destination=${encodeURIComponent(d.cityName)}`)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
@@ -84,7 +86,7 @@ export function PopularDestinations() {
               color: 'white',
             }}>
               <div style={{ fontWeight: 600 }}>{d.cityName}</div>
-              <div style={{ fontSize: 12, opacity: 0.85 }}>{d.hotelCount} hotel{d.hotelCount === 1 ? '' : 's'}</div>
+              <div style={{ fontSize: 12, opacity: 0.85 }}>{t('home.hotelCount', { count: d.hotelCount })}</div>
             </div>
           </div>
         ))}

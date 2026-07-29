@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import dayjs, { type Dayjs } from 'dayjs';
 import { Typography, Radio, DatePicker, InputNumber, Input, Alert, Skeleton, Result, Divider, Card } from 'antd';
 import { useAuth } from '@features/auth';
@@ -17,6 +18,7 @@ interface BookableVariant {
 }
 
 export function BookingPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const hotelId = Number(id);
   const { isAuthenticated } = useAuth();
@@ -87,8 +89,8 @@ export function BookingPage() {
     return (
       <Result
         status="404"
-        title="Hotel not found"
-        extra={<AppButton variant="primary" onClick={() => navigate('/hotels')}>Back to search</AppButton>}
+        title={t('hotel.notFoundTitle')}
+        extra={<AppButton variant="primary" onClick={() => navigate('/hotels')}>{t('hotel.backToSearch')}</AppButton>}
       />
     );
   }
@@ -97,9 +99,9 @@ export function BookingPage() {
     return (
       <Result
         status="success"
-        title="Booking created"
-        subTitle={`Your stay at ${hotel.name} has been requested and is pending confirmation.`}
-        extra={<AppButton variant="primary" onClick={() => navigate('/my-bookings')}>View my bookings</AppButton>}
+        title={t('booking.bookingCreated')}
+        subTitle={t('booking.bookingCreatedSubtitle', { hotelName: hotel.name })}
+        extra={<AppButton variant="primary" onClick={() => navigate('/my-bookings')}>{t('booking.viewMyBookings')}</AppButton>}
       />
     );
   }
@@ -108,23 +110,23 @@ export function BookingPage() {
     setFormError(null);
 
     if (!selected) {
-      setFormError('Please select a room.');
+      setFormError(t('booking.errors.selectRoom'));
       return;
     }
     if (!dateRange) {
-      setFormError('Please select check-in and check-out dates.');
+      setFormError(t('booking.errors.selectDates'));
       return;
     }
     if (dateRange[0].startOf('day').isBefore(dayjs().startOf('day'))) {
-      setFormError('Check-in date cannot be in the past.');
+      setFormError(t('booking.errors.checkInInPast'));
       return;
     }
     if (nights <= 0) {
-      setFormError('Check-out must be after check-in.');
+      setFormError(t('booking.errors.checkOutBeforeCheckIn'));
       return;
     }
     if (guests < 1 || guests > maxGuests) {
-      setFormError(`Guests must be between 1 and ${maxGuests} for this room.`);
+      setFormError(t('booking.errors.guestsOutOfRange', { maxGuests }));
       return;
     }
 
@@ -148,7 +150,7 @@ export function BookingPage() {
   if (step === 'payment' && selected && dateRange) {
     return (
       <section style={{ padding: 24, maxWidth: 700, margin: '0 auto' }}>
-        <Typography.Title level={3}>Book {hotel.name}</Typography.Title>
+        <Typography.Title level={3}>{t('booking.bookHotel', { hotelName: hotel.name })}</Typography.Title>
         <PaymentForm
           order={{
             hotelName: hotel.name,
@@ -171,10 +173,10 @@ export function BookingPage() {
       <Typography.Title level={3}>Book {hotel.name}</Typography.Title>
 
       {options.length === 0
-        ? <Alert type="warning" message="No bookable rooms available for this hotel." />
+        ? <Alert type="warning" message={t('booking.noBookableRooms')} />
         : (
           <Card>
-            <Typography.Text strong>Room</Typography.Text>
+            <Typography.Text strong>{t('booking.room')}</Typography.Text>
             <Radio.Group
               value={variantId}
               onChange={(e) => { setVariantId(e.target.value); setGuests(1); }}
@@ -182,13 +184,16 @@ export function BookingPage() {
             >
               {options.map(({ variant, roomName }) => (
                 <Radio key={variant.id} value={variant.id}>
-                  {roomName} — ${variant.discountPrice ?? variant.price}/night
-                  {' '}(up to {variant.adultCount + variant.childCount} guests)
+                  {t('booking.roomOption', {
+                    roomName,
+                    price: variant.discountPrice ?? variant.price,
+                    maxGuests: variant.adultCount + variant.childCount,
+                  })}
                 </Radio>
               ))}
             </Radio.Group>
 
-            <Typography.Text strong>Dates</Typography.Text>
+            <Typography.Text strong>{t('booking.dates')}</Typography.Text>
             <div style={{ marginTop: 8, marginBottom: 24 }}>
               <DatePicker.RangePicker
                 value={dateRange}
@@ -198,13 +203,13 @@ export function BookingPage() {
               />
             </div>
 
-            <Typography.Text strong>Guests</Typography.Text>
+            <Typography.Text strong>{t('booking.guests')}</Typography.Text>
             <div style={{ marginTop: 8, marginBottom: 24 }}>
               <InputNumber min={1} max={maxGuests} value={guests} onChange={(v) => setGuests(v ?? 1)} />
-              <Typography.Text type="secondary" style={{ marginLeft: 8 }}>max {maxGuests}</Typography.Text>
+              <Typography.Text type="secondary" style={{ marginLeft: 8 }}>{t('booking.maxGuests', { maxGuests })}</Typography.Text>
             </div>
 
-            <Typography.Text strong>Personal wishes (optional)</Typography.Text>
+            <Typography.Text strong>{t('booking.personalWishes')}</Typography.Text>
             <Input.TextArea
               value={personalWishes}
               onChange={(e) => setPersonalWishes(e.target.value)}
@@ -215,14 +220,14 @@ export function BookingPage() {
             <Divider />
 
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-              <Typography.Text>{pricePerNight ? `$${pricePerNight} × ${nights} night${nights === 1 ? '' : 's'}` : '—'}</Typography.Text>
+              <Typography.Text>{pricePerNight ? t('booking.priceTimesNights', { price: pricePerNight, count: nights }) : '—'}</Typography.Text>
               <Typography.Title level={4} style={{ margin: 0 }}>${total}</Typography.Title>
             </div>
 
             {formError && <Alert type="error" message={formError} style={{ marginBottom: 16 }} />}
 
             <AppButton variant="primary" onClick={handleContinueToPayment} block>
-              Continue to payment
+              {t('booking.continueToPayment')}
             </AppButton>
           </Card>
         )}

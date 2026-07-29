@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, Typography, Input, Alert, Divider, Radio } from 'antd';
 import { AppButton } from '@shared/ui';
 import { formatCardNumber, formatExpiry, luhnCheck, maskCardNumber } from '@shared/lib/cardFormat';
@@ -27,6 +28,7 @@ function dateOnlyToExpiry(dateOnly: string): string {
 }
 
 export function PaymentForm({ order, onBack, onPay }: PaymentFormProps) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [savedCards, setSavedCards] = useState<BankCard[]>([]);
   const [selectedCardId, setSelectedCardId] = useState<number | 'new'>('new');
@@ -77,30 +79,30 @@ export function PaymentForm({ order, onBack, onPay }: PaymentFormProps) {
     setError(null);
 
     if (!cardName.trim()) {
-      setError('Please enter the cardholder name.');
+      setError(t('booking.payment.errors.cardholderNameRequired'));
       return;
     }
     if (!luhnCheck(cardNumber)) {
-      setError('Card number is invalid.');
+      setError(t('booking.payment.errors.cardNumberInvalid'));
       return;
     }
     const expiryMatch = /^(\d{2})\/(\d{2})$/.exec(expiry);
     if (!expiryMatch) {
-      setError('Expiry must be in MM/YY format.');
+      setError(t('booking.payment.errors.expiryFormat'));
       return;
     }
     const month = Number(expiryMatch[1]);
     if (month < 1 || month > 12) {
-      setError('Expiry month is invalid.');
+      setError(t('booking.payment.errors.expiryMonthInvalid'));
       return;
     }
     const expiryDate = new Date(2000 + Number(expiryMatch[2]), month);
     if (expiryDate.getTime() < Date.now()) {
-      setError('Card has expired.');
+      setError(t('booking.payment.errors.cardExpired'));
       return;
     }
     if (!/^\d{3,4}$/.test(cvv)) {
-      setError('CVV must be 3 or 4 digits.');
+      setError(t('booking.payment.errors.cvvInvalid'));
       return;
     }
 
@@ -110,7 +112,7 @@ export function PaymentForm({ order, onBack, onPay }: PaymentFormProps) {
       await onPay();
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: { error?: string } }; message?: string };
-      setError(axiosErr.response?.data?.error ?? axiosErr.message ?? 'Payment failed');
+      setError(axiosErr.response?.data?.error ?? axiosErr.message ?? t('booking.payment.errors.paymentFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -118,7 +120,7 @@ export function PaymentForm({ order, onBack, onPay }: PaymentFormProps) {
 
   return (
     <Card>
-      <Typography.Title level={4} style={{ marginTop: 0 }}>Order summary</Typography.Title>
+      <Typography.Title level={4} style={{ marginTop: 0 }}>{t('booking.payment.orderSummary')}</Typography.Title>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
         <Typography.Text>{order.hotelName} · {order.roomName}</Typography.Text>
       </div>
@@ -126,15 +128,15 @@ export function PaymentForm({ order, onBack, onPay }: PaymentFormProps) {
         <Typography.Text type="secondary">{order.checkIn} – {order.checkOut}</Typography.Text>
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-        <Typography.Text type="secondary">${order.pricePerNight} × {order.nights} night{order.nights === 1 ? '' : 's'}</Typography.Text>
+        <Typography.Text type="secondary">{t('booking.priceTimesNights', { price: order.pricePerNight, count: order.nights })}</Typography.Text>
         <Typography.Title level={4} style={{ margin: 0 }}>${order.total}</Typography.Title>
       </div>
 
       <Divider />
 
-      <Typography.Title level={4}>Payment details</Typography.Title>
+      <Typography.Title level={4}>{t('booking.payment.paymentDetails')}</Typography.Title>
       <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
-        This is a demo checkout — no real card data is sent or stored.
+        {t('booking.payment.demoNotice')}
       </Typography.Text>
 
       {savedCards.length > 0 && (
@@ -144,16 +146,20 @@ export function PaymentForm({ order, onBack, onPay }: PaymentFormProps) {
         >
           {savedCards.map((c) => (
             <Radio key={c.id} value={c.id} onClick={() => selectSavedCard(c)}>
-              {maskCardNumber(c.number)} · {c.ownerFullName} · exp {dateOnlyToExpiry(c.expirationDate)}
+              {t('booking.payment.savedCardLabel', {
+                masked: maskCardNumber(c.number),
+                owner: c.ownerFullName,
+                expiry: dateOnlyToExpiry(c.expirationDate),
+              })}
             </Radio>
           ))}
           <Radio value="new" onClick={selectNewCard}>
-            Use a new card
+            {t('booking.payment.useNewCard')}
           </Radio>
         </Radio.Group>
       )}
 
-      <Typography.Text strong>Card number</Typography.Text>
+      <Typography.Text strong>{t('booking.payment.cardNumber')}</Typography.Text>
       <Input
         value={cardNumber}
         onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
@@ -163,7 +169,7 @@ export function PaymentForm({ order, onBack, onPay }: PaymentFormProps) {
         style={{ marginTop: 8, marginBottom: 16 }}
       />
 
-      <Typography.Text strong>Cardholder name</Typography.Text>
+      <Typography.Text strong>{t('booking.payment.cardholderName')}</Typography.Text>
       <Input
         value={cardName}
         onChange={(e) => setCardName(e.target.value)}
@@ -174,7 +180,7 @@ export function PaymentForm({ order, onBack, onPay }: PaymentFormProps) {
 
       <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
         <div style={{ flex: 1 }}>
-          <Typography.Text strong>Expiry</Typography.Text>
+          <Typography.Text strong>{t('booking.payment.expiry')}</Typography.Text>
           <Input
             value={expiry}
             onChange={(e) => setExpiry(formatExpiry(e.target.value))}
@@ -185,7 +191,7 @@ export function PaymentForm({ order, onBack, onPay }: PaymentFormProps) {
           />
         </div>
         <div style={{ flex: 1 }}>
-          <Typography.Text strong>CVV</Typography.Text>
+          <Typography.Text strong>{t('booking.payment.cvv')}</Typography.Text>
           <Input
             value={cvv}
             onChange={(e) => setCvv(e.target.value.replace(/\D/g, '').slice(0, 4))}
@@ -200,10 +206,10 @@ export function PaymentForm({ order, onBack, onPay }: PaymentFormProps) {
 
       <div style={{ display: 'flex', gap: 12 }}>
         <AppButton variant="secondary" onClick={onBack} disabled={submitting}>
-          Back
+          {t('common.back')}
         </AppButton>
         <AppButton variant="primary" onClick={handleSubmit} loading={submitting} block>
-          Pay ${order.total}
+          {t('booking.payment.payAmount', { amount: order.total })}
         </AppButton>
       </div>
     </Card>

@@ -4,6 +4,7 @@ import { applyCssTokens } from "./styles/applyCssTokens";
 import { App as AntApp, ConfigProvider, theme } from "antd";
 import { colors } from "./styles/tokens";
 import './styles/index.css';
+import '@shared/i18n';
 import App from './App';
 import { ErrorBoundary } from './ErrorBoundary';
 import { NotificationBridge } from './NotificationBridge';

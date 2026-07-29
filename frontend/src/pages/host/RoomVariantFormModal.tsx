@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Modal, Form, InputNumber, Row, Col, message } from 'antd';
 import { roomVariantApi, type RoomVariant } from '@entities/room-variant';
 
@@ -23,6 +24,7 @@ interface Props {
 }
 
 export function RoomVariantFormModal({ open, onClose, onSaved, roomId, editingVariant }: Props) {
+  const { t } = useTranslation();
   const [form] = Form.useForm<FormValues>();
   const [saving, setSaving] = useState(false);
 
@@ -73,12 +75,12 @@ export function RoomVariantFormModal({ open, onClose, onSaved, roomId, editingVa
         await roomVariantApi.create(dto);
       }
 
-      message.success(editingVariant ? 'Rate updated' : 'Rate added');
+      message.success(editingVariant ? t('host.rateForm.rateUpdated') : t('host.rateForm.rateAdded'));
       onSaved();
       onClose();
     } catch (err: unknown) {
       if (err && typeof err === 'object' && 'errorFields' in err) return;
-      message.error('Could not save the rate. Please check the form and try again.');
+      message.error(t('host.rateForm.saveError'));
     } finally {
       setSaving(false);
     }
@@ -87,61 +89,61 @@ export function RoomVariantFormModal({ open, onClose, onSaved, roomId, editingVa
   return (
     <Modal
       open={open}
-      title={editingVariant ? 'Edit rate' : 'Add a rate'}
+      title={editingVariant ? t('host.rateForm.editRate') : t('host.rateForm.addRate')}
       onCancel={onClose}
       onOk={handleOk}
       confirmLoading={saving}
-      okText={editingVariant ? 'Save' : 'Add'}
+      okText={editingVariant ? t('common.save') : t('common.add')}
       destroyOnHidden
     >
       <Form form={form} layout="vertical">
         <Row gutter={12}>
           <Col span={12}>
-            <Form.Item label="Price per night" name="price" rules={[{ required: true }]}>
+            <Form.Item label={t('host.rateForm.pricePerNight')} name="price" rules={[{ required: true }]}>
               <InputNumber min={0} style={{ width: '100%' }} prefix="$" />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label="Discount price" name="discountPrice">
+            <Form.Item label={t('host.rateForm.discountPrice')} name="discountPrice">
               <InputNumber min={0} style={{ width: '100%' }} prefix="$" />
             </Form.Item>
           </Col>
         </Row>
         <Row gutter={12}>
           <Col span={12}>
-            <Form.Item label="Adults" name="adultCount" rules={[{ required: true }]}>
+            <Form.Item label={t('search.adults')} name="adultCount" rules={[{ required: true }]}>
               <InputNumber min={0} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label="Children" name="childCount" rules={[{ required: true }]}>
+            <Form.Item label={t('search.children')} name="childCount" rules={[{ required: true }]}>
               <InputNumber min={0} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
         </Row>
         <Row gutter={12}>
           <Col span={6}>
-            <Form.Item label="Single beds" name="singleBedCount" rules={[{ required: true }]}>
+            <Form.Item label={t('host.rateForm.singleBeds')} name="singleBedCount" rules={[{ required: true }]}>
               <InputNumber min={0} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
           <Col span={6}>
-            <Form.Item label="Double beds" name="doubleBedCount" rules={[{ required: true }]}>
+            <Form.Item label={t('host.rateForm.doubleBeds')} name="doubleBedCount" rules={[{ required: true }]}>
               <InputNumber min={0} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
           <Col span={6}>
-            <Form.Item label="Kingsize beds" name="kingsizeBedCount" rules={[{ required: true }]}>
+            <Form.Item label={t('host.rateForm.kingsizeBeds')} name="kingsizeBedCount" rules={[{ required: true }]}>
               <InputNumber min={0} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
           <Col span={6}>
-            <Form.Item label="Sofas" name="sofaCount" rules={[{ required: true }]}>
+            <Form.Item label={t('host.rateForm.sofas')} name="sofaCount" rules={[{ required: true }]}>
               <InputNumber min={0} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
         </Row>
-        <Form.Item label="Extra beds" name="extraBedCount" rules={[{ required: true }]}>
+        <Form.Item label={t('host.rateForm.extraBeds')} name="extraBedCount" rules={[{ required: true }]}>
           <InputNumber min={0} style={{ width: '100%' }} />
         </Form.Item>
       </Form>

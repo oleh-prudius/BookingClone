@@ -1,4 +1,5 @@
 import { useNavigate, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Typography, Card, Avatar, Tag, Space, Tabs } from 'antd';
 import {
   UserOutlined,
@@ -13,6 +14,7 @@ import { AppButton } from '@shared/ui';
 import { PaymentMethodsSection } from './PaymentMethodsSection';
 
 export function ProfilePage() {
+  const { t } = useTranslation();
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -49,62 +51,62 @@ export function ProfilePage() {
           items={[
             {
               key: 'profile',
-              label: <span><SettingOutlined /> Profile</span>,
+              label: <span><SettingOutlined /> {t('profile.tabs.profile')}</span>,
               children: (
                 <div style={{ padding: '8px 24px' }}>
-                  <Typography.Title level={5} style={{ marginTop: 0 }}>Personal information</Typography.Title>
+                  <Typography.Title level={5} style={{ marginTop: 0 }}>{t('profile.personalInformation')}</Typography.Title>
                   <ProfileForm onSuccess={() => navigate('/profile')} />
                 </div>
               ),
             },
             {
               key: 'payment',
-              label: <span><CreditCardOutlined /> Payment methods</span>,
+              label: <span><CreditCardOutlined /> {t('profile.tabs.paymentMethods')}</span>,
               children: (
                 <div>
-                  <Typography.Title level={5} style={{ margin: '8px 24px 0' }}>Payment methods</Typography.Title>
+                  <Typography.Title level={5} style={{ margin: '8px 24px 0' }}>{t('profile.tabs.paymentMethods')}</Typography.Title>
                   <PaymentMethodsSection />
                 </div>
               ),
             },
             {
               key: 'bookings',
-              label: <span><CalendarOutlined /> Bookings</span>,
+              label: <span><CalendarOutlined /> {t('profile.tabs.bookings')}</span>,
               children: (
                 <div style={{ padding: '8px 24px' }}>
-                  <Typography.Title level={5} style={{ marginTop: 0 }}>My Bookings</Typography.Title>
+                  <Typography.Title level={5} style={{ marginTop: 0 }}>{t('profile.myBookings')}</Typography.Title>
                   <Typography.Paragraph type="secondary">
-                    View and manage your upcoming, past, and cancelled bookings.
+                    {t('profile.myBookingsDescription')}
                   </Typography.Paragraph>
                   <AppButton variant="primary" onClick={() => navigate('/my-bookings')}>
-                    View my bookings
+                    {t('booking.viewMyBookings')}
                   </AppButton>
                 </div>
               ),
             },
             {
               key: 'favorites',
-              label: <span><HeartOutlined /> Favorites</span>,
+              label: <span><HeartOutlined /> {t('profile.tabs.favorites')}</span>,
               children: (
                 <div style={{ padding: '8px 24px' }}>
-                  <Typography.Title level={5} style={{ marginTop: 0 }}>Favorites</Typography.Title>
+                  <Typography.Title level={5} style={{ marginTop: 0 }}>{t('profile.tabs.favorites')}</Typography.Title>
                   <Typography.Paragraph type="secondary">
-                    Hotels you've saved for later.
+                    {t('profile.favoritesDescription')}
                   </Typography.Paragraph>
                   <AppButton variant="primary" onClick={() => navigate('/favorites')}>
-                    View my favorites
+                    {t('profile.viewMyFavorites')}
                   </AppButton>
                 </div>
               ),
             },
             {
               key: 'account',
-              label: <span><LogoutOutlined /> Account</span>,
+              label: <span><LogoutOutlined /> {t('profile.tabs.account')}</span>,
               children: (
                 <div style={{ padding: '8px 24px' }}>
-                  <Typography.Title level={5} style={{ marginTop: 0 }}>Account</Typography.Title>
+                  <Typography.Title level={5} style={{ marginTop: 0 }}>{t('profile.tabs.account')}</Typography.Title>
                   <AppButton variant="secondary" danger icon={<LogoutOutlined />} onClick={handleLogout}>
-                    Sign out
+                    {t('profile.signOut')}
                   </AppButton>
                 </div>
               ),

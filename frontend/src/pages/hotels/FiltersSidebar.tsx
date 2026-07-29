@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, Slider, Checkbox, Typography, Divider } from 'antd';
 import { hotelCategoryApi, type HotelCategory } from '@entities/hotel-category';
-
-const STAR_OPTIONS = [5, 4, 3, 2, 1].map((n) => ({ label: `${n} star${n > 1 ? 's' : ''}`, value: n }));
 
 export interface HotelFilters {
   priceRange: [number, number];
@@ -16,7 +15,10 @@ interface Props {
 }
 
 export function FiltersSidebar({ value, onChange }: Props) {
+  const { t } = useTranslation();
   const [categories, setCategories] = useState<HotelCategory[]>([]);
+
+  const starOptions = [5, 4, 3, 2, 1].map((n) => ({ label: t('hotels.starsCount', { count: n }), value: n }));
 
   useEffect(() => {
     hotelCategoryApi.getAll().then(setCategories).catch(() => setCategories([]));
@@ -24,10 +26,10 @@ export function FiltersSidebar({ value, onChange }: Props) {
 
   return (
     <Card style={{ position: 'sticky', top: 88 }}>
-      <Typography.Title level={5} style={{ marginTop: 0 }}>Filter by</Typography.Title>
+      <Typography.Title level={5} style={{ marginTop: 0 }}>{t('hotels.filterBy')}</Typography.Title>
 
       <Divider style={{ margin: '12px 0' }} />
-      <Typography.Text strong>Price per night</Typography.Text>
+      <Typography.Text strong>{t('hotels.pricePerNight')}</Typography.Text>
       <Slider
         range
         value={value.priceRange}
@@ -39,16 +41,16 @@ export function FiltersSidebar({ value, onChange }: Props) {
       />
 
       <Divider style={{ margin: '12px 0' }} />
-      <Typography.Text strong>Star rating</Typography.Text>
+      <Typography.Text strong>{t('hotels.starRating')}</Typography.Text>
       <Checkbox.Group
-        options={STAR_OPTIONS}
+        options={starOptions}
         value={value.stars}
         onChange={(stars) => onChange({ ...value, stars: stars as number[] })}
         style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}
       />
 
       <Divider style={{ margin: '12px 0' }} />
-      <Typography.Text strong>Property type</Typography.Text>
+      <Typography.Text strong>{t('hotels.propertyType')}</Typography.Text>
       <Checkbox.Group
         options={categories.map((c) => ({ label: c.name, value: c.id }))}
         value={value.categoryIds}

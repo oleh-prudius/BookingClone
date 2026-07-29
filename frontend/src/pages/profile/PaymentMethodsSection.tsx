@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { List, Typography, Input, Alert, App } from 'antd';
 import { CreditCardOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { useAuth } from '@features/auth';
@@ -31,6 +32,7 @@ interface CardFormState {
 const EMPTY_FORM: CardFormState = { number: '', expiry: '', cvv: '', ownerFullName: '' };
 
 export function PaymentMethodsSection() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { message } = App.useApp();
   const [cards, setCards] = useState<BankCard[]>([]);
@@ -79,24 +81,24 @@ export function PaymentMethodsSection() {
     setError(null);
 
     if (!form.ownerFullName.trim()) {
-      setError('Please enter the cardholder name.');
+      setError(t('booking.payment.errors.cardholderNameRequired'));
       return;
     }
     if (!luhnCheck(form.number)) {
-      setError('Card number is invalid.');
+      setError(t('booking.payment.errors.cardNumberInvalid'));
       return;
     }
     const expirationDate = expiryToDateOnly(form.expiry);
     if (!expirationDate) {
-      setError('Expiry must be in MM/YY format.');
+      setError(t('booking.payment.errors.expiryFormat'));
       return;
     }
     if (new Date(expirationDate).getTime() < Date.now()) {
-      setError('Card has expired.');
+      setError(t('booking.payment.errors.cardExpired'));
       return;
     }
     if (!/^\d{3,4}$/.test(form.cvv)) {
-      setError('CVV must be 3 or 4 digits.');
+      setError(t('booking.payment.errors.cvvInvalid'));
       return;
     }
 
@@ -114,13 +116,13 @@ export function PaymentMethodsSection() {
 
     request
       .then(() => {
-        message.success(editingId === 'new' ? 'Card added' : 'Card updated');
+        message.success(editingId === 'new' ? t('profile.paymentMethods.cardAdded') : t('profile.paymentMethods.cardUpdated'));
         cancelEdit();
         loadCards();
       })
       .catch((err: unknown) => {
         const axiosErr = err as { response?: { data?: { error?: string } }; message?: string };
-        setError(axiosErr.response?.data?.error ?? axiosErr.message ?? 'Failed to save card');
+        setError(axiosErr.response?.data?.error ?? axiosErr.message ?? t('profile.paymentMethods.saveFailed'));
       })
       .finally(() => setSubmitting(false));
   };
@@ -128,15 +130,15 @@ export function PaymentMethodsSection() {
   const handleDelete = (id: number) => {
     bankCardApi.remove(id)
       .then(() => {
-        message.success('Card removed');
+        message.success(t('profile.paymentMethods.cardRemoved'));
         loadCards();
       })
-      .catch(() => message.error('Failed to remove card'));
+      .catch(() => message.error(t('profile.paymentMethods.removeFailed')));
   };
 
   const editForm = (
     <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
-      <Typography.Text strong>Card number</Typography.Text>
+      <Typography.Text strong>{t('booking.payment.cardNumber')}</Typography.Text>
       <Input
         value={form.number}
         onChange={(e) => setForm({ ...form, number: formatCardNumber(e.target.value) })}
@@ -145,7 +147,7 @@ export function PaymentMethodsSection() {
         style={{ marginTop: 8, marginBottom: 12 }}
       />
 
-      <Typography.Text strong>Cardholder name</Typography.Text>
+      <Typography.Text strong>{t('booking.payment.cardholderName')}</Typography.Text>
       <Input
         value={form.ownerFullName}
         onChange={(e) => setForm({ ...form, ownerFullName: e.target.value })}
@@ -155,7 +157,7 @@ export function PaymentMethodsSection() {
 
       <div style={{ display: 'flex', gap: 16, marginBottom: 12 }}>
         <div style={{ flex: 1 }}>
-          <Typography.Text strong>Expiry</Typography.Text>
+          <Typography.Text strong>{t('booking.payment.expiry')}</Typography.Text>
           <Input
             value={form.expiry}
             onChange={(e) => setForm({ ...form, expiry: formatExpiry(e.target.value) })}
@@ -165,7 +167,7 @@ export function PaymentMethodsSection() {
           />
         </div>
         <div style={{ flex: 1 }}>
-          <Typography.Text strong>CVV</Typography.Text>
+          <Typography.Text strong>{t('booking.payment.cvv')}</Typography.Text>
           <Input
             value={form.cvv}
             onChange={(e) => setForm({ ...form, cvv: e.target.value.replace(/\D/g, '').slice(0, 4) })}
@@ -179,8 +181,8 @@ export function PaymentMethodsSection() {
       {error && <Alert type="error" message={error} style={{ marginBottom: 12 }} />}
 
       <div style={{ display: 'flex', gap: 8 }}>
-        <AppButton variant="secondary" onClick={cancelEdit} disabled={submitting}>Cancel</AppButton>
-        <AppButton variant="primary" onClick={handleSave} loading={submitting}>Save card</AppButton>
+        <AppButton variant="secondary" onClick={cancelEdit} disabled={submitting}>{t('common.cancel')}</AppButton>
+        <AppButton variant="primary" onClick={handleSave} loading={submitting}>{t('profile.paymentMethods.saveCard')}</AppButton>
       </div>
     </div>
   );
@@ -188,9 +190,9 @@ export function PaymentMethodsSection() {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px' }}>
-        <Typography.Text type="secondary">Saved cards are used to speed up checkout.</Typography.Text>
+        <Typography.Text type="secondary">{t('profile.paymentMethods.description')}</Typography.Text>
         {editingId === null && (
-          <AppButton variant="primary" onClick={startAdd}>Add card</AppButton>
+          <AppButton variant="primary" onClick={startAdd}>{t('profile.paymentMethods.addCard')}</AppButton>
         )}
       </div>
 
@@ -198,21 +200,21 @@ export function PaymentMethodsSection() {
 
       <List
         loading={loading}
-        locale={{ emptyText: 'No saved cards yet' }}
+        locale={{ emptyText: t('profile.paymentMethods.noSavedCards') }}
         dataSource={cards}
         renderItem={(card) => (
           <div key={card.id}>
             <List.Item
               style={{ padding: '14px 20px' }}
               actions={[
-                <AppButton key="edit" variant="secondary" icon={<EditOutlined />} onClick={() => startEdit(card)}>Edit</AppButton>,
-                <AppButton key="delete" variant="secondary" danger icon={<DeleteOutlined />} onClick={() => handleDelete(card.id)}>Delete</AppButton>,
+                <AppButton key="edit" variant="secondary" icon={<EditOutlined />} onClick={() => startEdit(card)}>{t('common.edit')}</AppButton>,
+                <AppButton key="delete" variant="secondary" danger icon={<DeleteOutlined />} onClick={() => handleDelete(card.id)}>{t('common.delete')}</AppButton>,
               ]}
             >
               <List.Item.Meta
                 avatar={<CreditCardOutlined style={{ fontSize: 24 }} />}
                 title={maskCardNumber(card.number)}
-                description={`${card.ownerFullName} · expires ${dateOnlyToExpiry(card.expirationDate)}`}
+                description={t('profile.paymentMethods.cardExpiresLabel', { owner: card.ownerFullName, expiry: dateOnlyToExpiry(card.expirationDate) })}
               />
             </List.Item>
             {editingId === card.id && editForm}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Typography, Skeleton } from 'antd';
 import { hotelApi, HotelCard } from '@entities/hotel';
 import type { Hotel } from '@shared/types';
@@ -6,6 +7,7 @@ import { useAuth } from '@features/auth';
 import { useFavorites } from '@features/favorites';
 
 export function DealsSection() {
+  const { t } = useTranslation();
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState(true);
   const { isAuthenticated } = useAuth();
@@ -23,7 +25,7 @@ export function DealsSection() {
 
   return (
     <section style={{ padding: '32px 24px', maxWidth: 1200, margin: '0 auto' }}>
-      <Typography.Title level={3}>Great deals</Typography.Title>
+      <Typography.Title level={3}>{t('home.greatDeals')}</Typography.Title>
       <div style={{
         display: 'flex',
         gap: 16,

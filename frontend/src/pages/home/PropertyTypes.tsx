@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Typography, Card } from 'antd';
 import {
   HomeOutlined,
@@ -21,6 +22,7 @@ const ICONS_BY_NAME: Record<string, React.ReactNode> = {
 
 export function PropertyTypes() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [categories, setCategories] = useState<HotelCategory[]>([]);
 
   useEffect(() => {
@@ -31,7 +33,7 @@ export function PropertyTypes() {
 
   return (
     <section style={{ padding: '32px 24px', maxWidth: 1200, margin: '0 auto' }}>
-      <Typography.Title level={3}>Browse by property type</Typography.Title>
+      <Typography.Title level={3}>{t('home.browseByPropertyType')}</Typography.Title>
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
@@ -43,7 +45,7 @@ export function PropertyTypes() {
             hoverable
             role="button"
             tabIndex={0}
-            aria-label={`Browse ${c.name} hotels`}
+            aria-label={t('home.browseCategoryHotels', { category: c.name })}
             onClick={() => navigate(`/hotels?categoryIds=${c.id}`)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {

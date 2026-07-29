@@ -1,9 +1,11 @@
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Card, Typography } from 'antd';
 import { LoginForm } from '@features/auth';
 import { Logo } from '@shared/ui';
 
 export function LoginPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   return (
     <section
@@ -31,18 +33,18 @@ export function LoginPage() {
           >
             <Logo />
           </div>
-          <Typography.Title level={3} style={{ margin: 0 }}>Welcome back</Typography.Title>
-          <Typography.Text type="secondary">Sign in to continue to Triply</Typography.Text>
+          <Typography.Title level={3} style={{ margin: 0 }}>{t('auth.login.welcomeBack')}</Typography.Title>
+          <Typography.Text type="secondary">{t('auth.login.signInToContinue')}</Typography.Text>
         </div>
 
         <LoginForm onSuccess={() => navigate('/hotels')} />
 
         <div style={{ textAlign: 'center', marginTop: 16 }}>
-          <Link to="/forgot-password">Forgot password?</Link>
+          <Link to="/forgot-password">{t('auth.login.forgotPassword')}</Link>
         </div>
         <div style={{ textAlign: 'center', marginTop: 8 }}>
-          <Typography.Text type="secondary">No account? </Typography.Text>
-          <Link to="/register">Create one</Link>
+          <Typography.Text type="secondary">{t('auth.login.noAccount')} </Typography.Text>
+          <Link to="/register">{t('auth.login.createOne')}</Link>
         </div>
       </Card>
     </section>

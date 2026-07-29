@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import { App, Typography, Tabs, List, Tag, Skeleton, Empty, Modal, Descriptions } from 'antd';
 import { useAuth } from '@features/auth';
@@ -25,6 +26,7 @@ function categorize(booking: Booking): BookingTab {
 }
 
 export function MyBookingsPage() {
+  const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
   const { modal, message } = App.useApp();
 
@@ -56,21 +58,28 @@ export function MyBookingsPage() {
 
   if (!isAuthenticated) return <Navigate to="/login" replace />;
 
+  const statusLabels: Record<BookingStatus, string> = {
+    Pending: t('myBookings.status.pending'),
+    Confirmed: t('myBookings.status.confirmed'),
+    Completed: t('myBookings.status.completed'),
+    Cancelled: t('myBookings.status.cancelled'),
+  };
+
   const handleCancel = (booking: Booking) => {
     modal.confirm({
-      title: 'Cancel this booking?',
-      content: `${hotelNames[booking.hotelId] ?? `Hotel #${booking.hotelId}`}, ${new Date(booking.checkIn).toLocaleDateString()} – ${new Date(booking.checkOut).toLocaleDateString()}`,
-      okText: 'Cancel booking',
+      title: t('myBookings.cancelConfirmTitle'),
+      content: `${hotelNames[booking.hotelId] ?? t('myBookings.hotelFallback', { id: booking.hotelId })}, ${new Date(booking.checkIn).toLocaleDateString()} – ${new Date(booking.checkOut).toLocaleDateString()}`,
+      okText: t('myBookings.cancelBooking'),
       okButtonProps: { danger: true },
-      cancelText: 'Keep it',
+      cancelText: t('myBookings.keepIt'),
       onOk: () =>
         bookingApi.changeStatus(booking.id, 'Cancelled')
           .then(() => {
-            message.success('Booking cancelled');
+            message.success(t('myBookings.bookingCancelled'));
             setSelected(null);
             loadBookings();
           })
-          .catch(() => message.error('Failed to cancel booking')),
+          .catch(() => message.error(t('myBookings.cancelFailed'))),
     });
   };
 
@@ -79,7 +88,7 @@ export function MyBookingsPage() {
 
   const renderList = (items: Booking[]) => {
     if (loading) return <Skeleton active />;
-    if (items.length === 0) return <Empty description="No bookings here" />;
+    if (items.length === 0) return <Empty description={t('myBookings.noBookingsHere')} />;
 
     return (
       <List
@@ -89,7 +98,7 @@ export function MyBookingsPage() {
             style={{ cursor: 'pointer' }}
             role="button"
             tabIndex={0}
-            aria-label={`View details for booking at ${hotelNames[b.hotelId] ?? `hotel #${b.hotelId}`}`}
+            aria-label={t('myBookings.viewDetailsFor', { hotelName: hotelNames[b.hotelId] ?? t('myBookings.hotelFallbackLower', { id: b.hotelId }) })}
             onClick={() => setSelected(b)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
@@ -103,18 +112,18 @@ export function MyBookingsPage() {
                 variant="secondary"
                 onClick={(e) => { e.stopPropagation(); handleCancel(b); }}
               >
-                Cancel
+                {t('common.cancel')}
               </AppButton>,
             ] : undefined}
           >
             <List.Item.Meta
-              title={hotelNames[b.hotelId] ?? `Hotel #${b.hotelId}`}
-              description={`${new Date(b.checkIn).toLocaleDateString()} – ${new Date(b.checkOut).toLocaleDateString()} · ${b.guests} guest${b.guests === 1 ? '' : 's'}`}
+              title={hotelNames[b.hotelId] ?? t('myBookings.hotelFallback', { id: b.hotelId })}
+              description={`${new Date(b.checkIn).toLocaleDateString()} – ${new Date(b.checkOut).toLocaleDateString()} · ${t('myBookings.guestsCount', { count: b.guests })}`}
             />
             <div style={{ textAlign: 'right' }}>
               <Typography.Text strong>${b.totalPrice}</Typography.Text>
               <div>
-                <Tag color={STATUS_COLORS[b.status]}>{b.status}</Tag>
+                <Tag color={STATUS_COLORS[b.status]}>{statusLabels[b.status]}</Tag>
               </div>
             </div>
           </List.Item>
@@ -125,15 +134,15 @@ export function MyBookingsPage() {
 
   return (
     <section style={{ padding: 24, maxWidth: 800, margin: '0 auto' }}>
-      <Typography.Title level={3}>My Bookings</Typography.Title>
+      <Typography.Title level={3}>{t('myBookings.title')}</Typography.Title>
 
       <Tabs
         activeKey={tab}
         onChange={(key) => setTab(key as BookingTab)}
         items={[
-          { key: 'upcoming', label: `Upcoming (${grouped.upcoming.length})`, children: renderList(grouped.upcoming) },
-          { key: 'past', label: `Past (${grouped.past.length})`, children: renderList(grouped.past) },
-          { key: 'cancelled', label: `Cancelled (${grouped.cancelled.length})`, children: renderList(grouped.cancelled) },
+          { key: 'upcoming', label: t('myBookings.tabUpcoming', { count: grouped.upcoming.length }), children: renderList(grouped.upcoming) },
+          { key: 'past', label: t('myBookings.tabPast', { count: grouped.past.length }), children: renderList(grouped.past) },
+          { key: 'cancelled', label: t('myBookings.tabCancelled', { count: grouped.cancelled.length }), children: renderList(grouped.cancelled) },
         ]}
       />
 
@@ -142,26 +151,26 @@ export function MyBookingsPage() {
         onCancel={() => setSelected(null)}
         footer={selected && CANCELLABLE_STATUSES.includes(selected.status) ? [
           <AppButton key="cancel" variant="secondary" onClick={() => handleCancel(selected)}>
-            Cancel booking
+            {t('myBookings.cancelBooking')}
           </AppButton>,
         ] : null}
-        title="Booking details"
+        title={t('myBookings.bookingDetails')}
       >
         {selected && (
           <Descriptions column={1} bordered size="small">
-            <Descriptions.Item label="Hotel">{hotelNames[selected.hotelId] ?? `Hotel #${selected.hotelId}`}</Descriptions.Item>
-            <Descriptions.Item label="Check-in">{new Date(selected.checkIn).toLocaleDateString()}</Descriptions.Item>
-            <Descriptions.Item label="Check-out">{new Date(selected.checkOut).toLocaleDateString()}</Descriptions.Item>
-            <Descriptions.Item label="Guests">{selected.guests}</Descriptions.Item>
-            <Descriptions.Item label="Total price">${selected.totalPrice}</Descriptions.Item>
-            <Descriptions.Item label="Status">
-              <Tag color={STATUS_COLORS[selected.status]}>{selected.status}</Tag>
+            <Descriptions.Item label={t('myBookings.hotel')}>{hotelNames[selected.hotelId] ?? t('myBookings.hotelFallback', { id: selected.hotelId })}</Descriptions.Item>
+            <Descriptions.Item label={t('search.checkIn')}>{new Date(selected.checkIn).toLocaleDateString()}</Descriptions.Item>
+            <Descriptions.Item label={t('search.checkOut')}>{new Date(selected.checkOut).toLocaleDateString()}</Descriptions.Item>
+            <Descriptions.Item label={t('booking.guests')}>{selected.guests}</Descriptions.Item>
+            <Descriptions.Item label={t('myBookings.totalPrice')}>${selected.totalPrice}</Descriptions.Item>
+            <Descriptions.Item label={t('myBookings.statusLabel')}>
+              <Tag color={STATUS_COLORS[selected.status]}>{statusLabels[selected.status]}</Tag>
             </Descriptions.Item>
             {selected.confirmedAtUtc && (
-              <Descriptions.Item label="Confirmed at">{new Date(selected.confirmedAtUtc).toLocaleString()}</Descriptions.Item>
+              <Descriptions.Item label={t('myBookings.confirmedAt')}>{new Date(selected.confirmedAtUtc).toLocaleString()}</Descriptions.Item>
             )}
             {selected.cancelledAtUtc && (
-              <Descriptions.Item label="Cancelled at">{new Date(selected.cancelledAtUtc).toLocaleString()}</Descriptions.Item>
+              <Descriptions.Item label={t('myBookings.cancelledAt')}>{new Date(selected.cancelledAtUtc).toLocaleString()}</Descriptions.Item>
             )}
           </Descriptions>
         )}

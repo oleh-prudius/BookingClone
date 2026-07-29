@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { List, Rate, Typography, Skeleton, Empty, Select, Input, Alert } from 'antd';
 import { useAuth } from '@features/auth';
 import { hotelReviewApi, type HotelReview } from '@entities/hotel-review';
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function ReviewsSection({ hotelId, onReviewSubmitted }: Props) {
+  const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
 
   const [reviews, setReviews] = useState<HotelReview[]>([]);
@@ -67,7 +69,7 @@ export function ReviewsSection({ hotelId, onReviewSubmitted }: Props) {
       })
       .catch((err: unknown) => {
         const axiosErr = err as { response?: { data?: { error?: string } }; message?: string };
-        setError(axiosErr.response?.data?.error ?? axiosErr.message ?? 'Failed to submit review');
+        setError(axiosErr.response?.data?.error ?? axiosErr.message ?? t('hotel.reviewSubmitError'));
       })
       .finally(() => setSubmitting(false));
   };
@@ -77,7 +79,7 @@ export function ReviewsSection({ hotelId, onReviewSubmitted }: Props) {
       {loading
         ? <Skeleton active />
         : reviews.length === 0
-          ? <Empty description="No reviews yet" style={{ margin: '16px 0' }} />
+          ? <Empty description={t('hotel.noReviewsYetLong')} style={{ margin: '16px 0' }} />
           : (
             <List
               itemLayout="vertical"
@@ -85,7 +87,7 @@ export function ReviewsSection({ hotelId, onReviewSubmitted }: Props) {
               renderItem={(r) => (
                 <List.Item>
                   <List.Item.Meta
-                    title={r.authorName || 'Anonymous'}
+                    title={r.authorName || t('hotel.anonymous')}
                     description={new Date(r.createdAtUtc).toLocaleDateString()}
                   />
                   {r.score != null && <Rate disabled allowHalf value={toStars(r.score)} style={{ fontSize: 14 }} />}
@@ -97,14 +99,14 @@ export function ReviewsSection({ hotelId, onReviewSubmitted }: Props) {
 
       {eligibleBookingIds.length > 0 && (
         <div style={{ marginTop: 24, maxWidth: 480 }}>
-          <Typography.Title level={5}>Write a review</Typography.Title>
+          <Typography.Title level={5}>{t('hotel.writeAReview')}</Typography.Title>
 
           {eligibleBookingIds.length > 1 && (
             <Select
               value={selectedBookingId}
               onChange={setSelectedBookingId}
               style={{ width: '100%', marginBottom: 12 }}
-              options={eligibleBookingIds.map((id) => ({ value: id, label: `Booking #${id}` }))}
+              options={eligibleBookingIds.map((id) => ({ value: id, label: t('hotel.bookingNumber', { id }) }))}
             />
           )}
 
@@ -113,7 +115,7 @@ export function ReviewsSection({ hotelId, onReviewSubmitted }: Props) {
           <Input.TextArea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Share your experience..."
+            placeholder={t('hotel.shareYourExperience')}
             rows={3}
             style={{ marginBottom: 12 }}
           />
@@ -126,7 +128,7 @@ export function ReviewsSection({ hotelId, onReviewSubmitted }: Props) {
             loading={submitting}
             disabled={!description.trim() || !selectedBookingId}
           >
-            Submit review
+            {t('hotel.submitReview')}
           </AppButton>
         </div>
       )}

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Typography, Card, List, Tag, Space, Popconfirm, message, Empty } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useAuth } from '@features/auth';
@@ -9,6 +10,7 @@ import type { Hotel } from '@shared/types';
 import { HotelFormModal } from './HotelFormModal';
 
 export function HostDashboardPage() {
+  const { t } = useTranslation();
   const { isAuthenticated, user } = useAuth();
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState(true);
@@ -20,7 +22,7 @@ export function HostDashboardPage() {
     setLoading(true);
     hotelApi.getByRealtorId(user.id)
       .then(setHotels)
-      .catch(() => message.error('Could not load your hotels'))
+      .catch(() => message.error(t('host.dashboard.loadError')))
       .finally(() => setLoading(false));
   }, [user]);
 
@@ -34,52 +36,52 @@ export function HostDashboardPage() {
   const handleDelete = async (id: number) => {
     try {
       await hotelApi.remove(id);
-      message.success('Hotel removed');
+      message.success(t('host.dashboard.hotelRemoved'));
       load();
     } catch {
-      message.error('Could not remove the hotel');
+      message.error(t('host.dashboard.removeError'));
     }
   };
 
   return (
     <section style={{ padding: 24, maxWidth: 900, margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <Typography.Title level={3} style={{ margin: 0 }}>My hotels</Typography.Title>
+        <Typography.Title level={3} style={{ margin: 0 }}>{t('host.dashboard.title')}</Typography.Title>
         <AppButton
           variant="primary"
           icon={<PlusOutlined />}
           onClick={() => { setEditingHotel(null); setModalOpen(true); }}
         >
-          Add hotel
+          {t('host.dashboard.addHotel')}
         </AppButton>
       </div>
 
       <Card loading={loading}>
         {hotels.length === 0 && !loading ? (
-          <Empty description="You haven't listed any hotels yet" />
+          <Empty description={t('host.dashboard.noHotelsYet')} />
         ) : (
           <List
             dataSource={hotels}
             renderItem={(hotel) => (
               <List.Item
                 actions={[
-                  <Link key="manage" to={`/host/hotels/${hotel.id}`}>Manage rooms</Link>,
+                  <Link key="manage" to={`/host/hotels/${hotel.id}`}>{t('host.dashboard.manageRooms')}</Link>,
                   <AppButton
                     key="edit"
                     variant="tertiary"
                     icon={<EditOutlined />}
                     onClick={() => { setEditingHotel(hotel); setModalOpen(true); }}
                   >
-                    Edit
+                    {t('common.edit')}
                   </AppButton>,
                   <Popconfirm
                     key="delete"
-                    title="Remove this hotel?"
-                    description="This cannot be undone."
+                    title={t('host.dashboard.removeHotelConfirmTitle')}
+                    description={t('host.dashboard.removeHotelConfirmDescription')}
                     onConfirm={() => handleDelete(hotel.id)}
                   >
                     <AppButton variant="tertiary" danger icon={<DeleteOutlined />}>
-                      Remove
+                      {t('common.remove')}
                     </AppButton>
                   </Popconfirm>,
                 ]}

@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { authApi } from '@features/auth/api/authApi';
 
 export function ForgotPasswordPage() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -18,7 +20,7 @@ export function ForgotPasswordPage() {
       setMessage(msg);
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: { error?: string } } };
-      setError(axiosErr.response?.data?.error ?? 'Something went wrong. Please try again.');
+      setError(axiosErr.response?.data?.error ?? t('auth.somethingWentWrong'));
     } finally {
       setBusy(false);
     }
@@ -31,7 +33,7 @@ export function ForgotPasswordPage() {
           {message}
         </div>
         <p style={{ marginTop: 12 }}>
-          <Link to="/login">Back to sign in</Link>
+          <Link to="/login">{t('auth.backToSignIn')}</Link>
         </p>
       </section>
     );
@@ -40,22 +42,22 @@ export function ForgotPasswordPage() {
   return (
     <section style={{ padding: 24, maxWidth: 360, margin: '0 auto' }}>
       <form onSubmit={onSubmit} style={{ display: 'grid', gap: 8 }}>
-        <h2>Forgot password</h2>
+        <h2>{t('auth.forgotPassword.title')}</h2>
         <p style={{ margin: 0, color: '#555' }}>
-          Enter your email and we'll send you a reset link.
+          {t('auth.forgotPassword.description')}
         </p>
         <input
           type="email"
-          placeholder="Email"
+          placeholder={t('auth.email')}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
         {error && <div style={{ color: 'crimson' }}>{error}</div>}
-        <button type="submit" disabled={busy}>{busy ? '…' : 'Send reset link'}</button>
+        <button type="submit" disabled={busy}>{busy ? '…' : t('auth.forgotPassword.sendResetLink')}</button>
       </form>
       <p style={{ marginTop: 12 }}>
-        <Link to="/login">Back to sign in</Link>
+        <Link to="/login">{t('auth.backToSignIn')}</Link>
       </p>
     </section>
   );

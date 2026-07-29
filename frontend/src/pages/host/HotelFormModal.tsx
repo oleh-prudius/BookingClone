@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Modal, Form, Input, InputNumber, Select, Row, Col, message } from 'antd';
 import { cityApi, type City } from '@entities/city';
 import { hotelCategoryApi, type HotelCategory } from '@entities/hotel-category';
@@ -37,6 +38,7 @@ interface Props {
 }
 
 export function HotelFormModal({ open, onClose, onSaved, realtorId, editingHotel }: Props) {
+  const { t } = useTranslation();
   const [form] = Form.useForm<FormValues>();
   const [cities, setCities] = useState<City[]>([]);
   const [categories, setCategories] = useState<HotelCategory[]>([]);
@@ -110,12 +112,12 @@ export function HotelFormModal({ open, onClose, onSaved, realtorId, editingHotel
         });
       }
 
-      message.success(editingHotel ? 'Hotel updated' : 'Hotel created');
+      message.success(editingHotel ? t('host.hotelForm.hotelUpdated') : t('host.hotelForm.hotelCreated'));
       onSaved();
       onClose();
     } catch (err: unknown) {
       if (err && typeof err === 'object' && 'errorFields' in err) return;
-      message.error('Could not save the hotel. Please check the form and try again.');
+      message.error(t('host.hotelForm.saveError'));
     } finally {
       setSaving(false);
     }
@@ -124,39 +126,39 @@ export function HotelFormModal({ open, onClose, onSaved, realtorId, editingHotel
   return (
     <Modal
       open={open}
-      title={editingHotel ? 'Edit hotel' : 'Add a new hotel'}
+      title={editingHotel ? t('host.hotelForm.editHotel') : t('host.hotelForm.addNewHotel')}
       onCancel={onClose}
       onOk={handleOk}
       confirmLoading={saving}
-      okText={editingHotel ? 'Save' : 'Create'}
+      okText={editingHotel ? t('common.save') : t('common.create')}
       destroyOnHidden
     >
       <Form form={form} layout="vertical">
-        <Form.Item label="Name" name="name" rules={[{ required: true, max: 255 }]}>
+        <Form.Item label={t('host.hotelForm.name')} name="name" rules={[{ required: true, max: 255 }]}>
           <Input />
         </Form.Item>
-        <Form.Item label="Description" name="description" rules={[{ required: true, max: 4000 }]}>
+        <Form.Item label={t('host.hotelForm.description')} name="description" rules={[{ required: true, max: 4000 }]}>
           <Input.TextArea rows={3} />
         </Form.Item>
 
         {!editingHotel && (
           <>
-            <Form.Item label="City" name="cityId" rules={[{ required: true, message: 'Please select a city' }]}>
+            <Form.Item label={t('host.hotelForm.city')} name="cityId" rules={[{ required: true, message: t('host.hotelForm.selectCity') }]}>
               <Select
                 showSearch
-                placeholder="Select a city"
+                placeholder={t('host.hotelForm.selectCity')}
                 optionFilterProp="label"
                 options={cities.map((c) => ({ value: c.id, label: `${c.name}, ${c.countryName}` }))}
               />
             </Form.Item>
             <Row gutter={12}>
               <Col span={16}>
-                <Form.Item label="Street" name="street" rules={[{ required: true }]}>
+                <Form.Item label={t('host.hotelForm.street')} name="street" rules={[{ required: true }]}>
                   <Input />
                 </Form.Item>
               </Col>
               <Col span={8}>
-                <Form.Item label="House number" name="houseNumber" rules={[{ required: true }]}>
+                <Form.Item label={t('host.hotelForm.houseNumber')} name="houseNumber" rules={[{ required: true }]}>
                   <Input />
                 </Form.Item>
               </Col>
@@ -166,12 +168,12 @@ export function HotelFormModal({ open, onClose, onSaved, realtorId, editingHotel
 
         <Row gutter={12}>
           <Col span={12}>
-            <Form.Item label="Category" name="hotelCategoryId" rules={[{ required: true, message: 'Please select a category' }]}>
-              <Select placeholder="Select a category" options={categories.map((c) => ({ value: c.id, label: c.name }))} />
+            <Form.Item label={t('host.hotelForm.category')} name="hotelCategoryId" rules={[{ required: true, message: t('host.hotelForm.selectCategory') }]}>
+              <Select placeholder={t('host.hotelForm.selectCategory')} options={categories.map((c) => ({ value: c.id, label: c.name }))} />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label="Star rating" name="starRating" rules={[{ required: true }]}>
+            <Form.Item label={t('host.hotelForm.starRating')} name="starRating" rules={[{ required: true }]}>
               <InputNumber min={1} max={5} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
@@ -179,24 +181,24 @@ export function HotelFormModal({ open, onClose, onSaved, realtorId, editingHotel
 
         <Row gutter={12}>
           <Col span={12}>
-            <Form.Item label="Check-in from" name="arrivalFrom" rules={[{ required: true }]}>
+            <Form.Item label={t('host.hotelForm.checkInFrom')} name="arrivalFrom" rules={[{ required: true }]}>
               <Input type="time" />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label="Check-in to" name="arrivalTo" rules={[{ required: true }]}>
+            <Form.Item label={t('host.hotelForm.checkInTo')} name="arrivalTo" rules={[{ required: true }]}>
               <Input type="time" />
             </Form.Item>
           </Col>
         </Row>
         <Row gutter={12}>
           <Col span={12}>
-            <Form.Item label="Check-out from" name="departureFrom" rules={[{ required: true }]}>
+            <Form.Item label={t('host.hotelForm.checkOutFrom')} name="departureFrom" rules={[{ required: true }]}>
               <Input type="time" />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label="Check-out to" name="departureTo" rules={[{ required: true }]}>
+            <Form.Item label={t('host.hotelForm.checkOutTo')} name="departureTo" rules={[{ required: true }]}>
               <Input type="time" />
             </Form.Item>
           </Col>

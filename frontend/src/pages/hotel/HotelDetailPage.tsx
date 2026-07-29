@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Typography, Rate, Tag, Carousel, Skeleton, Result, Empty, Divider } from 'antd';
 import { EnvironmentOutlined, HeartOutlined, HeartFilled, StarFilled } from '@ant-design/icons';
 import { hotelApi } from '@entities/hotel';
@@ -13,6 +14,7 @@ import { useFavorites } from '@features/favorites';
 import { ReviewsSection } from './ReviewsSection';
 
 export function HotelDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const hotelId = Number(id);
@@ -63,9 +65,9 @@ export function HotelDetailPage() {
     return (
       <Result
         status="404"
-        title="Hotel not found"
-        subTitle="This hotel doesn't exist or has been removed."
-        extra={<AppButton variant="primary" onClick={() => navigate('/hotels')}>Back to search</AppButton>}
+        title={t('hotel.notFoundTitle')}
+        subTitle={t('hotel.notFoundSubtitle')}
+        extra={<AppButton variant="primary" onClick={() => navigate('/hotels')}>{t('hotel.backToSearch')}</AppButton>}
       />
     );
   }
@@ -89,7 +91,7 @@ export function HotelDetailPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <Typography.Title level={2} style={{ margin: 0 }}>{hotel.name}</Typography.Title>
             {hotel.starRating > 0 && (
-              <span aria-label={`${hotel.starRating}-star hotel`} style={{ color: '#faad14', fontSize: 16 }}>
+              <span aria-label={t('hotels.starHotel', { count: hotel.starRating })} style={{ color: '#faad14', fontSize: 16 }}>
                 {Array.from({ length: hotel.starRating }, (_, i) => <StarFilled key={i} />)}
               </span>
             )}
@@ -100,14 +102,14 @@ export function HotelDetailPage() {
           <div style={{ marginTop: 8 }}>
             {hotel.rating != null
               ? <Rate disabled allowHalf defaultValue={toStars(hotel.rating)} />
-              : <Tag>No reviews yet</Tag>}
+              : <Tag>{t('hotels.noReviewsYet')}</Tag>}
           </div>
         </div>
 
         <div style={{ textAlign: 'right' }}>
           {hotel.pricePerNight != null && (
             <Typography.Title level={3} style={{ margin: 0, color: 'var(--triply-primary)' }}>
-              ${hotel.pricePerNight}<Typography.Text type="secondary" style={{ fontSize: 14 }}>/night</Typography.Text>
+              ${hotel.pricePerNight}<Typography.Text type="secondary" style={{ fontSize: 14 }}>{t('hotel.perNight')}</Typography.Text>
             </Typography.Title>
           )}
           <div style={{ display: 'flex', gap: 8, marginTop: 8, justifyContent: 'flex-end' }}>
@@ -117,11 +119,11 @@ export function HotelDetailPage() {
                 icon={isFavorite(hotel.id) ? <HeartFilled style={{ color: '#e0245e' }} /> : <HeartOutlined />}
                 onClick={() => toggleFavorite(hotel.id)}
               >
-                {isFavorite(hotel.id) ? 'Saved' : 'Save'}
+                {isFavorite(hotel.id) ? t('hotel.saved') : t('hotel.save')}
               </AppButton>
             )}
             <AppButton variant="primary" onClick={() => navigate(`/hotels/${hotel.id}/book`)}>
-              Book
+              {t('hotel.book')}
             </AppButton>
           </div>
         </div>
@@ -129,24 +131,24 @@ export function HotelDetailPage() {
 
       <Divider />
 
-      <Typography.Title level={4}>About this hotel</Typography.Title>
+      <Typography.Title level={4}>{t('hotel.aboutThisHotel')}</Typography.Title>
       <Typography.Paragraph>{hotel.description}</Typography.Paragraph>
 
-      <Typography.Title level={4}>Amenities</Typography.Title>
+      <Typography.Title level={4}>{t('hotel.amenities')}</Typography.Title>
       {hotel.amenities && hotel.amenities.length > 0
         ? (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
             {hotel.amenities.map((a) => <Tag key={a}>{a}</Tag>)}
           </div>
         )
-        : <Empty description="No amenities listed" style={{ margin: '16px 0' }} />}
+        : <Empty description={t('hotel.noAmenitiesListed')} style={{ margin: '16px 0' }} />}
 
-      <Typography.Title level={4}>Location</Typography.Title>
+      <Typography.Title level={4}>{t('hotel.location')}</Typography.Title>
       <div style={{ marginBottom: 24 }}>
         <MapPanel hotels={[hotel]} height="360px" sticky={false} />
       </div>
 
-      <Typography.Title level={4}>Reviews</Typography.Title>
+      <Typography.Title level={4}>{t('hotel.reviews')}</Typography.Title>
       <ReviewsSection hotelId={hotel.id} onReviewSubmitted={reloadHotel} />
     </section>
   );

@@ -1,5 +1,6 @@
 import { Card, Rate, Tag, Typography } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { EnvironmentOutlined, HeartOutlined, HeartFilled, StarFilled } from '@ant-design/icons';
 import type { Hotel } from '@shared/types';
 import { AppButton } from '@shared/ui';
@@ -14,21 +15,22 @@ interface Props {
 
 export function HotelCard({ hotel, variant = 'grid', isFavorite, onToggleFavorite }: Props) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const starClassBlock = hotel.starRating > 0 && (
-    <span aria-label={`${hotel.starRating}-star hotel`} style={{ color: '#faad14', fontSize: 12, letterSpacing: 1 }}>
+    <span aria-label={t('hotels.starHotel', { count: hotel.starRating })} style={{ color: '#faad14', fontSize: 12, letterSpacing: 1 }}>
       {Array.from({ length: hotel.starRating }, (_, i) => <StarFilled key={i} />)}
     </span>
   );
 
   const ratingBlock = hotel.rating != null
     ? <Rate disabled allowHalf defaultValue={toStars(hotel.rating)} style={{ fontSize: 14 }} />
-    : <Tag>No reviews yet</Tag>;
+    : <Tag>{t('hotels.noReviewsYet')}</Tag>;
 
   const priceStack = hotel.pricePerNight != null && (
     <div>
       <Typography.Text type="secondary" style={{ fontSize: 12, whiteSpace: 'nowrap' }}>
-        Price for 1 night
+        {t('hotels.priceForOneNight')}
       </Typography.Text>
       <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--triply-primary)', lineHeight: 1.2 }}>
         ${hotel.pricePerNight}
@@ -39,7 +41,7 @@ export function HotelCard({ hotel, variant = 'grid', isFavorite, onToggleFavorit
   const favoriteButton = onToggleFavorite && (
     <button
       onClick={(e) => { e.stopPropagation(); onToggleFavorite(); }}
-      aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+      aria-label={isFavorite ? t('hotels.removeFromFavorites') : t('hotels.addToFavorites')}
       style={{
         border: 'none',
         background: 'rgba(255,255,255,0.9)',
@@ -103,7 +105,7 @@ export function HotelCard({ hotel, variant = 'grid', isFavorite, onToggleFavorit
           }}>
             {priceStack}
             <AppButton variant="primary" onClick={() => navigate(`/hotels/${hotel.id}`)}>
-              Details
+              {t('hotels.details')}
             </AppButton>
           </div>
         </div>
@@ -151,7 +153,7 @@ export function HotelCard({ hotel, variant = 'grid', isFavorite, onToggleFavorit
 
       <div style={{ marginTop: 12 }}>
         <AppButton variant="primary" onClick={() => navigate(`/hotels/${hotel.id}`)}>
-          Details
+          {t('hotels.details')}
         </AppButton>
       </div>
     </Card>
