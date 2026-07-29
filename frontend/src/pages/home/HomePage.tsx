@@ -4,7 +4,7 @@ import {SearchForm} from "@features/search/ui/SearchForm";
 export function HomePage() {
   return (
     <section style={{ 
-        background: 'var(--triply-primary)',    
+        background: 'var(--triply-navyDarkest)',
         padding: '48px 24px',
         display: 'flex',
         flexDirection: 'column',
@@ -12,13 +12,13 @@ export function HomePage() {
         gap: 24,
         color: 'white'
     }}>
-      <h1 style={{ margin:0, fontSize:36, fontWeight: 700}}>
+      <h1 style={{ margin:0, fontSize:36, fontWeight: 700, color: 'white'}}>
           Find your next stay
       </h1>
       <p style={{margin: 0, fontSize:18, opacity:0.9}}>
           Browse hotels and make a booking in a few clicks.
       </p>
-      <Link to="/hotels">Browse hotels →</Link>
+      <Link to="/hotels" style={{ color: 'white', textDecoration: 'underline' }}>Browse hotels →</Link>
         <SearchForm/>
     </section>
   );

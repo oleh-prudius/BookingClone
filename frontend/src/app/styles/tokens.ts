@@ -1,7 +1,7 @@
 export const colors = {
-    navyDarkest: "#001F3F",
-    navyDark: "#003366",
+    navyDarkest: "#003580",
+    navyDark: "#00224F",
     blue: "#004D99",
-    primary: "#0066CC",
-    backgroundLight: "#E6F2FF"
+    primary: "#0071C2",
+    backgroundLight: "#EBF3FF"
 } as const;

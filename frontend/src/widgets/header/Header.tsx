@@ -16,9 +16,10 @@ export function Header() {
   
   const iconStyle = { fontSize: 18 as const, cursor: 'pointer' as const};
   const navLinkStyle = ({isActive}: {isActive:boolean} )=> ({
-          color: isActive ? 'var(--triply-blue)' : 'inherit' as const,
+          color: 'inherit' as const,
+          fontWeight: isActive ? 700 : 400,
           textDecoration: 'none' as const
-      });  
+      });
   const [isOpen, setIsOpen] = useState(false);
   
   
@@ -30,7 +31,7 @@ export function Header() {
       alignItems: 'center',
       padding: '12px 24px',
       borderBottom: '1px solid var(--border)', 
-        background: 'var(--triply-primary)',
+        background: 'var(--triply-navyDarkest)',
         color: 'white'
     }}>
         <NavLink to="/" style={{textDecoration: 'none'}}>
