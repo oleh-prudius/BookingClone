@@ -25,7 +25,8 @@ public class CreateHotelHandler(IHotelRepository hotelRepository)
             ArrivalTimeUtcTo = request.ArrivalTimeUtcTo,
             DepartureTimeUtcFrom = request.DepartureTimeUtcFrom,
             DepartureTimeUtcTo = request.DepartureTimeUtcTo,
-            IsArchived = false
+            IsArchived = false,
+            StarRating = request.StarRating
         };
 
         var created = await hotelRepository.AddAsync(hotel);

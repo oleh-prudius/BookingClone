@@ -19,6 +19,9 @@ public class Hotel {
 
 	public bool IsArchived { get; set; }
 
+	/// Official hotel classification (1-5 stars), independent of guest review scores.
+	public int StarRating { get; set; }
+
 	public long AddressId { get; set; }
 	public Address Address { get; set; } = null!;
 

@@ -25,6 +25,7 @@ export interface Hotel {
   hotelCategoryName: string;
   realtorId: number;
   isArchived: boolean;
+  starRating: number;
   arrivalTimeUtcFrom: string;
   arrivalTimeUtcTo: string;
   departureTimeUtcFrom: string;

@@ -12,6 +12,7 @@ public class HotelDto
     public string HotelCategoryName { get; set; } = string.Empty;
     public long RealtorId { get; set; }
     public bool IsArchived { get; set; }
+    public int StarRating { get; set; }
     public string? CoverPhotoUrl { get; set; }
     public double? Rating { get; set; }
     public int ReviewCount { get; set; }

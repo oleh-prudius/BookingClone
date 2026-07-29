@@ -15,5 +15,8 @@ internal class HotelEntityTypeConfiguration : IEntityTypeConfiguration<Hotel> {
 		builder.Property(h => h.Description)
 			.HasMaxLength(4000)
 			.IsRequired();
+
+		builder.Property(h => h.StarRating)
+			.HasDefaultValue(3);
 	}
 }

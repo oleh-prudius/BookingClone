@@ -343,7 +343,8 @@ public class DbInitializer(
 			IsArchived            = false,
 			AddressId             = address.Id,
 			HotelCategoryId       = category.Id,
-			RealtorId             = realtor.Id
+			RealtorId             = realtor.Id,
+			StarRating            = 4
 		};
 		await context.Hotels.AddAsync(hotel, ct);
 		await context.SaveChangesAsync(ct);
@@ -463,7 +464,8 @@ public class DbInitializer(
 		string CategoryName,
 		string Description,
 		string[] AmenityNames,
-		(string RoomName, string RoomTypeName, int Quantity, (decimal Price, decimal? DiscountPrice, int Adults, int Children) Variant)[] Rooms);
+		(string RoomName, string RoomTypeName, int Quantity, (decimal Price, decimal? DiscountPrice, int Adults, int Children) Variant)[] Rooms,
+		int StarRating);
 
 	private async Task SeedMoreHotelsAsync(CancellationToken ct)
 	{
@@ -471,48 +473,57 @@ public class DbInitializer(
 		[
 			new("Lviv Old Town Boutique Hotel", "Lviv", "Hotel",
 				"A charming boutique hotel steps away from Lviv's historic old town.",
-				["Wi-Fi", "Restaurant", "Air Conditioning"], 
-				[("Standard Room", "Standard", 8, (55m, null, 2, 0)), ("Suite", "Suite", 3, (110m, 95m, 2, 1))]),
+				["Wi-Fi", "Restaurant", "Air Conditioning"],
+				[("Standard Room", "Standard", 8, (55m, null, 2, 0)), ("Suite", "Suite", 3, (110m, 95m, 2, 1))],
+				3),
 
 			new("Le Marais Suites", "Paris", "Apartment",
 				"Stylish apartments in the heart of Paris' Le Marais district.",
-				["Wi-Fi", "Air Conditioning", "Pet Friendly"], 
-				[("Studio", "Standard", 6, (140m, null, 2, 0)), ("One-Bedroom Suite", "Suite", 4, (210m, 180m, 2, 2))]),
+				["Wi-Fi", "Air Conditioning", "Pet Friendly"],
+				[("Studio", "Standard", 6, (140m, null, 2, 0)), ("One-Bedroom Suite", "Suite", 4, (210m, 180m, 2, 2))],
+				4),
 
 			new("Roma Colosseo Hotel", "Rome", "Hotel",
 				"Elegant hotel with views of the Colosseum and classic Roman hospitality.",
-				["Wi-Fi", "Pool", "Restaurant", "Gym"], 
-				[("Superior Room", "Superior", 10, (130m, null, 2, 1)), ("Deluxe Room", "Deluxe", 5, (190m, 160m, 2, 1))]),
+				["Wi-Fi", "Pool", "Restaurant", "Gym"],
+				[("Superior Room", "Superior", 10, (130m, null, 2, 1)), ("Deluxe Room", "Deluxe", 5, (190m, 160m, 2, 1))],
+				4),
 
 			new("Barcelona Beachfront Resort", "Barcelona", "Resort",
 				"A relaxed beachfront resort with direct access to the Mediterranean coast.",
-				["Pool", "Beach Access", "Spa", "Restaurant"], 
-				[("Sea View Room", "Superior", 12, (160m, 140m, 2, 2)), ("Family Suite", "Suite", 4, (240m, null, 4, 2))]),
+				["Pool", "Beach Access", "Spa", "Restaurant"],
+				[("Sea View Room", "Superior", 12, (160m, 140m, 2, 2)), ("Family Suite", "Suite", 4, (240m, null, 4, 2))],
+				5),
 
 			new("Bosphorus View Hotel", "Istanbul", "Hotel",
 				"Modern hotel overlooking the Bosphorus, minutes from Istanbul's old city.",
-				["Wi-Fi", "Restaurant", "Airport Shuttle"], 
-				[("Standard Room", "Standard", 10, (70m, null, 2, 0)), ("Deluxe Room", "Deluxe", 6, (115m, 95m, 2, 1))]),
+				["Wi-Fi", "Restaurant", "Airport Shuttle"],
+				[("Standard Room", "Standard", 10, (70m, null, 2, 0)), ("Deluxe Room", "Deluxe", 6, (115m, 95m, 2, 1))],
+				3),
 
 			new("Dubai Marina Towers", "Dubai", "Resort",
 				"Luxury high-rise resort in Dubai Marina with skyline and sea views.",
-				["Pool", "Spa", "Gym", "Air Conditioning", "Airport Shuttle"], 
-				[("Deluxe Room", "Deluxe", 8, (220m, null, 2, 1)), ("Executive Suite", "Suite", 3, (380m, 340m, 2, 2))]),
+				["Pool", "Spa", "Gym", "Air Conditioning", "Airport Shuttle"],
+				[("Deluxe Room", "Deluxe", 8, (220m, null, 2, 1)), ("Executive Suite", "Suite", 3, (380m, 340m, 2, 2))],
+				5),
 
 			new("Bangkok Riverside Hostel", "Bangkok", "Hostel",
 				"Budget-friendly hostel on the Chao Phraya riverside, popular with backpackers.",
-				["Wi-Fi", "Air Conditioning"], 
-				[("Economy Room", "Economy", 15, (25m, null, 1, 0)), ("Standard Room", "Standard", 8, (40m, 35m, 2, 0))]),
+				["Wi-Fi", "Air Conditioning"],
+				[("Economy Room", "Economy", 15, (25m, null, 1, 0)), ("Standard Room", "Standard", 8, (40m, 35m, 2, 0))],
+				1),
 
 			new("Santorini Cliffside Villas", "Santorini", "Villa",
 				"Whitewashed cliffside villas overlooking the Aegean Sea and caldera sunsets.",
-				["Pool", "Beach Access", "Wi-Fi", "Spa"], 
-				[("Caldera View Villa", "Deluxe", 4, (280m, 250m, 2, 2)), ("Honeymoon Suite", "Suite", 2, (350m, null, 2, 0))]),
+				["Pool", "Beach Access", "Wi-Fi", "Spa"],
+				[("Caldera View Villa", "Deluxe", 4, (280m, 250m, 2, 2)), ("Honeymoon Suite", "Suite", 2, (350m, null, 2, 0))],
+				5),
 
 			new("Dubrovnik Old City Hotel", "Dubrovnik", "Hotel",
 				"Historic hotel within Dubrovnik's ancient city walls, near the Adriatic coast.",
-				["Wi-Fi", "Restaurant", "Air Conditioning"], 
-				[("Standard Room", "Standard", 9, (90m, null, 2, 0)), ("Superior Room", "Superior", 5, (130m, 115m, 2, 1))]),
+				["Wi-Fi", "Restaurant", "Air Conditioning"],
+				[("Standard Room", "Standard", 9, (90m, null, 2, 0)), ("Superior Room", "Superior", 5, (130m, 115m, 2, 1))],
+				4),
 		];
 
 		var realtor = await userManager.FindByEmailAsync("realtor@booking.test")
@@ -548,7 +559,8 @@ public class DbInitializer(
 				IsArchived = false,
 				AddressId = address.Id,
 				HotelCategoryId = category.Id,
-				RealtorId = realtor.Id
+				RealtorId = realtor.Id,
+				StarRating = spec.StarRating
 			};
 			await context.Hotels.AddAsync(hotel, ct);
 			await context.SaveChangesAsync(ct);

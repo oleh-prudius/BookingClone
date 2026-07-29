@@ -22,6 +22,9 @@ export function HotelCreate() {
         <Form.Item label="Realtor ID" name="realtorId" rules={[{ required: true }]}>
           <InputNumber style={{ width: '100%' }} min={1} />
         </Form.Item>
+        <Form.Item label="Star Rating" name="starRating" initialValue={3} rules={[{ required: true }]}>
+          <InputNumber style={{ width: '100%' }} min={1} max={5} />
+        </Form.Item>
         <Form.Item label="Arrival From (ISO)" name="arrivalTimeUtcFrom" rules={[{ required: true }]}>
           <Input placeholder="2000-01-01T14:00:00+00:00" />
         </Form.Item>

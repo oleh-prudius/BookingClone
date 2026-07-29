@@ -1,6 +1,6 @@
 import { Card, Rate, Tag, Typography } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { EnvironmentOutlined, HeartOutlined, HeartFilled } from '@ant-design/icons';
+import { EnvironmentOutlined, HeartOutlined, HeartFilled, StarFilled } from '@ant-design/icons';
 import type { Hotel } from '@shared/types';
 import { AppButton } from '@shared/ui';
 import { toStars } from '@shared/lib/rating';
@@ -14,6 +14,12 @@ interface Props {
 
 export function HotelCard({ hotel, variant = 'grid', isFavorite, onToggleFavorite }: Props) {
   const navigate = useNavigate();
+
+  const starClassBlock = hotel.starRating > 0 && (
+    <span aria-label={`${hotel.starRating}-star hotel`} style={{ color: '#faad14', fontSize: 12, letterSpacing: 1 }}>
+      {Array.from({ length: hotel.starRating }, (_, i) => <StarFilled key={i} />)}
+    </span>
+  );
 
   const ratingBlock = hotel.rating != null
     ? <Rate disabled allowHalf defaultValue={toStars(hotel.rating)} style={{ fontSize: 14 }} />
@@ -69,7 +75,12 @@ export function HotelCard({ hotel, variant = 'grid', isFavorite, onToggleFavorit
 
           <div style={{ flex: 1, minWidth: 220, padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <div>
-              <div style={{ fontSize: 18, fontWeight: 600 }}>{hotel.name}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+                <div style={{ fontSize: 18, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
+                  {hotel.name}
+                </div>
+                {starClassBlock && <span style={{ flexShrink: 0 }}>{starClassBlock}</span>}
+              </div>
               <div style={{ color: 'var(--text)', marginTop: 4 }}>
                 <EnvironmentOutlined /> {hotel.cityName}, {hotel.countryName}
               </div>
@@ -118,7 +129,14 @@ export function HotelCard({ hotel, variant = 'grid', isFavorite, onToggleFavorit
       }
     >
       <Card.Meta
-        title={hotel.name}
+        title={
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
+              {hotel.name}
+            </span>
+            {starClassBlock && <span style={{ flexShrink: 0 }}>{starClassBlock}</span>}
+          </div>
+        }
         description={
           <span>
             <EnvironmentOutlined /> {hotel.cityName}, {hotel.countryName}
