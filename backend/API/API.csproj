@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>69bd0f20-2397-494a-824e-4ffa454fa294</UserSecretsId>
     <AllowMissingPrunePackageData>true</AllowMissingPrunePackageData>
-    <Version>0.2.2</Version>
+    <Version>0.2.3</Version>
   </PropertyGroup>
 
   <ItemGroup>
