@@ -5,6 +5,7 @@ public class HotelDto
     public long Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
+    public long AddressId { get; set; }
     public string CityName { get; set; } = string.Empty;
     public string CountryName { get; set; } = string.Empty;
     public string Street { get; set; } = string.Empty;

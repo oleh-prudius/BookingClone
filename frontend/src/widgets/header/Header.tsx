@@ -54,9 +54,14 @@ export function Header() {
 
       <div className='desktop-nav' style={{ marginLeft: 'auto', gap: 12, alignItems: 'center' }}>
           {isAuthenticated ? (
-            <NavLink to="/profile" style={navLinkStyle}>
-              {user!.firstName} {user!.lastName}
-            </NavLink>
+            <>
+              {user!.roles.includes('Realtor') && (
+                <NavLink to="/host" style={navLinkStyle}>My hotels</NavLink>
+              )}
+              <NavLink to="/profile" style={navLinkStyle}>
+                {user!.firstName} {user!.lastName}
+              </NavLink>
+            </>
           ) : (
             <>
               <Button ghost shape="round" href="/register">Registration</Button>
@@ -86,7 +91,10 @@ export function Header() {
         </nav>
         <div style={{marginTop:24, display:'flex', flexDirection:'column', gap:12}}>
             {isAuthenticated ? (
-                <Button href="/profile">My account</Button>
+                <>
+                    {user!.roles.includes('Realtor') && <Button href="/host">My hotels</Button>}
+                    <Button href="/profile">My account</Button>
+                </>
             ) : (
                 <>
                 <Button href='/login'>Sign in</Button>

@@ -10,6 +10,7 @@ internal static class HotelMappings
         Id = h.Id,
         Name = h.Name,
         Description = h.Description,
+        AddressId = h.AddressId,
         CityName = h.Address?.City?.Name ?? string.Empty,
         CountryName = h.Address?.City?.Country?.Name ?? string.Empty,
         Street = h.Address is not null ? $"{h.Address.Street} {h.Address.HouseNumber}" : string.Empty,

@@ -12,6 +12,7 @@ import { RegisterPage } from '@pages/register';
 import { ProfilePage } from '@pages/profile';
 import { MyBookingsPage } from '@pages/my-bookings';
 import { FavoritesPage } from '@pages/favorites';
+import { HostDashboardPage, HostHotelDetailPage } from '@pages/host';
 import { ConfirmEmailPage } from '@pages/confirm-email';
 import { ForgotPasswordPage } from '@pages/forgot-password';
 import { ResetPasswordPage } from '@pages/reset-password';
@@ -45,6 +46,8 @@ export default function App() {
                     <Route path="/profile" element={<ProfilePage />} />
                     <Route path="/my-bookings" element={<MyBookingsPage />} />
                     <Route path="/favorites" element={<FavoritesPage />} />
+                    <Route path="/host" element={<HostDashboardPage />} />
+                    <Route path="/host/hotels/:id" element={<HostHotelDetailPage />} />
                     <Route path="/ui-kit" element={<UiKitPage />} />
                     <Route path="*" element={<Page404 />} />
                   </Routes>
