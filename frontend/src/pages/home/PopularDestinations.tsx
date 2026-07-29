@@ -56,7 +56,16 @@ export function PopularDestinations() {
         {destinations.map((d) => (
           <div
             key={d.cityName}
+            role="button"
+            tabIndex={0}
+            aria-label={`Search hotels in ${d.cityName}`}
             onClick={() => navigate(`/hotels?destination=${encodeURIComponent(d.cityName)}`)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                navigate(`/hotels?destination=${encodeURIComponent(d.cityName)}`);
+              }
+            }}
             style={{ cursor: 'pointer', borderRadius: 8, overflow: 'hidden', position: 'relative' }}
           >
             <img

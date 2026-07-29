@@ -41,7 +41,16 @@ export function PropertyTypes() {
           <Card
             key={c.id}
             hoverable
+            role="button"
+            tabIndex={0}
+            aria-label={`Browse ${c.name} hotels`}
             onClick={() => navigate(`/hotels?categoryIds=${c.id}`)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                navigate(`/hotels?categoryIds=${c.id}`);
+              }
+            }}
             style={{ textAlign: 'center' }}
           >
             {ICONS_BY_NAME[c.name] ?? <ApartmentOutlined style={{ fontSize: 28 }} />}

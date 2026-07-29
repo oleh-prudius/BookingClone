@@ -87,7 +87,16 @@ export function MyBookingsPage() {
         renderItem={(b) => (
           <List.Item
             style={{ cursor: 'pointer' }}
+            role="button"
+            tabIndex={0}
+            aria-label={`View details for booking at ${hotelNames[b.hotelId] ?? `hotel #${b.hotelId}`}`}
             onClick={() => setSelected(b)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setSelected(b);
+              }
+            }}
             actions={CANCELLABLE_STATUSES.includes(b.status) ? [
               <AppButton
                 key="cancel"
