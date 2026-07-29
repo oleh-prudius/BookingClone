@@ -92,6 +92,65 @@ public class DbInitializer(
 		await SeedTestHotelAsync(ct);
 		await SeedGrandKyivPhotosAsync(ct);
 		await SeedMoreHotelsAsync(ct);
+		await SeedPlacesAsync(ct);
+	}
+
+	private async Task SeedPlacesAsync(CancellationToken ct)
+	{
+		if (await context.Places.AnyAsync(ct))
+			return;
+
+		var kyiv = await context.Cities.FirstOrDefaultAsync(c => c.Name == "Kyiv", ct);
+		var paris = await context.Cities.FirstOrDefaultAsync(c => c.Name == "Paris", ct);
+		var rome = await context.Cities.FirstOrDefaultAsync(c => c.Name == "Rome", ct);
+		var bangkok = await context.Cities.FirstOrDefaultAsync(c => c.Name == "Bangkok", ct);
+
+		var places = new List<Place>();
+
+		if (kyiv is not null)
+		{
+			places.AddRange([
+				new Place { Name = "Saint Sophia Cathedral", Category = PlaceCategories.Landmark, Latitude = 50.4526, Longitude = 30.5147, CityId = kyiv.Id },
+				new Place { Name = "Mystetskyi Arsenal",     Category = PlaceCategories.Museum,   Latitude = 50.4425, Longitude = 30.5461, CityId = kyiv.Id },
+				new Place { Name = "Mariinsky Park",         Category = PlaceCategories.Park,     Latitude = 50.4477, Longitude = 30.5442, CityId = kyiv.Id },
+				new Place { Name = "Ostannya Barykada",      Category = PlaceCategories.Restaurant, Latitude = 50.4488, Longitude = 30.5238, CityId = kyiv.Id },
+				new Place { Name = "TSUM Kyiv",              Category = PlaceCategories.Shopping, Latitude = 50.4479, Longitude = 30.5236, CityId = kyiv.Id },
+			]);
+		}
+
+		if (paris is not null)
+		{
+			places.AddRange([
+				new Place { Name = "Eiffel Tower",   Category = PlaceCategories.Landmark, Latitude = 48.8584, Longitude = 2.2945, CityId = paris.Id },
+				new Place { Name = "Louvre Museum",  Category = PlaceCategories.Museum,   Latitude = 48.8606, Longitude = 2.3376, CityId = paris.Id },
+				new Place { Name = "Jardin du Luxembourg", Category = PlaceCategories.Park, Latitude = 48.8462, Longitude = 2.3372, CityId = paris.Id },
+				new Place { Name = "Le Comptoir du Relais", Category = PlaceCategories.Restaurant, Latitude = 48.8523, Longitude = 2.3389, CityId = paris.Id },
+			]);
+		}
+
+		if (rome is not null)
+		{
+			places.AddRange([
+				new Place { Name = "Colosseum",      Category = PlaceCategories.Landmark, Latitude = 41.8902, Longitude = 12.4922, CityId = rome.Id },
+				new Place { Name = "Vatican Museums", Category = PlaceCategories.Museum,  Latitude = 41.9065, Longitude = 12.4536, CityId = rome.Id },
+				new Place { Name = "Villa Borghese", Category = PlaceCategories.Park,     Latitude = 41.9142, Longitude = 12.4845, CityId = rome.Id },
+			]);
+		}
+
+		if (bangkok is not null)
+		{
+			places.AddRange([
+				new Place { Name = "Grand Palace",   Category = PlaceCategories.Landmark, Latitude = 13.7500, Longitude = 100.4914, CityId = bangkok.Id },
+				new Place { Name = "Chatuchak Market", Category = PlaceCategories.Shopping, Latitude = 13.7999, Longitude = 100.5500, CityId = bangkok.Id },
+				new Place { Name = "Lumpini Park",   Category = PlaceCategories.Park,     Latitude = 13.7307, Longitude = 100.5418, CityId = bangkok.Id },
+			]);
+		}
+
+		if (places.Count > 0)
+		{
+			await context.Places.AddRangeAsync(places, ct);
+			await context.SaveChangesAsync(ct);
+		}
 	}
 
 	private async Task SeedCountriesAndCitiesAsync(CancellationToken ct)

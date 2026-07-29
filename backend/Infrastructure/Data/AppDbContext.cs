@@ -62,6 +62,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<HotelReview> HotelReviews { get; set; } = null!;
     public DbSet<FavoriteHotel> FavoriteHotels { get; set; } = null!;
     public DbSet<Notification> Notifications { get; set; } = null!;
+    public DbSet<Place> Places { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
