@@ -7,13 +7,9 @@ import { BellOutlined, UserOutlined, SendOutlined, MenuOutlined } from '@ant-des
 
 
 export function Header() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
-  
+
   const iconStyle = { fontSize: 18 as const, cursor: 'pointer' as const};
   const navLinkStyle = ({isActive}: {isActive:boolean} )=> ({
           color: 'inherit' as const,
@@ -54,28 +50,22 @@ export function Header() {
         />
         
       <div className='desktop-nav' style={{ marginLeft: 'auto', gap: 12, alignItems: 'center' }}>
-          <Button ghost shape="round" href="/register">Registration</Button>
-          
           {isAuthenticated ? (
-          <>
             <NavLink to="/profile" style={navLinkStyle}>
               {user!.firstName} {user!.lastName}
             </NavLink>
-            <button
-              onClick={handleLogout}
-              style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 4, padding: '4px 10px', cursor: 'pointer' }}
-            >
-              Sign out
-            </button>
-          </>
-        ) : (
-          <>
+          ) : (
+            <>
+              <Button ghost shape="round" href="/register">Registration</Button>
               <Button ghost shape="round" href="/login">Sign in</Button>
-          </>
-        )}
+            </>
+          )}
           <SendOutlined style={iconStyle}/>
           <BellOutlined style={iconStyle}/>
-          <UserOutlined style={iconStyle}/>
+          <UserOutlined
+            style={iconStyle}
+            onClick={() => navigate(isAuthenticated ? '/profile' : '/login')}
+          />
       </div>
     </header>
           
@@ -89,7 +79,7 @@ export function Header() {
         </nav>
         <div style={{marginTop:24, display:'flex', flexDirection:'column', gap:12}}>
             {isAuthenticated ? (
-                <button onClick={handleLogout}>Sign out</button>    
+                <Button href="/profile">My account</Button>
             ) : (
                 <>
                 <Button href='/login'>Sign in</Button>

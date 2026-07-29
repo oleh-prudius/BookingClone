@@ -41,7 +41,6 @@ export function ProfileForm({ onSuccess }: Props) {
 
   return (
     <form onSubmit={onSubmit} style={{ display: 'grid', gap: 8, maxWidth: 320 }}>
-      <h2>Update profile</h2>
       <input placeholder="Email" type="email" value={form.email} onChange={upd('email')} required />
       <input placeholder="Username" value={form.userName} onChange={upd('userName')} required minLength={3} />
       <input placeholder="First name" value={form.firstName} onChange={upd('firstName')} required />
