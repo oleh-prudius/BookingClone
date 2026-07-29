@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { tokenStorage, refreshTokenStorage, userStorage } from '@shared/lib/tokenStorage';
 import type { User } from '@shared/types';
 import { userApi } from '@entities/user';
@@ -19,6 +20,7 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(() => userStorage.get());
   const [loading, setLoading] = useState(false);
 
@@ -40,9 +42,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const handler = () => setUser(null);
+    const handler = () => {
+      setUser(null);
+      navigate('/login');
+    };
     window.addEventListener('auth:logout', handler);
     return () => window.removeEventListener('auth:logout', handler);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const applyAuthResponse = (data: { token: string; refreshToken: string; user: User }) => {

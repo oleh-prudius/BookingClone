@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { API_BASE_URL } from '@shared/config/env';
 import { tokenStorage } from '@shared/lib/tokenStorage';
+import { notifyError } from '@shared/lib/notify';
 
 export const httpClient = axios.create({
   baseURL: API_BASE_URL,
@@ -23,10 +24,22 @@ httpClient.interceptors.request.use((config) => {
 httpClient.interceptors.response.use(
   (response) => response,
   (error: unknown) => {
-    if (axios.isAxiosError(error) && error.response?.status === 401) {
-      tokenStorage.clear();
-      window.dispatchEvent(new Event('auth:logout'));
+    if (!axios.isAxiosError(error)) {
+      return Promise.reject(error);
     }
+
+    const status = error.response?.status;
+
+    if (status === 401) {
+      tokenStorage.clear();
+      notifyError('Your session has expired. Please log in again.');
+      window.dispatchEvent(new Event('auth:logout'));
+    } else if (status === undefined) {
+      notifyError('Network error. Please check your connection.');
+    } else if (status >= 500) {
+      notifyError('Something went wrong on our end. Please try again later.');
+    }
+
     return Promise.reject(error);
   },
 );
