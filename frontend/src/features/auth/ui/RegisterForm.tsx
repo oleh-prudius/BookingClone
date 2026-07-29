@@ -1,4 +1,4 @@
-import { Form, Input, Alert, Row, Col } from 'antd';
+import { Form, Input, Alert, Row, Col, Segmented } from 'antd';
 import { MailOutlined, UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import { useAuth } from '../model/AuthContext';
@@ -35,8 +35,25 @@ export function RegisterForm({ onSuccess }: Props) {
   };
 
   return (
-    <Form layout="vertical" onFinish={onFinish} requiredMark={false} autoComplete="on">
+    <Form
+      layout="vertical"
+      onFinish={onFinish}
+      requiredMark={false}
+      autoComplete="on"
+      initialValues={{ accountType: 'Customer' }}
+    >
       {error && <Alert type="error" message={error} showIcon style={{ marginBottom: 16 }} />}
+
+      <Form.Item label="I want to" name="accountType">
+        <Segmented
+          block
+          size="large"
+          options={[
+            { label: 'Book stays', value: 'Customer' },
+            { label: 'List my property', value: 'Realtor' },
+          ]}
+        />
+      </Form.Item>
 
       <Form.Item
         label="Email"

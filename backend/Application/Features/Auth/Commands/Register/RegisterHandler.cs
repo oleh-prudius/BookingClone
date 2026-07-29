@@ -28,20 +28,29 @@ public class RegisterHandler(
         if (await userManager.FindByNameAsync(dto.UserName) is not null)
             return Error.Conflict("Username is already taken.");
 
-        var user = new Customer
-        {
-            Email = dto.Email,
-            UserName = dto.UserName,
-            FirstName = dto.FirstName,
-            LastName = dto.LastName,
-            Photo = "default.jpg"
-        };
+        AppUser user = dto.AccountType == Roles.Realtor
+            ? new Realtor
+            {
+                Email = dto.Email,
+                UserName = dto.UserName,
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                Photo = "default.jpg"
+            }
+            : new Customer
+            {
+                Email = dto.Email,
+                UserName = dto.UserName,
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                Photo = "default.jpg"
+            };
 
         var createResult = await userManager.CreateAsync(user, dto.Password);
         if (!createResult.Succeeded)
             return Error.Validation(string.Join("; ", createResult.Errors.Select(e => e.Description)));
 
-        var roleResult = await userManager.AddToRoleAsync(user, Roles.Customer);
+        var roleResult = await userManager.AddToRoleAsync(user, dto.AccountType);
         if (!roleResult.Succeeded)
             return Error.Unexpected(string.Join("; ", roleResult.Errors.Select(e => e.Description)));
 

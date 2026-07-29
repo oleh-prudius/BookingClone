@@ -34,6 +34,7 @@ public class CreateHotelHandler(IHotelRepository hotelRepository, ICurrentUserSe
         };
 
         var created = await hotelRepository.AddAsync(hotel, ct);
-        return HotelMappings.MapToDto(created);
+        var withIncludes = await hotelRepository.GetByIdAsync(created.Id, ct);
+        return HotelMappings.MapToDto(withIncludes!);
     }
 }

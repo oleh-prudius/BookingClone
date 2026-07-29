@@ -34,7 +34,9 @@ public class CreateHotelHandlerTests
     {
         var repo = new Mock<IHotelRepository>();
         repo.Setup(r => r.AddAsync(It.IsAny<Hotel>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Hotel h, CancellationToken _) => WithEmptyNavigations(h));
+            .ReturnsAsync((Hotel h, CancellationToken _) => { h.Id = 42; return h; });
+        repo.Setup(r => r.GetByIdAsync(42, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((long id, CancellationToken _) => WithEmptyNavigations(new Hotel { Id = id, RealtorId = 17 }));
 
         var currentUser = new Mock<ICurrentUserService>();
         currentUser.Setup(x => x.GetUserId()).Returns(17L);
@@ -54,7 +56,9 @@ public class CreateHotelHandlerTests
     {
         var repo = new Mock<IHotelRepository>();
         repo.Setup(r => r.AddAsync(It.IsAny<Hotel>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Hotel h, CancellationToken _) => WithEmptyNavigations(h));
+            .ReturnsAsync((Hotel h, CancellationToken _) => { h.Id = 42; return h; });
+        repo.Setup(r => r.GetByIdAsync(42, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((long id, CancellationToken _) => WithEmptyNavigations(new Hotel { Id = id, RealtorId = 999 }));
 
         var currentUser = new Mock<ICurrentUserService>();
         currentUser.Setup(x => x.GetUserId()).Returns(1L);

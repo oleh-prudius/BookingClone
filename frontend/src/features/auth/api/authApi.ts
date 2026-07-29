@@ -12,6 +12,7 @@ export interface RegisterDto {
   password: string;
   firstName: string;
   lastName: string;
+  accountType: 'Customer' | 'Realtor';
 }
 
 export interface UpdateProfileDto {
