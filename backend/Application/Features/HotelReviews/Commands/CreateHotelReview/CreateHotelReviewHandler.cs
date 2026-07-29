@@ -31,6 +31,7 @@ public class CreateHotelReviewHandler(
             CreatedAtUtc = DateTime.UtcNow
         };
         var created = await repository.AddAsync(entity, ct);
+        created.Booking = booking;
         return HotelReviewMappings.MapToDto(created);
     }
 }

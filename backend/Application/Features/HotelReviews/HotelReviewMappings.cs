@@ -11,6 +11,7 @@ internal static class HotelReviewMappings
         Description = e.Description,
         Score = e.Score,
         BookingId = e.BookingId,
+        AuthorName = e.Booking?.Customer is { } customer ? $"{customer.FirstName} {customer.LastName}" : string.Empty,
         CreatedAtUtc = e.CreatedAtUtc,
         UpdatedAtUtc = e.UpdatedAtUtc
     };
