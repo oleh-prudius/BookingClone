@@ -2,13 +2,18 @@ using Application.DTOs;
 using Application.Interfaces;
 using Domain.Common;
 using Domain.Constants;
+using Domain.Entities;
 using Domain.Enums;
 using Domain.Interfaces;
+using Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Application.Features.Bookings.Commands.ChangeBookingStatus;
 
-public class ChangeBookingStatusHandler(IBookingRepository bookingRepository, ICurrentUserService currentUser)
+public class ChangeBookingStatusHandler(
+    IBookingRepository bookingRepository,
+    INotificationRepository notificationRepository,
+    ICurrentUserService currentUser)
     : IRequestHandler<ChangeBookingStatusCommand, Result<BookingDto>>
 {
     public async Task<Result<BookingDto>> Handle(ChangeBookingStatusCommand request, CancellationToken ct)
@@ -35,6 +40,18 @@ public class ChangeBookingStatusHandler(IBookingRepository bookingRepository, IC
             booking.ConfirmedAtUtc = DateTimeOffset.UtcNow;
 
         await bookingRepository.UpdateAsync(booking);
+
+        if (request.NewStatus == BookingStatus.Confirmed)
+        {
+            await notificationRepository.AddAsync(new Notification
+            {
+                UserId = booking.CustomerId,
+                Type = NotificationTypes.BookingConfirmed,
+                Message = $"Your booking #{booking.Id} has been confirmed.",
+                CreatedAtUtc = DateTimeOffset.UtcNow
+            }, ct);
+        }
+
         return BookingMappings.MapToDto(booking);
     }
 

@@ -43,6 +43,7 @@ public static class DependencyInjection
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IRoomRepository, RoomRepository>();
         services.AddScoped<IFavoriteHotelRepository, FavoriteHotelRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<IBankCardRepository, BankCardRepository>();
         services.AddScoped<IChatRepository, ChatRepository>();
         services.AddScoped<IHotelPhotoRepository, HotelPhotoRepository>();
