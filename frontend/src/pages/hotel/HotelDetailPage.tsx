@@ -7,6 +7,8 @@ import { hotelPhotoApi, type HotelPhoto } from '@entities/hotel-photo';
 import { MapPanel } from '@widgets/hotel-map';
 import type { Hotel } from '@shared/types';
 import { AppButton } from '@shared/ui';
+import { toStars } from '@shared/lib/rating';
+import { ReviewsSection } from './ReviewsSection';
 
 export function HotelDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -17,6 +19,12 @@ export function HotelDetailPage() {
   const [photos, setPhotos] = useState<HotelPhoto[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+
+  const reloadHotel = () => {
+    hotelApi.getById(hotelId)
+      .then((h) => setHotel(h))
+      .catch(() => setNotFound(true));
+  };
 
   useEffect(() => {
     if (!Number.isFinite(hotelId)) {
@@ -35,6 +43,7 @@ export function HotelDetailPage() {
     hotelPhotoApi.getByHotelId(hotelId)
       .then((p) => setPhotos(p.sort((a, b) => a.priority - b.priority)))
       .catch(() => setPhotos([]));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hotelId]);
 
   if (loading) {
@@ -79,7 +88,7 @@ export function HotelDetailPage() {
           </Typography.Text>
           <div style={{ marginTop: 8 }}>
             {hotel.rating != null
-              ? <Rate disabled allowHalf defaultValue={hotel.rating} />
+              ? <Rate disabled allowHalf defaultValue={toStars(hotel.rating)} />
               : <Tag>No reviews yet</Tag>}
           </div>
         </div>
@@ -116,7 +125,7 @@ export function HotelDetailPage() {
       </div>
 
       <Typography.Title level={4}>Reviews</Typography.Title>
-      <Empty description="No reviews yet" style={{ margin: '16px 0' }} />
+      <ReviewsSection hotelId={hotel.id} onReviewSubmitted={reloadHotel} />
     </section>
   );
 }
