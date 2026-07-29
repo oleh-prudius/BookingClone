@@ -22,7 +22,7 @@ export function HotelCard({ hotel }: Props) {
           style={{ height: 200, objectFit: 'cover' }}
         />
       }
-      style={{ width: 320 }}
+      style={{ width: '100%' }}
     >
       <Card.Meta
         title={hotel.name}

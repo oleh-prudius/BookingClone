@@ -104,7 +104,7 @@ export function HotelsPage() {
           <FiltersSidebar value={filters} onChange={setFilters} />
         </Col>
 
-        <Col xs={24} lg={12}>
+        <Col xs={24} lg={18}>
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -123,24 +123,20 @@ export function HotelsPage() {
           {error && <Alert type="error" message={error} style={{ marginBottom: 16 }} />}
           {!loading && !error && hotels.length === 0 && <Empty description="No hotels found" />}
 
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 16,
-            maxHeight: 'calc(100vh - 220px)',
-            overflowY: 'auto',
-            paddingRight: 4,
-          }}>
+          <Row gutter={[16, 16]}>
             {hotels.map((h) => (
-              <div
+              <Col
                 key={h.id}
+                xs={24}
+                sm={12}
+                lg={8}
                 onMouseEnter={() => setHoveredHotelId(h.id)}
                 onMouseLeave={() => setHoveredHotelId((id) => (id === h.id ? null : id))}
               >
                 <HotelCard hotel={h} />
-              </div>
+              </Col>
             ))}
-          </div>
+          </Row>
 
           {total > PAGE_SIZE && (
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: 24 }}>
@@ -154,11 +150,11 @@ export function HotelsPage() {
             </div>
           )}
         </Col>
-
-        <Col xs={0} lg={6}>
-          <MapPanel hotels={hotels} hoveredHotelId={hoveredHotelId} />
-        </Col>
       </Row>
+
+      <div style={{ marginTop: 24 }}>
+        <MapPanel hotels={hotels} hoveredHotelId={hoveredHotelId} height="400px" sticky={false} />
+      </div>
     </section>
   );
 }

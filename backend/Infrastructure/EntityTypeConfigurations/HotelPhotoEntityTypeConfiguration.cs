@@ -9,7 +9,7 @@ internal class HotelPhotoEntityTypeConfiguration : IEntityTypeConfiguration<Hote
 		builder.ToTable("HotelPhotos");
 
 		builder.Property(hp => hp.Name)
-			.HasMaxLength(255)
+			.HasMaxLength(1000)
 			.IsRequired();
 	}
 }
