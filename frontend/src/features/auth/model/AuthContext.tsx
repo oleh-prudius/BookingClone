@@ -62,8 +62,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const updateProfile = async (dto: UpdateProfileDto) => {
-    const data = await authApi.updateProfile(dto);
-    applyAuthResponse(data);
+    const updatedUser = await authApi.updateProfile(dto);
+    userStorage.set(updatedUser);
+    setUser(updatedUser);
   };
 
   const logout = () => {

@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import type { FormEvent } from 'react';
+import { Form, Input, Row, Col, Alert } from 'antd';
+import { UserOutlined, MailOutlined, IdcardOutlined } from '@ant-design/icons';
 import { useAuth } from '../model/AuthContext';
 import type { UpdateProfileDto } from '../api/authApi';
+import { AppButton } from '@shared/ui';
 
 interface Props {
   onSuccess?: () => void;
@@ -9,23 +11,16 @@ interface Props {
 
 export function ProfileForm({ onSuccess }: Props) {
   const { user, updateProfile } = useAuth();
-  const [form, setForm] = useState<UpdateProfileDto>({
-    email: user?.email ?? '',
-    userName: user?.userName ?? '',
-    firstName: user?.firstName ?? '',
-    lastName: user?.lastName ?? '',
-  });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [busy, setBusy] = useState(false);
 
-  const onSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (values: UpdateProfileDto) => {
     setError(null);
     setSuccess(false);
     setBusy(true);
     try {
-      await updateProfile(form);
+      await updateProfile(values);
       setSuccess(true);
       onSuccess?.();
     } catch (err: unknown) {
@@ -36,18 +31,56 @@ export function ProfileForm({ onSuccess }: Props) {
     }
   };
 
-  const upd = (k: keyof UpdateProfileDto) => (e: React.ChangeEvent<HTMLInputElement>) =>
-    setForm({ ...form, [k]: e.target.value });
-
   return (
-    <form onSubmit={onSubmit} style={{ display: 'grid', gap: 8, maxWidth: 320 }}>
-      <input placeholder="Email" type="email" value={form.email} onChange={upd('email')} required />
-      <input placeholder="Username" value={form.userName} onChange={upd('userName')} required minLength={3} />
-      <input placeholder="First name" value={form.firstName} onChange={upd('firstName')} required />
-      <input placeholder="Last name" value={form.lastName} onChange={upd('lastName')} required />
-      {error && <div style={{ color: 'crimson' }}>{error}</div>}
-      {success && <div style={{ color: 'green' }}>Profile updated!</div>}
-      <button type="submit" disabled={busy}>{busy ? '…' : 'Save'}</button>
-    </form>
+    <Form
+      layout="vertical"
+      style={{ maxWidth: 420 }}
+      initialValues={{
+        email: user?.email ?? '',
+        userName: user?.userName ?? '',
+        firstName: user?.firstName ?? '',
+        lastName: user?.lastName ?? '',
+      }}
+      onFinish={onSubmit}
+      onValuesChange={() => setSuccess(false)}
+    >
+      <Row gutter={16}>
+        <Col span={12}>
+          <Form.Item label="First name" name="firstName" rules={[{ required: true, message: 'Required' }]}>
+            <Input prefix={<IdcardOutlined />} placeholder="Jane" />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item label="Last name" name="lastName" rules={[{ required: true, message: 'Required' }]}>
+            <Input prefix={<IdcardOutlined />} placeholder="Doe" />
+          </Form.Item>
+        </Col>
+      </Row>
+
+      <Form.Item
+        label="Email"
+        name="email"
+        rules={[{ required: true, message: 'Required' }, { type: 'email', message: 'Enter a valid email' }]}
+      >
+        <Input prefix={<MailOutlined />} placeholder="jane.doe@example.com" />
+      </Form.Item>
+
+      <Form.Item
+        label="Username"
+        name="userName"
+        rules={[{ required: true, message: 'Required' }, { min: 3, message: 'At least 3 characters' }]}
+      >
+        <Input prefix={<UserOutlined />} placeholder="jane_doe" />
+      </Form.Item>
+
+      {error && <Alert type="error" message={error} style={{ marginBottom: 16 }} showIcon />}
+      {success && <Alert type="success" message="Profile updated!" style={{ marginBottom: 16 }} showIcon />}
+
+      <Form.Item style={{ marginBottom: 0 }}>
+        <AppButton variant="primary" htmlType="submit" loading={busy}>
+          Save changes
+        </AppButton>
+      </Form.Item>
+    </Form>
   );
 }

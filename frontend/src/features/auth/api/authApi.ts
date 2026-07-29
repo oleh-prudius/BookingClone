@@ -1,5 +1,5 @@
 import { httpClient } from '@shared/api/httpClient';
-import type { AuthResponse } from '@shared/types';
+import type { AuthResponse, User } from '@shared/types';
 
 export interface LoginDto {
   emailOrUserName: string;
@@ -28,8 +28,8 @@ export const authApi = {
   login: (dto: LoginDto): Promise<AuthResponse> =>
     httpClient.post<AuthResponse>('/auth/login', dto).then((r) => r.data),
 
-  updateProfile: (dto: UpdateProfileDto): Promise<AuthResponse> =>
-    httpClient.patch<AuthResponse>('/auth/profile', dto).then((r) => r.data),
+  updateProfile: (dto: UpdateProfileDto): Promise<User> =>
+    httpClient.patch<User>('/auth/profile', dto).then((r) => r.data),
 
   confirmEmail: (userId: number, token: string): Promise<string> =>
     httpClient.post<string>('/auth/confirm-email', { userId, token }).then((r) => r.data),
