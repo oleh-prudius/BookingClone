@@ -11,5 +11,6 @@ public record CreateBookingCommand(
     DateTime CheckIn,
     DateTime CheckOut,
     decimal TotalPrice,
-    string? PersonalWishes
+    string? PersonalWishes,
+    IReadOnlyList<BreakfastSelectionDto>? Breakfasts = null
 ) : IRequest<Result<BookingDto>>;

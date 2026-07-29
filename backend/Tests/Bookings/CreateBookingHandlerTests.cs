@@ -21,7 +21,7 @@ public class CreateBookingHandlerTests(DatabaseFixture fixture) : IAsyncLifetime
     {
         var (customer, variant) = await SeedHelper.SeedBookingChainAsync(_ctx);
         var repo = new BookingRepository(_ctx);
-        var handler = new CreateBookingHandler(repo);
+        var handler = new CreateBookingHandler(repo, new RoomVariantRepository(_ctx), new RoomRepository(_ctx), new HotelBreakfastRepository(_ctx));
 
         var command = new CreateBookingCommand(
             CustomerId: customer.Id,
@@ -44,7 +44,7 @@ public class CreateBookingHandlerTests(DatabaseFixture fixture) : IAsyncLifetime
     {
         var (customer, variant) = await SeedHelper.SeedBookingChainAsync(_ctx);
         var repo = new BookingRepository(_ctx);
-        var handler = new CreateBookingHandler(repo);
+        var handler = new CreateBookingHandler(repo, new RoomVariantRepository(_ctx), new RoomRepository(_ctx), new HotelBreakfastRepository(_ctx));
 
         var command = new CreateBookingCommand(
             CustomerId: customer.Id,
@@ -72,7 +72,7 @@ public class CreateBookingHandlerTests(DatabaseFixture fixture) : IAsyncLifetime
             new DateOnly(2027, 7, 10),
             new DateOnly(2027, 7, 20));
 
-        var handler = new CreateBookingHandler(repo);
+        var handler = new CreateBookingHandler(repo, new RoomVariantRepository(_ctx), new RoomRepository(_ctx), new HotelBreakfastRepository(_ctx));
 
         var command = new CreateBookingCommand(
             CustomerId: customer.Id,

@@ -20,4 +20,6 @@ public class CreateBookingDto
     public decimal TotalPrice { get; set; }
 
     public string? PersonalWishes { get; set; }
+
+    public IReadOnlyList<BreakfastSelectionDto>? Breakfasts { get; set; }
 }

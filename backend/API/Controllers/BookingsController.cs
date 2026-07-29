@@ -60,7 +60,8 @@ public class BookingsController(IMediator mediator) : ControllerBase
             dto.CheckIn,
             dto.CheckOut,
             dto.TotalPrice,
-            dto.PersonalWishes
+            dto.PersonalWishes,
+            dto.Breakfasts
         );
         return (await mediator.Send(command, ct)).ToCreatedResult();
     }

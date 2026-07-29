@@ -58,6 +58,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<BankCard> BankCards { get; set; } = null!;
     public DbSet<Booking> Bookings { get; set; } = null!;
     public DbSet<BookingRoomVariant> BookingRoomVariants { get; set; } = null!;
+    public DbSet<BookingBreakfast> BookingBreakfasts { get; set; } = null!;
     public DbSet<BookingBedSelection> BookingBedSelections { get; set; } = null!;
     public DbSet<HotelReview> HotelReviews { get; set; } = null!;
     public DbSet<FavoriteHotel> FavoriteHotels { get; set; } = null!;

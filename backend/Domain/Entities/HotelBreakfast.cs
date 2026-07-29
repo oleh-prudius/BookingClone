@@ -6,4 +6,6 @@ public class HotelBreakfast {
 
 	public long BreakfastId { get; set; }
 	public Breakfast Breakfast { get; set; } = null!;
+
+	public decimal Price { get; set; }
 }
