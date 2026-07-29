@@ -31,6 +31,7 @@ function GuestCounter({
           icon={<MinusOutlined />}
           shape="circle"
           size="small"
+          aria-label={`Decrease ${label.toLowerCase()}`}
           disabled={value <= min}
           onClick={() => onChange(value - 1)}
         />
@@ -39,6 +40,7 @@ function GuestCounter({
           icon={<PlusOutlined />}
           shape="circle"
           size="small"
+          aria-label={`Increase ${label.toLowerCase()}`}
           onClick={() => onChange(value + 1)}
         />
       </div>

@@ -42,13 +42,16 @@ export function Header() {
             <NavLink to="/nearby" style={navLinkStyle}>Nearby</NavLink>
         </nav>
         
-        <MenuOutlined 
+        <Button
             className="burger-btn"
-            style={{ fontSize:22, cursor: 'pointer', marginLeft: 'auto'}}
-            onClick={() => setIsOpen(true)
-            }
+            type="text"
+            shape="circle"
+            aria-label="Open menu"
+            icon={<MenuOutlined style={{ fontSize: 22, color: 'inherit' }} />}
+            style={{ marginLeft: 'auto', color: 'inherit' }}
+            onClick={() => setIsOpen(true)}
         />
-        
+
       <div className='desktop-nav' style={{ marginLeft: 'auto', gap: 12, alignItems: 'center' }}>
           {isAuthenticated ? (
             <NavLink to="/profile" style={navLinkStyle}>
@@ -60,10 +63,14 @@ export function Header() {
               <Button ghost shape="round" href="/login">Sign in</Button>
             </>
           )}
-          <SendOutlined style={iconStyle}/>
-          <BellOutlined style={iconStyle}/>
-          <UserOutlined
-            style={iconStyle}
+          <Button type="text" shape="circle" style={{ color: 'inherit' }} aria-label="Messages" icon={<SendOutlined style={iconStyle} />} />
+          <Button type="text" shape="circle" style={{ color: 'inherit' }} aria-label="Notifications" icon={<BellOutlined style={iconStyle} />} />
+          <Button
+            type="text"
+            shape="circle"
+            style={{ color: 'inherit' }}
+            aria-label={isAuthenticated ? 'My profile' : 'Sign in'}
+            icon={<UserOutlined style={iconStyle} />}
             onClick={() => navigate(isAuthenticated ? '/profile' : '/login')}
           />
       </div>
