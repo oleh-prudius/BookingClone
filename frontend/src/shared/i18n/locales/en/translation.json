@@ -274,6 +274,15 @@
     "title": "My Favorites",
     "noFavoritesYet": "No favorite hotels yet"
   },
+  "messages": {
+    "title": "Messages",
+    "noConversationsYet": "No conversations yet",
+    "selectAConversation": "Select a conversation to start chatting",
+    "openConversationWith": "Open conversation with {{name}}",
+    "noMessagesYet": "No messages yet — say hello!",
+    "typeAMessage": "Type a message...",
+    "send": "Send"
+  },
   "host": {
     "dashboard": {
       "title": "My hotels",

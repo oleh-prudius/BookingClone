@@ -75,7 +75,16 @@ export function Header() {
               <Button ghost shape="round" href="/login">{t('header.signIn')}</Button>
             </>
           )}
-          <Button type="text" shape="circle" style={{ color: 'inherit' }} aria-label={t('header.messages')} icon={<SendOutlined style={iconStyle} />} />
+          {isAuthenticated && (
+            <Button
+              type="text"
+              shape="circle"
+              style={{ color: 'inherit' }}
+              aria-label={t('header.messages')}
+              icon={<SendOutlined style={iconStyle} />}
+              onClick={() => navigate('/messages')}
+            />
+          )}
           <Button type="text" shape="circle" style={{ color: 'inherit' }} aria-label={t('header.notifications')} icon={<BellOutlined style={iconStyle} />} />
           <Button
             type="text"

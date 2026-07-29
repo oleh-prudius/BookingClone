@@ -288,6 +288,15 @@
     "title": "Обране",
     "noFavoritesYet": "Ще немає обраних готелів"
   },
+  "messages": {
+    "title": "Повідомлення",
+    "noConversationsYet": "Поки немає розмов",
+    "selectAConversation": "Оберіть розмову, щоб почати спілкування",
+    "openConversationWith": "Відкрити розмову з {{name}}",
+    "noMessagesYet": "Ще немає повідомлень — привітайтесь!",
+    "typeAMessage": "Введіть повідомлення...",
+    "send": "Надіслати"
+  },
   "host": {
     "dashboard": {
       "title": "Мої готелі",

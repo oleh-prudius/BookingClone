@@ -3,6 +3,7 @@ using Application.Features.Chats.Commands.CreateChat;
 using Application.Features.Chats.Commands.DeleteChat;
 using Application.Features.Chats.Queries.GetChatById;
 using Application.Features.Chats.Queries.GetChatsByCustomerId;
+using Application.Features.Chats.Queries.GetChatsByRealtorId;
 using Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -23,6 +24,11 @@ public class ChatsController(IMediator mediator) : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetByCustomerId(long customerId, CancellationToken ct)
         => (await mediator.Send(new GetChatsByCustomerIdQuery(customerId), ct)).ToActionResult();
+
+    [HttpGet("by-realtor/{realtorId:long}")]
+    [Authorize]
+    public async Task<IActionResult> GetByRealtorId(long realtorId, CancellationToken ct)
+        => (await mediator.Send(new GetChatsByRealtorIdQuery(realtorId), ct)).ToActionResult();
 
     [HttpPost]
     [Authorize(Roles = Roles.Customer)]
