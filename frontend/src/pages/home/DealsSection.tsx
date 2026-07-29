@@ -2,10 +2,14 @@ import { useEffect, useState } from 'react';
 import { Typography, Skeleton } from 'antd';
 import { hotelApi, HotelCard } from '@entities/hotel';
 import type { Hotel } from '@shared/types';
+import { useAuth } from '@features/auth';
+import { useFavorites } from '@features/favorites';
 
 export function DealsSection() {
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState(true);
+  const { isAuthenticated } = useAuth();
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   useEffect(() => {
     hotelApi.getAllPaged({ pageSize: 6, sortBy: 'price' })
@@ -28,7 +32,12 @@ export function DealsSection() {
       }}>
         {hotels.map((h) => (
           <div key={h.id} style={{ minWidth: 280, maxWidth: 280, flexShrink: 0 }}>
-            <HotelCard hotel={h} variant="grid" />
+            <HotelCard
+              hotel={h}
+              variant="grid"
+              isFavorite={isFavorite(h.id)}
+              onToggleFavorite={isAuthenticated ? () => toggleFavorite(h.id) : undefined}
+            />
           </div>
         ))}
       </div>

@@ -7,6 +7,8 @@ import type { Hotel } from '@shared/types';
 import { FiltersSidebar, type HotelFilters } from './FiltersSidebar';
 import { SortTabs, type SortBy } from './SortTabs';
 import { MapPanel } from '@widgets/hotel-map';
+import { useAuth } from '@features/auth';
+import { useFavorites } from '@features/favorites';
 
 const PAGE_SIZE = 10;
 const PRICE_MIN = 0;
@@ -57,6 +59,8 @@ export function HotelsPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [hoveredHotelId, setHoveredHotelId] = useState<number | null>(null);
+  const { isAuthenticated } = useAuth();
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   // Debounce filter changes before they hit the URL/API
   useEffect(() => {
@@ -153,7 +157,12 @@ export function HotelsPage() {
                   onMouseEnter={() => setHoveredHotelId(h.id)}
                   onMouseLeave={() => setHoveredHotelId((id) => (id === h.id ? null : id))}
                 >
-                  <HotelCard hotel={h} variant="grid" />
+                  <HotelCard
+                    hotel={h}
+                    variant="grid"
+                    isFavorite={isFavorite(h.id)}
+                    onToggleFavorite={isAuthenticated ? () => toggleFavorite(h.id) : undefined}
+                  />
                 </Col>
               ))}
             </Row>
@@ -165,7 +174,12 @@ export function HotelsPage() {
                   onMouseEnter={() => setHoveredHotelId(h.id)}
                   onMouseLeave={() => setHoveredHotelId((id) => (id === h.id ? null : id))}
                 >
-                  <HotelCard hotel={h} variant="list" />
+                  <HotelCard
+                    hotel={h}
+                    variant="list"
+                    isFavorite={isFavorite(h.id)}
+                    onToggleFavorite={isAuthenticated ? () => toggleFavorite(h.id) : undefined}
+                  />
                 </div>
               ))}
             </div>

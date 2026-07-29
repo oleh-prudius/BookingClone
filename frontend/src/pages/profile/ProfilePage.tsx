@@ -23,6 +23,13 @@ export function ProfilePage() {
       <AppButton variant="secondary" onClick={() => navigate('/my-bookings')}>
         View my bookings
       </AppButton>
+
+      <Divider />
+
+      <Typography.Title level={4}>Favorites</Typography.Title>
+      <AppButton variant="secondary" onClick={() => navigate('/favorites')}>
+        View my favorites
+      </AppButton>
     </section>
   );
 }

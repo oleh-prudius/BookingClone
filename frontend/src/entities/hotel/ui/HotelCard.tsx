@@ -1,6 +1,6 @@
 import { Card, Rate, Tag } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { EnvironmentOutlined } from '@ant-design/icons';
+import { EnvironmentOutlined, HeartOutlined, HeartFilled } from '@ant-design/icons';
 import type { Hotel } from '@shared/types';
 import { AppButton } from '@shared/ui';
 import { toStars } from '@shared/lib/rating';
@@ -8,9 +8,11 @@ import { toStars } from '@shared/lib/rating';
 interface Props {
   hotel: Hotel;
   variant?: 'grid' | 'list';
+  isFavorite?: boolean;
+  onToggleFavorite?: () => void;
 }
 
-export function HotelCard({ hotel, variant = 'grid' }: Props) {
+export function HotelCard({ hotel, variant = 'grid', isFavorite, onToggleFavorite }: Props) {
   const navigate = useNavigate();
 
   const ratingBlock = hotel.rating != null
@@ -23,10 +25,35 @@ export function HotelCard({ hotel, variant = 'grid' }: Props) {
     </span>
   );
 
+  const favoriteButton = onToggleFavorite && (
+    <button
+      onClick={(e) => { e.stopPropagation(); onToggleFavorite(); }}
+      aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+      style={{
+        border: 'none',
+        background: 'rgba(255,255,255,0.9)',
+        borderRadius: '50%',
+        width: 32,
+        height: 32,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'pointer',
+        fontSize: 16,
+        color: isFavorite ? '#e0245e' : '#666',
+      }}
+    >
+      {isFavorite ? <HeartFilled /> : <HeartOutlined />}
+    </button>
+  );
+
   if (variant === 'list') {
     return (
       <Card hoverable style={{ width: '100%' }} styles={{ body: { padding: 0 } }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', position: 'relative' }}>
+          {favoriteButton && (
+            <div style={{ position: 'absolute', top: 8, right: 8, zIndex: 1 }}>{favoriteButton}</div>
+          )}
           <img
             src={hotel.coverPhotoUrl ?? 'https://placehold.co/400x200?text=No+Photo'}
             alt={hotel.name}
@@ -65,14 +92,19 @@ export function HotelCard({ hotel, variant = 'grid' }: Props) {
   return (
     <Card
       hoverable
-      cover={
-        <img
-          src={hotel.coverPhotoUrl ?? 'https://placehold.co/400x200?text=No+Photo'}
-          alt={hotel.name}
-          style={{ height: 200, objectFit: 'cover' }}
-        />
-      }
       style={{ width: '100%' }}
+      cover={
+        <div style={{ position: 'relative' }}>
+          <img
+            src={hotel.coverPhotoUrl ?? 'https://placehold.co/400x200?text=No+Photo'}
+            alt={hotel.name}
+            style={{ height: 200, objectFit: 'cover', width: '100%', display: 'block' }}
+          />
+          {favoriteButton && (
+            <div style={{ position: 'absolute', top: 8, right: 8 }}>{favoriteButton}</div>
+          )}
+        </div>
+      }
     >
       <Card.Meta
         title={hotel.name}
