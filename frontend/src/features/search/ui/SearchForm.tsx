@@ -1,8 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Input, DatePicker, Popover, Button } from 'antd';
+import { AutoComplete, Input, DatePicker, Popover, Button } from 'antd';
 import { AppButton } from '@shared/ui';
 import { SearchOutlined, UserOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import { cityApi, type City } from '@entities/city';
+
+const DESTINATION_DEBOUNCE_MS = 250;
 
 function GuestCounter({
   label,
@@ -45,10 +48,31 @@ function GuestCounter({
 
 export function SearchForm() {
   const [destination, setDestination] = useState('');
+  const [destinationQuery, setDestinationQuery] = useState('');
+  const [cities, setCities] = useState<City[]>([]);
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
   const [guestOpen, setGuestOpen] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    cityApi.getAll().then(setCities).catch(() => setCities([]));
+  }, []);
+
+  // Debounce the typed query before filtering, so fast typing doesn't re-filter on every keystroke
+  useEffect(() => {
+    const timeout = setTimeout(() => setDestinationQuery(destination), DESTINATION_DEBOUNCE_MS);
+    return () => clearTimeout(timeout);
+  }, [destination]);
+
+  const options = useMemo(() => {
+    const query = destinationQuery.trim().toLowerCase();
+    if (!query) return [];
+    return cities
+      .filter((c) => c.name.toLowerCase().includes(query) || c.countryName.toLowerCase().includes(query))
+      .slice(0, 8)
+      .map((c) => ({ value: c.name, label: `${c.name}, ${c.countryName}` }));
+  }, [cities, destinationQuery]);
 
   const guestLabel = children > 0
     ? `${adults} adult${adults > 1 ? 's' : ''} · ${children} child${children > 1 ? 'ren' : ''}`
@@ -93,13 +117,15 @@ export function SearchForm() {
       width: '100%',
       maxWidth: 900,
     }}>
-      <Input
-        placeholder="Where are you going?"
-        prefix={<SearchOutlined />}
+      <AutoComplete
+        options={options}
         value={destination}
-        onChange={e => setDestination(e.target.value)}
+        onChange={setDestination}
+        onSelect={setDestination}
         style={{ flex: 2, minWidth: 200 }}
-      />
+      >
+        <Input placeholder="Where are you going?" prefix={<SearchOutlined />} />
+      </AutoComplete>
       <DatePicker.RangePicker
         style={{ flex: 2, minWidth: 240 }}
         placeholder={['Check-in', 'Check-out']}
