@@ -1,3 +1,4 @@
+using API.Hubs;
 using API.Middleware;
 using Application;
 using Domain.Interfaces;
@@ -53,7 +54,23 @@ try
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.Zero
             };
+
+            // SignalR can't attach an Authorization header to WebSocket connections,
+            // so accept the token via query string for hub requests only.
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    var accessToken = context.Request.Query["access_token"];
+                    if (!string.IsNullOrEmpty(accessToken) && context.HttpContext.Request.Path.StartsWithSegments("/hubs"))
+                        context.Token = accessToken;
+
+                    return Task.CompletedTask;
+                }
+            };
         });
+
+    builder.Services.AddSignalR();
 
     builder.Services.AddControllers()
         .AddJsonOptions(options =>
@@ -164,6 +181,7 @@ try
     app.UseAuthorization();
     app.UseRateLimiter();
     app.MapControllers();
+    app.MapHub<ChatHub>("/hubs/chat");
 
     await app.Services.GetRequiredService<IScopeCoveredDbInicializer>().InitializeAsync();
 
