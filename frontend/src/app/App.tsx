@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from '@features/auth';
 import { FavoritesProvider } from '@features/favorites';
 import { Header } from '@widgets/header';
+import { Footer } from '@widgets/footer';
 import { HomePage } from '@pages/home';
 import { HotelsPage } from '@pages/hotels';
 import { HotelDetailPage } from '@pages/hotel';
@@ -48,6 +49,7 @@ export default function App() {
                     <Route path="*" element={<Page404 />} />
                   </Routes>
                 </main>
+                <Footer />
               </FavoritesProvider>
             </AuthProvider>
           }
