@@ -1,4 +1,4 @@
-import { Card, Rate, Tag } from 'antd';
+import { Card, Rate, Tag, Typography } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { EnvironmentOutlined, HeartOutlined, HeartFilled } from '@ant-design/icons';
 import type { Hotel } from '@shared/types';
@@ -19,10 +19,15 @@ export function HotelCard({ hotel, variant = 'grid', isFavorite, onToggleFavorit
     ? <Rate disabled allowHalf defaultValue={toStars(hotel.rating)} style={{ fontSize: 14 }} />
     : <Tag>No reviews yet</Tag>;
 
-  const priceBlock = hotel.pricePerNight != null && (
-    <span style={{ fontWeight: 600, color: 'var(--triply-primary)' }}>
-      from ${hotel.pricePerNight}/night
-    </span>
+  const priceStack = hotel.pricePerNight != null && (
+    <div>
+      <Typography.Text type="secondary" style={{ fontSize: 12, whiteSpace: 'nowrap' }}>
+        Price for 1 night
+      </Typography.Text>
+      <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--triply-primary)', lineHeight: 1.2 }}>
+        ${hotel.pricePerNight}
+      </div>
+    </div>
   );
 
   const favoriteButton = onToggleFavorite && (
@@ -50,15 +55,17 @@ export function HotelCard({ hotel, variant = 'grid', isFavorite, onToggleFavorit
   if (variant === 'list') {
     return (
       <Card hoverable style={{ width: '100%' }} styles={{ body: { padding: 0 } }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', position: 'relative' }}>
-          {favoriteButton && (
-            <div style={{ position: 'absolute', top: 8, right: 8, zIndex: 1 }}>{favoriteButton}</div>
-          )}
-          <img
-            src={hotel.coverPhotoUrl ?? 'https://placehold.co/400x200?text=No+Photo'}
-            alt={hotel.name}
-            style={{ width: 240, minWidth: 200, height: 180, objectFit: 'cover', flexShrink: 0 }}
-          />
+        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+          <div style={{ position: 'relative', flexShrink: 0 }}>
+            <img
+              src={hotel.coverPhotoUrl ?? 'https://placehold.co/400x200?text=No+Photo'}
+              alt={hotel.name}
+              style={{ width: 240, minWidth: 200, height: 180, objectFit: 'cover', display: 'block' }}
+            />
+            {favoriteButton && (
+              <div style={{ position: 'absolute', top: 8, right: 8 }}>{favoriteButton}</div>
+            )}
+          </div>
 
           <div style={{ flex: 1, minWidth: 220, padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <div>
@@ -71,15 +78,19 @@ export function HotelCard({ hotel, variant = 'grid', isFavorite, onToggleFavorit
           </div>
 
           <div style={{
-            width: 200,
+            width: 180,
+            minWidth: 160,
+            flexShrink: 0,
             padding: 16,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'flex-end',
             justifyContent: 'space-between',
+            gap: 12,
+            textAlign: 'right',
             borderLeft: '1px solid var(--border)',
           }}>
-            {priceBlock}
+            {priceStack}
             <AppButton variant="primary" onClick={() => navigate(`/hotels/${hotel.id}`)}>
               Details
             </AppButton>
@@ -115,9 +126,9 @@ export function HotelCard({ hotel, variant = 'grid', isFavorite, onToggleFavorit
         }
       />
 
-      <div style={{ marginTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div style={{ marginTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
         {ratingBlock}
-        {priceBlock}
+        {priceStack}
       </div>
 
       <div style={{ marginTop: 12 }}>
