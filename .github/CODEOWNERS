@@ -1,0 +1,6 @@
+# Default reviewer for everything not covered below.
+* @oleh-prudius
+
+/backend/  @oleh-prudius
+/frontend/ @oleh-prudius
+/.github/  @oleh-prudius
