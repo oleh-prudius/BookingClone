@@ -27,6 +27,7 @@ public class UpdateHotelHandler(IHotelRepository hotelRepository, ICurrentUserSe
         hotel.ArrivalTimeUtcTo = request.ArrivalTimeUtcTo;
         hotel.DepartureTimeUtcFrom = request.DepartureTimeUtcFrom;
         hotel.DepartureTimeUtcTo = request.DepartureTimeUtcTo;
+        hotel.StarRating = request.StarRating;
 
         await hotelRepository.UpdateAsync(hotel);
         return HotelMappings.MapToDto(hotel);

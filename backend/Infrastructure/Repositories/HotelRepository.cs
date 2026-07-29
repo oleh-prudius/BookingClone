@@ -72,20 +72,7 @@ public class HotelRepository(AppDbContext context) : IHotelRepository
                     (!priceMax.HasValue || rv.Price <= priceMax.Value)));
 
         if (starRatings is { Count: > 0 })
-            query = query.Where(h => h.Rooms
-                .SelectMany(r => r.RoomVariants)
-                .SelectMany(rv => rv.BookingRoomVariants)
-                .Select(brv => brv.Booking.HotelReview)
-                .Where(hr => hr != null)
-                .Select(hr => hr!.Score)
-                .Average() != null
-                && starRatings.Contains((int)Math.Round(h.Rooms
-                    .SelectMany(r => r.RoomVariants)
-                    .SelectMany(rv => rv.BookingRoomVariants)
-                    .Select(brv => brv.Booking.HotelReview)
-                    .Where(hr => hr != null)
-                    .Select(hr => hr!.Score)
-                    .Average()!.Value)));
+            query = query.Where(h => starRatings.Contains(h.StarRating));
 
         query = sortBy switch
         {

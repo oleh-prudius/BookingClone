@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Typography, Rate, Tag, Carousel, Skeleton, Result, Empty, Divider } from 'antd';
-import { EnvironmentOutlined, HeartOutlined, HeartFilled } from '@ant-design/icons';
+import { EnvironmentOutlined, HeartOutlined, HeartFilled, StarFilled } from '@ant-design/icons';
 import { hotelApi } from '@entities/hotel';
 import { hotelPhotoApi, type HotelPhoto } from '@entities/hotel-photo';
 import { MapPanel } from '@widgets/hotel-map';
@@ -86,7 +86,14 @@ export function HotelDetailPage() {
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: 24, flexWrap: 'wrap', gap: 16 }}>
         <div>
-          <Typography.Title level={2} style={{ margin: 0 }}>{hotel.name}</Typography.Title>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <Typography.Title level={2} style={{ margin: 0 }}>{hotel.name}</Typography.Title>
+            {hotel.starRating > 0 && (
+              <span aria-label={`${hotel.starRating}-star hotel`} style={{ color: '#faad14', fontSize: 16 }}>
+                {Array.from({ length: hotel.starRating }, (_, i) => <StarFilled key={i} />)}
+              </span>
+            )}
+          </div>
           <Typography.Text type="secondary">
             <EnvironmentOutlined /> {hotel.street}, {hotel.cityName}, {hotel.countryName}
           </Typography.Text>

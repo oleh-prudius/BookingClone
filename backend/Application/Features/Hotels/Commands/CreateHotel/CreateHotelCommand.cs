@@ -13,5 +13,6 @@ public record CreateHotelCommand(
     DateTimeOffset ArrivalTimeUtcFrom,
     DateTimeOffset ArrivalTimeUtcTo,
     DateTimeOffset DepartureTimeUtcFrom,
-    DateTimeOffset DepartureTimeUtcTo
+    DateTimeOffset DepartureTimeUtcTo,
+    int StarRating = 3
 ) : IRequest<Result<HotelDto>>;
