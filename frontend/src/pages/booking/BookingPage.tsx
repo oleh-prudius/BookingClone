@@ -9,6 +9,7 @@ import { roomVariantApi, type RoomVariant } from '@entities/room-variant';
 import { bookingApi } from '@entities/booking';
 import type { Hotel } from '@shared/types';
 import { AppButton } from '@shared/ui';
+import { PaymentForm } from './PaymentForm';
 
 interface BookableVariant {
   variant: RoomVariant;
@@ -31,9 +32,8 @@ export function BookingPage() {
   const [guests, setGuests] = useState(1);
   const [personalWishes, setPersonalWishes] = useState('');
 
-  const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [step, setStep] = useState<'details' | 'payment' | 'success'>('details');
 
   useEffect(() => {
     if (!Number.isFinite(hotelId)) {
@@ -93,7 +93,7 @@ export function BookingPage() {
     );
   }
 
-  if (success) {
+  if (step === 'success') {
     return (
       <Result
         status="success"
@@ -104,7 +104,7 @@ export function BookingPage() {
     );
   }
 
-  const handleSubmit = () => {
+  const handleContinueToPayment = () => {
     setFormError(null);
 
     if (!selected) {
@@ -128,22 +128,43 @@ export function BookingPage() {
       return;
     }
 
-    setSubmitting(true);
-    bookingApi.create({
+    setStep('payment');
+  };
+
+  const handlePay = async () => {
+    if (!selected || !dateRange) return;
+
+    await bookingApi.create({
       roomVariantId: selected.variant.id,
       quantity: 1,
       checkIn: dateRange[0].toISOString(),
       checkOut: dateRange[1].toISOString(),
       totalPrice: total,
       personalWishes: personalWishes || undefined,
-    })
-      .then(() => setSuccess(true))
-      .catch((err: unknown) => {
-        const axiosErr = err as { response?: { data?: { error?: string } }; message?: string };
-        setFormError(axiosErr.response?.data?.error ?? axiosErr.message ?? 'Failed to create booking');
-      })
-      .finally(() => setSubmitting(false));
+    });
+    setStep('success');
   };
+
+  if (step === 'payment' && selected && dateRange) {
+    return (
+      <section style={{ padding: 24, maxWidth: 700, margin: '0 auto' }}>
+        <Typography.Title level={3}>Book {hotel.name}</Typography.Title>
+        <PaymentForm
+          order={{
+            hotelName: hotel.name,
+            roomName: selected.roomName,
+            checkIn: dateRange[0].format('MMM D, YYYY'),
+            checkOut: dateRange[1].format('MMM D, YYYY'),
+            nights,
+            pricePerNight,
+            total,
+          }}
+          onBack={() => setStep('details')}
+          onPay={handlePay}
+        />
+      </section>
+    );
+  }
 
   return (
     <section style={{ padding: 24, maxWidth: 700, margin: '0 auto' }}>
@@ -200,8 +221,8 @@ export function BookingPage() {
 
             {formError && <Alert type="error" message={formError} style={{ marginBottom: 16 }} />}
 
-            <AppButton variant="primary" onClick={handleSubmit} loading={submitting} block>
-              Confirm booking
+            <AppButton variant="primary" onClick={handleContinueToPayment} block>
+              Continue to payment
             </AppButton>
           </Card>
         )}
