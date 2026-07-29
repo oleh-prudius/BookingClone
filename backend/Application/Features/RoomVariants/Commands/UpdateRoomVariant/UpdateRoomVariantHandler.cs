@@ -1,12 +1,15 @@
 using Application.DTOs;
+using Application.Interfaces;
 using Domain.Common;
+using Domain.Constants;
 using Domain.Entities;
+using Domain.Interfaces;
 using Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Application.Features.RoomVariants.Commands.UpdateRoomVariant;
 
-public class UpdateRoomVariantHandler(IRoomVariantRepository repository)
+public class UpdateRoomVariantHandler(IRoomVariantRepository repository, IRoomRepository roomRepository, IHotelRepository hotelRepository, ICurrentUserService currentUser)
     : IRequestHandler<UpdateRoomVariantCommand, Result<RoomVariantDto>>
 {
     public async Task<Result<RoomVariantDto>> Handle(UpdateRoomVariantCommand request, CancellationToken ct)
@@ -14,6 +17,16 @@ public class UpdateRoomVariantHandler(IRoomVariantRepository repository)
         var entity = await repository.GetByIdAsync(request.Id, ct);
         if (entity is null)
             return Error.NotFound($"Room variant with id {request.Id} not found.");
+
+        if (!currentUser.IsInRole(Roles.Admin))
+        {
+            var room = await roomRepository.GetByIdAsync(entity.RoomId, ct);
+            if (room is null)
+                return Error.NotFound($"Room with id {entity.RoomId} not found.");
+            var hotel = await hotelRepository.GetByIdAsync(room.HotelId, ct);
+            if (hotel is null || hotel.RealtorId != currentUser.GetUserId())
+                return Error.Forbidden("You do not have access to this resource.");
+        }
 
         if (request.Price <= 0)
             return Error.Validation("Price must be greater than zero.");
