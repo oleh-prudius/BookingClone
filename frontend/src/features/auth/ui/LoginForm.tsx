@@ -1,7 +1,9 @@
+import { Form, Input, Alert } from 'antd';
+import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useState } from 'react';
-import type { FormEvent } from 'react';
 import { useAuth } from '../model/AuthContext';
 import type { LoginDto } from '../api/authApi';
+import { AppButton } from '@shared/ui';
 
 interface Props {
   onSuccess?: () => void;
@@ -9,16 +11,14 @@ interface Props {
 
 export function LoginForm({ onSuccess }: Props) {
   const { login } = useAuth();
-  const [form, setForm] = useState<LoginDto>({ emailOrUserName: '', password: '' });
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const onSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  const onFinish = async (values: LoginDto) => {
     setError(null);
     setBusy(true);
     try {
-      await login(form);
+      await login(values);
       onSuccess?.();
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: { error?: string } } };
@@ -29,23 +29,30 @@ export function LoginForm({ onSuccess }: Props) {
   };
 
   return (
-    <form onSubmit={onSubmit} style={{ display: 'grid', gap: 8, maxWidth: 320 }}>
-      <h2>Sign in</h2>
-      <input
-        placeholder="Email or username"
-        value={form.emailOrUserName}
-        onChange={(e) => setForm({ ...form, emailOrUserName: e.target.value })}
-        required
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={form.password}
-        onChange={(e) => setForm({ ...form, password: e.target.value })}
-        required
-      />
-      {error && <div style={{ color: 'crimson' }}>{error}</div>}
-      <button type="submit" disabled={busy}>{busy ? '…' : 'Sign in'}</button>
-    </form>
+    <Form layout="vertical" onFinish={onFinish} requiredMark={false} autoComplete="on">
+      {error && <Alert type="error" message={error} showIcon style={{ marginBottom: 16 }} />}
+
+      <Form.Item
+        label="Email or username"
+        name="emailOrUserName"
+        rules={[{ required: true, message: 'Please enter your email or username' }]}
+      >
+        <Input prefix={<UserOutlined />} placeholder="Email or username" size="large" />
+      </Form.Item>
+
+      <Form.Item
+        label="Password"
+        name="password"
+        rules={[{ required: true, message: 'Please enter your password' }]}
+      >
+        <Input.Password prefix={<LockOutlined />} placeholder="Password" size="large" />
+      </Form.Item>
+
+      <Form.Item style={{ marginBottom: 0 }}>
+        <AppButton variant="primary" htmlType="submit" loading={busy} block size="large">
+          Sign in
+        </AppButton>
+      </Form.Item>
+    </Form>
   );
 }
