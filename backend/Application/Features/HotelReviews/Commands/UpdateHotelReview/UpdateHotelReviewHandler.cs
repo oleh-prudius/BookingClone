@@ -28,6 +28,7 @@ public class UpdateHotelReviewHandler(
         entity.Score = request.Score;
         entity.UpdatedAtUtc = DateTime.UtcNow;
         await repository.UpdateAsync(entity, ct);
+        entity.Booking = booking;
         return HotelReviewMappings.MapToDto(entity);
     }
 }

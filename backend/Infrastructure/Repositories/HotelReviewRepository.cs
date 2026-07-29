@@ -9,6 +9,8 @@ public class HotelReviewRepository(AppDbContext context) : Repository<HotelRevie
 {
     public async Task<IReadOnlyList<HotelReview>> GetByHotelIdAsync(long hotelId, CancellationToken ct = default) =>
         (await Context.HotelReviews
+            .Include(r => r.Booking)
+            .ThenInclude(b => b.Customer)
             .Where(r => r.Booking.BookingRoomVariants
                 .Any(brv => brv.RoomVariant.Room.HotelId == hotelId))
             .OrderByDescending(r => r.CreatedAtUtc)

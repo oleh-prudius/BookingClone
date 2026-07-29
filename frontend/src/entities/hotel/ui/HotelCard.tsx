@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { EnvironmentOutlined } from '@ant-design/icons';
 import type { Hotel } from '@shared/types';
 import { AppButton } from '@shared/ui';
+import { toStars } from '@shared/lib/rating';
 
 interface Props {
   hotel: Hotel;
@@ -34,7 +35,7 @@ export function HotelCard({ hotel }: Props) {
 
       <div style={{ marginTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         {hotel.rating != null
-          ? <Rate disabled allowHalf defaultValue={hotel.rating} style={{ fontSize: 14 }} />
+          ? <Rate disabled allowHalf defaultValue={toStars(hotel.rating)} style={{ fontSize: 14 }} />
           : <Tag>No reviews yet</Tag>
         }
         {hotel.pricePerNight != null && (
