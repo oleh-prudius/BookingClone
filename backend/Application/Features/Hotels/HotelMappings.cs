@@ -30,7 +30,18 @@ internal static class HotelMappings
             .SelectMany(r => r.RoomVariants)
             .Select(rv => (decimal?)rv.Price)
             .Min(),
-        Rating = null,
+        Rating = h.Rooms
+            .SelectMany(r => r.RoomVariants)
+            .SelectMany(rv => rv.BookingRoomVariants)
+            .Select(brv => brv.Booking.HotelReview)
+            .Where(hr => hr != null)
+            .Select(hr => hr!.Score)
+            .Average(),
+        ReviewCount = h.Rooms
+            .SelectMany(r => r.RoomVariants)
+            .SelectMany(rv => rv.BookingRoomVariants)
+            .Select(brv => brv.Booking.HotelReview)
+            .Count(hr => hr != null && hr.Score != null),
         Amenities = h.HotelHotelAmenities?
             .Select(hha => hha.HotelAmenity.Name)
             .ToList() ?? new List<string>()

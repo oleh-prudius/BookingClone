@@ -17,5 +17,6 @@ public record GetAllHotelsQuery(
     DateOnly? CheckOut = null,
     int? Adults = null,
     int? Children = null,
-    IReadOnlyList<long>? CategoryIds = null
+    IReadOnlyList<long>? CategoryIds = null,
+    IReadOnlyList<int>? StarRatings = null
 ) : IRequest<Result<PagedResult<HotelDto>>>;

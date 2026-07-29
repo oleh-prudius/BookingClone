@@ -14,6 +14,7 @@ public class HotelDto
     public bool IsArchived { get; set; }
     public string? CoverPhotoUrl { get; set; }
     public double? Rating { get; set; }
+    public int ReviewCount { get; set; }
     public decimal? PricePerNight { get; set; }
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
