@@ -1,19 +1,23 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Typography, Rate, Tag, Carousel, Skeleton, Result, Empty, Divider } from 'antd';
-import { EnvironmentOutlined } from '@ant-design/icons';
+import { EnvironmentOutlined, HeartOutlined, HeartFilled } from '@ant-design/icons';
 import { hotelApi } from '@entities/hotel';
 import { hotelPhotoApi, type HotelPhoto } from '@entities/hotel-photo';
 import { MapPanel } from '@widgets/hotel-map';
 import type { Hotel } from '@shared/types';
 import { AppButton } from '@shared/ui';
 import { toStars } from '@shared/lib/rating';
+import { useAuth } from '@features/auth';
+import { useFavorites } from '@features/favorites';
 import { ReviewsSection } from './ReviewsSection';
 
 export function HotelDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const hotelId = Number(id);
+  const { isAuthenticated } = useAuth();
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   const [hotel, setHotel] = useState<Hotel | null>(null);
   const [photos, setPhotos] = useState<HotelPhoto[]>([]);
@@ -99,9 +103,20 @@ export function HotelDetailPage() {
               ${hotel.pricePerNight}<Typography.Text type="secondary" style={{ fontSize: 14 }}>/night</Typography.Text>
             </Typography.Title>
           )}
-          <AppButton variant="primary" onClick={() => navigate(`/hotels/${hotel.id}/book`)} style={{ marginTop: 8 }}>
-            Book
-          </AppButton>
+          <div style={{ display: 'flex', gap: 8, marginTop: 8, justifyContent: 'flex-end' }}>
+            {isAuthenticated && (
+              <AppButton
+                variant="secondary"
+                icon={isFavorite(hotel.id) ? <HeartFilled style={{ color: '#e0245e' }} /> : <HeartOutlined />}
+                onClick={() => toggleFavorite(hotel.id)}
+              >
+                {isFavorite(hotel.id) ? 'Saved' : 'Save'}
+              </AppButton>
+            )}
+            <AppButton variant="primary" onClick={() => navigate(`/hotels/${hotel.id}/book`)}>
+              Book
+            </AppButton>
+          </div>
         </div>
       </div>
 
