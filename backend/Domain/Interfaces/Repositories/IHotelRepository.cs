@@ -18,6 +18,7 @@ public interface IHotelRepository
         int? adults,
         int? children,
         IReadOnlyList<long>? categoryIds,
+        IReadOnlyList<int>? starRatings,
         int page,
         int pageSize,
         CancellationToken ct = default);

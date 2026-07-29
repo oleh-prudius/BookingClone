@@ -83,6 +83,7 @@ export function HotelsPage() {
       priceMin: debouncedFilters.priceRange[0] > PRICE_MIN ? debouncedFilters.priceRange[0] : undefined,
       priceMax: debouncedFilters.priceRange[1] < PRICE_MAX ? debouncedFilters.priceRange[1] : undefined,
       categoryIds: debouncedFilters.categoryIds.length ? debouncedFilters.categoryIds : undefined,
+      starRatings: debouncedFilters.stars.length ? debouncedFilters.stars : undefined,
       sortBy,
     })
       .then(({ items, totalCount }) => {

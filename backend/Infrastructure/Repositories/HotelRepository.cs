@@ -17,7 +17,10 @@ public class HotelRepository(AppDbContext context) : IHotelRepository
         .Include(h => h.HotelHotelAmenities)
         .ThenInclude(hha => hha.HotelAmenity)
         .Include(h => h.Rooms)
-        .ThenInclude(r => r.RoomVariants);
+        .ThenInclude(r => r.RoomVariants)
+        .ThenInclude(rv => rv.BookingRoomVariants)
+        .ThenInclude(brv => brv.Booking)
+        .ThenInclude(b => b.HotelReview);
 
     public async Task<IReadOnlyList<Hotel>> GetAllAsync(CancellationToken ct = default) =>
         (await WithIncludes().AsNoTracking().ToListAsync(ct)).AsReadOnly();
@@ -42,6 +45,7 @@ public class HotelRepository(AppDbContext context) : IHotelRepository
         int? adults,
         int? children,
         IReadOnlyList<long>? categoryIds,
+        IReadOnlyList<int>? starRatings,
         int page,
         int pageSize,
         CancellationToken ct = default)
@@ -67,6 +71,22 @@ public class HotelRepository(AppDbContext context) : IHotelRepository
                     (!priceMin.HasValue || rv.Price >= priceMin.Value) &&
                     (!priceMax.HasValue || rv.Price <= priceMax.Value)));
 
+        if (starRatings is { Count: > 0 })
+            query = query.Where(h => h.Rooms
+                .SelectMany(r => r.RoomVariants)
+                .SelectMany(rv => rv.BookingRoomVariants)
+                .Select(brv => brv.Booking.HotelReview)
+                .Where(hr => hr != null)
+                .Select(hr => hr!.Score)
+                .Average() != null
+                && starRatings.Contains((int)Math.Round(h.Rooms
+                    .SelectMany(r => r.RoomVariants)
+                    .SelectMany(rv => rv.BookingRoomVariants)
+                    .Select(brv => brv.Booking.HotelReview)
+                    .Where(hr => hr != null)
+                    .Select(hr => hr!.Score)
+                    .Average()!.Value)));
+
         query = sortBy switch
         {
             "price" => query.OrderBy(h => h.Rooms
@@ -77,6 +97,13 @@ public class HotelRepository(AppDbContext context) : IHotelRepository
                 .SelectMany(r => r.RoomVariants)
                 .SelectMany(rv => rv.BookingRoomVariants)
                 .Count(brv => brv.Booking.Status != BookingStatus.Cancelled)),
+            "rating" => query.OrderByDescending(h => h.Rooms
+                .SelectMany(r => r.RoomVariants)
+                .SelectMany(rv => rv.BookingRoomVariants)
+                .Select(brv => brv.Booking.HotelReview)
+                .Where(hr => hr != null)
+                .Select(hr => hr!.Score)
+                .Average() ?? -1),
             _ => query.OrderBy(h => h.Name)
         };
         var totalCount = await query.CountAsync(ct);
