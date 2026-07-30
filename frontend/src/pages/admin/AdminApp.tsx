@@ -33,6 +33,8 @@ import { CategoryEdit } from './categories/CategoryEdit';
 import { RoomList } from './rooms/RoomList';
 import { RoomCreate } from './rooms/RoomCreate';
 import { RoomEdit } from './rooms/RoomEdit';
+import { UserList } from './users/UserList';
+import { UserEdit } from './users/UserEdit';
 
 export function AdminApp() {
   return (
@@ -83,6 +85,12 @@ export function AdminApp() {
             create: '/admin/rooms/create',
             edit: '/admin/rooms/edit/:id',
             meta: { label: 'Rooms' },
+          },
+          {
+            name: 'users',
+            list: '/admin/users',
+            edit: '/admin/users/edit/:id',
+            meta: { label: 'Users' },
           },
         ]}
         options={{ syncWithLocation: true }}
@@ -137,6 +145,11 @@ export function AdminApp() {
               <Route index element={<RoomList />} />
               <Route path="create" element={<RoomCreate />} />
               <Route path="edit/:id" element={<RoomEdit />} />
+            </Route>
+
+            <Route path="users">
+              <Route index element={<UserList />} />
+              <Route path="edit/:id" element={<UserEdit />} />
             </Route>
 
             <Route path="*" element={<ErrorComponent />} />
