@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@features/auth';
 import { Logo } from "@shared/ui/Logo";
-import { LanguageSwitcher } from "@shared/ui";
+import { LanguageSwitcher, ThemeToggle } from "@shared/ui";
 import { Drawer, Button } from "antd";
 import { BellOutlined, UserOutlined, SendOutlined, MenuOutlined } from '@ant-design/icons';
 
@@ -45,7 +45,8 @@ export function Header() {
             <NavLink to="/nearby" style={navLinkStyle}>{t('header.nearby')}</NavLink>
         </nav>
 
-        <div className="desktop-nav" style={{ marginLeft: 'auto' }}>
+        <div className="desktop-nav" style={{ marginLeft: 'auto', gap: 4, alignItems: 'center' }}>
+          <ThemeToggle />
           <LanguageSwitcher />
         </div>
 
@@ -106,7 +107,10 @@ export function Header() {
             <NavLink to="/nearby" style={navLinkStyle}>{t('header.nearby')}</NavLink>
         </nav>
         <div style={{marginTop:24, display:'flex', flexDirection:'column', gap:12}}>
-            <LanguageSwitcher />
+            <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                <ThemeToggle />
+                <LanguageSwitcher />
+            </div>
             {isAuthenticated ? (
                 <>
                     {user!.roles.includes('Realtor') && <Button href="/host">{t('header.myHotels')}</Button>}

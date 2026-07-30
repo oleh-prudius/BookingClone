@@ -1,29 +1,37 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { applyCssTokens } from "./styles/applyCssTokens";
 import { App as AntApp, ConfigProvider, theme } from "antd";
-import { colors } from "./styles/tokens";
+import { colors, darkColors } from "@shared/theme/tokens";
 import './styles/index.css';
 import '@shared/i18n';
 import App from './App';
 import { ErrorBoundary } from './ErrorBoundary';
 import { NotificationBridge } from './NotificationBridge';
+import { ThemeProvider, useTheme } from '@shared/theme/ThemeContext';
 
+function ThemedApp() {
+  const { theme: mode } = useTheme();
+  const palette = mode === 'dark' ? darkColors : colors;
 
-applyCssTokens();
+  return (
+    <ConfigProvider theme={{
+        algorithm: mode === 'dark' ? theme.darkAlgorithm : theme.defaultAlgorithm,
+        token: { colorPrimary: palette.primary }
+    }}>
+      <AntApp>
+        <NotificationBridge />
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
+      </AntApp>
+    </ConfigProvider>
+  );
+}
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-      <ConfigProvider theme={{
-          algorithm: theme.defaultAlgorithm,
-          token:  {colorPrimary: colors.primary}
-      }}>
-        <AntApp>
-          <NotificationBridge />
-          <ErrorBoundary>
-            <App />
-          </ErrorBoundary>
-        </AntApp>
-      </ConfigProvider>
+    <ThemeProvider>
+      <ThemedApp />
+    </ThemeProvider>
   </StrictMode>,
 );

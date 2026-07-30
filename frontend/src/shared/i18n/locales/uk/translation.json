@@ -15,7 +15,9 @@
     "openMenu": "Відкрити меню",
     "messages": "Повідомлення",
     "notifications": "Сповіщення",
-    "myProfile": "Мій профіль"
+    "myProfile": "Мій профіль",
+    "switchToDarkTheme": "Перемкнути на темну тему",
+    "switchToLightTheme": "Перемкнути на світлу тему"
   },
   "footer": {
     "copyright": "Triply v{{version}} © {{year}}"

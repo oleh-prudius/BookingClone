@@ -15,7 +15,9 @@
     "openMenu": "Open menu",
     "messages": "Messages",
     "notifications": "Notifications",
-    "myProfile": "My profile"
+    "myProfile": "My profile",
+    "switchToDarkTheme": "Switch to dark theme",
+    "switchToLightTheme": "Switch to light theme"
   },
   "footer": {
     "copyright": "Triply v{{version}} © {{year}}"
