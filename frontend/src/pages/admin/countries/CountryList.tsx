@@ -2,12 +2,12 @@ import { List, useTable, EditButton, DeleteButton } from '@refinedev/antd';
 import { Table, Space } from 'antd';
 
 export function CountryList() {
-  const { tableProps } = useTable({ syncWithLocation: true });
+  const { tableProps } = useTable({ syncWithLocation: true, sorters: { mode: 'off' } });
   return (
     <List>
       <Table {...tableProps} rowKey="id">
-        <Table.Column dataIndex="id" title="ID" width={80} />
-        <Table.Column dataIndex="name" title="Name" />
+        <Table.Column dataIndex="id" title="ID" width={80} sorter={(a: { id: number }, b: { id: number }) => a.id - b.id} />
+        <Table.Column dataIndex="name" title="Name" sorter={(a: { name: string }, b: { name: string }) => a.name.localeCompare(b.name)} />
         <Table.Column
           dataIndex="image"
           title="Flag"

@@ -100,7 +100,9 @@
     "writeAReview": "Write a review",
     "bookingNumber": "Booking #{{id}}",
     "shareYourExperience": "Share your experience...",
-    "submitReview": "Submit review"
+    "submitReview": "Submit review",
+    "reviewRequiresBooking": "You can leave a review after your stay — complete a booking at this hotel first.",
+    "reviewRequiresLogin": "Log in to leave a review after your stay."
   },
   "booking": {
     "bookHotel": "Book {{hotelName}}",

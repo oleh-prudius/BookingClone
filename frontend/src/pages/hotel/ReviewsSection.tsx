@@ -97,6 +97,24 @@ export function ReviewsSection({ hotelId, onReviewSubmitted }: Props) {
             />
           )}
 
+      {isAuthenticated && eligibleBookingIds.length === 0 && (
+        <Alert
+          type="info"
+          showIcon
+          message={t('hotel.reviewRequiresBooking')}
+          style={{ marginTop: 24, maxWidth: 480 }}
+        />
+      )}
+
+      {!isAuthenticated && (
+        <Alert
+          type="info"
+          showIcon
+          message={t('hotel.reviewRequiresLogin')}
+          style={{ marginTop: 24, maxWidth: 480 }}
+        />
+      )}
+
       {eligibleBookingIds.length > 0 && (
         <div style={{ marginTop: 24, maxWidth: 480 }}>
           <Typography.Title level={5}>{t('hotel.writeAReview')}</Typography.Title>

@@ -110,7 +110,9 @@
     "writeAReview": "Залишити відгук",
     "bookingNumber": "Бронювання №{{id}}",
     "shareYourExperience": "Поділіться враженнями...",
-    "submitReview": "Надіслати відгук"
+    "submitReview": "Надіслати відгук",
+    "reviewRequiresBooking": "Залишити відгук можна після проживання — спочатку оформіть бронювання в цьому готелі.",
+    "reviewRequiresLogin": "Увійдіть в акаунт, щоб залишити відгук після проживання."
   },
   "booking": {
     "bookHotel": "Бронювання: {{hotelName}}",
