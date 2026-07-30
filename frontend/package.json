@@ -17,6 +17,7 @@
     "@refinedev/antd": "^6.0.3",
     "@refinedev/core": "^5.0.12",
     "@refinedev/react-router": "^2.0.4",
+    "@sentry/react": "^10.69.0",
     "antd": "^5.29.3",
     "axios": "^1.15.2",
     "i18next": "^26.3.6",

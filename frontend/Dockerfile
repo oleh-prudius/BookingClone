@@ -7,9 +7,11 @@ RUN npm ci
 
 COPY . .
 
-# API URL is baked in at build time (Vite inlines VITE_* vars)
+# API URL and Sentry DSN are baked in at build time (Vite inlines VITE_* vars)
 ARG VITE_API_BASE_URL=http://localhost:5134/api
+ARG VITE_SENTRY_DSN=
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+ENV VITE_SENTRY_DSN=$VITE_SENTRY_DSN
 RUN npm run build
 
 FROM nginx:alpine AS runtime

@@ -90,6 +90,11 @@ config file than the Docker path above.
   After changing `.env`, recreate the container: `docker compose up -d --build api`.
 - **Secrets.** `.env` and `appsettings.Local.json` are gitignored — never commit real
   credentials. `JWT_KEY` must be at least 32 characters.
+- **Error monitoring (Sentry).** Optional — set `BACKEND_SENTRY_DSN` and
+  `FRONTEND_SENTRY_DSN` in `.env` (separate Sentry projects, one per platform) to enable.
+  Both no-op cleanly when unset. The backend also forwards Serilog `Error`+ logs to
+  Sentry. `FRONTEND_SENTRY_DSN` is baked in at frontend build time like `VITE_API_BASE_URL`
+  — changing it requires rebuilding the frontend image.
 - **Frontend API URL is build-time.** Vite inlines `VITE_API_BASE_URL` during
   `npm run build`, so it is passed as a Docker build arg. Change it → rebuild the image.
 - **CI tests** use Testcontainers, which starts a throwaway PostgreSQL via the runner's

@@ -27,9 +27,32 @@ try
         .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true)
         .AddEnvironmentVariables();
 
+    // Sentry is entirely optional - both the Serilog sink below and UseSentry() further down
+    // no-op when Sentry:Dsn is unset, so nothing breaks in environments that don't configure it.
+    var sentryDsn = builder.Configuration["Sentry:Dsn"];
+
     builder.Host.UseSerilog((context, config) =>
+    {
         config.ReadFrom.Configuration(context.Configuration)
-              .Enrich.FromLogContext());
+              .Enrich.FromLogContext();
+
+        if (!string.IsNullOrWhiteSpace(sentryDsn))
+        {
+            config.WriteTo.Sentry(o =>
+            {
+                o.Dsn = sentryDsn;
+                o.MinimumEventLevel = Serilog.Events.LogEventLevel.Error;
+                o.Environment = context.HostingEnvironment.EnvironmentName;
+            });
+        }
+    });
+
+    builder.WebHost.UseSentry(o =>
+    {
+        o.Dsn = sentryDsn;
+        o.TracesSampleRate = 1.0;
+        o.Environment = builder.Environment.EnvironmentName;
+    });
 
     ValidateStartupConfiguration(builder.Configuration);
 

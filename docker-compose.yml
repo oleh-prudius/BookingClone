@@ -40,6 +40,7 @@ services:
       Smtp__Password: ${SMTP_PASSWORD:-}
       Smtp__From: ${SMTP_FROM:-no-reply@bookingclone.com}
       Smtp__EnableSsl: ${SMTP_ENABLE_SSL:-true}
+      Sentry__Dsn: ${BACKEND_SENTRY_DSN:-}
     ports:
       - "5134:8080"
     volumes:
@@ -51,6 +52,7 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:5134/api}
+        VITE_SENTRY_DSN: ${FRONTEND_SENTRY_DSN:-}
     restart: unless-stopped
     depends_on:
       api:
