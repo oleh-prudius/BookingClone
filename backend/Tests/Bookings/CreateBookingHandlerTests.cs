@@ -1,9 +1,12 @@
+using Application.DTOs;
 using Application.Features.Bookings.Commands.CreateBooking;
 using Application.Features.Bookings.Events;
 using Application.Interfaces;
+using Domain.Entities;
 using FluentAssertions;
 using Infrastructure.Repositories;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using Tests.Fixtures;
 using Tests.Helpers;
@@ -121,5 +124,68 @@ public class CreateBookingHandlerTests(DatabaseFixture fixture) : IAsyncLifetime
 
         result.IsSuccess.Should().BeFalse();
         result.Error.Code.Should().Be("Conflict");
+    }
+
+    [Fact]
+    public async Task Handle_WithBreakfastSelection_AddsBreakfastCostToAmountToPay()
+    {
+        var (customer, variant) = await SeedHelper.SeedBookingChainAsync(_ctx);
+        var room = await _ctx.Rooms.SingleAsync(r => r.Id == variant.RoomId);
+
+        var breakfast = new Breakfast { Name = "Continental" };
+        _ctx.Breakfasts.Add(breakfast);
+        await _ctx.SaveChangesAsync();
+
+        _ctx.HotelBreakfasts.Add(new HotelBreakfast { HotelId = room.HotelId, BreakfastId = breakfast.Id, Price = 15m });
+        await _ctx.SaveChangesAsync();
+
+        var repo = new BookingRepository(_ctx);
+        var handler = new CreateBookingHandler(repo, new RoomVariantRepository(_ctx), new RoomRepository(_ctx), new HotelBreakfastRepository(_ctx), _publisher.Object);
+
+        var command = new CreateBookingCommand(
+            CustomerId: customer.Id,
+            RoomVariantId: variant.Id,
+            Quantity: 1,
+            CheckIn: new DateTime(2027, 8, 10),
+            CheckOut: new DateTime(2027, 8, 15),
+            TotalPrice: 500m,
+            PersonalWishes: null,
+            Breakfasts: [new BreakfastSelectionDto(breakfast.Id, 2)]
+        );
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        result.IsSuccess.Should().BeTrue();
+        // 500 room total + (15 per breakfast * 2 guests) = 530
+        result.Value!.TotalPrice.Should().Be(530m);
+    }
+
+    [Fact]
+    public async Task Handle_BreakfastNotOfferedByHotel_ReturnsValidationError()
+    {
+        var (customer, variant) = await SeedHelper.SeedBookingChainAsync(_ctx);
+
+        var breakfast = new Breakfast { Name = "Not offered here" };
+        _ctx.Breakfasts.Add(breakfast);
+        await _ctx.SaveChangesAsync();
+
+        var repo = new BookingRepository(_ctx);
+        var handler = new CreateBookingHandler(repo, new RoomVariantRepository(_ctx), new RoomRepository(_ctx), new HotelBreakfastRepository(_ctx), _publisher.Object);
+
+        var command = new CreateBookingCommand(
+            CustomerId: customer.Id,
+            RoomVariantId: variant.Id,
+            Quantity: 1,
+            CheckIn: new DateTime(2027, 9, 10),
+            CheckOut: new DateTime(2027, 9, 15),
+            TotalPrice: 500m,
+            PersonalWishes: null,
+            Breakfasts: [new BreakfastSelectionDto(breakfast.Id, 1)]
+        );
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Code.Should().Be("Validation");
     }
 }
