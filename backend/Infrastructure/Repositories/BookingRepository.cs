@@ -11,7 +11,8 @@ public class BookingRepository(AppDbContext context) : IBookingRepository
         .Include(b => b.Customer)
         .Include(b => b.BookingRoomVariants)
             .ThenInclude(brv => brv.RoomVariant)
-                .ThenInclude(rv => rv.Room);
+                .ThenInclude(rv => rv.Room)
+                    .ThenInclude(rv => rv.Hotel);
 
     public async Task<IReadOnlyList<Booking>> GetAllAsync(CancellationToken ct = default)
     {

@@ -1,4 +1,5 @@
 using Application.DTOs;
+using Application.Features.Bookings.Events;
 using Domain.Common;
 using Domain.Entities;
 using Domain.Enums;
@@ -12,7 +13,8 @@ public class CreateBookingHandler(
     IBookingRepository bookingRepository,
     IRoomVariantRepository roomVariantRepository,
     IRoomRepository roomRepository,
-    IHotelBreakfastRepository hotelBreakfastRepository)
+    IHotelBreakfastRepository hotelBreakfastRepository,
+    IPublisher publisher)
     : IRequestHandler<CreateBookingCommand, Result<BookingDto>>
 {
     public async Task<Result<BookingDto>> Handle(CreateBookingCommand request, CancellationToken ct)
@@ -81,6 +83,7 @@ public class CreateBookingHandler(
 
         var created = await bookingRepository.AddAsync(booking, ct);
         var withIncludes = await bookingRepository.GetByIdAsync(created.Id, ct);
+        await publisher.Publish(new BookingCreatedEvent(created.Id), ct);
         return BookingMappings.MapToDto(withIncludes!);
     }
 }

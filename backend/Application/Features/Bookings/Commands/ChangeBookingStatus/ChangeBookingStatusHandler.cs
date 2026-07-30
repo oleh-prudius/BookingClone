@@ -1,4 +1,5 @@
 using Application.DTOs;
+using Application.Features.Bookings.Events;
 using Application.Interfaces;
 using Domain.Common;
 using Domain.Constants;
@@ -13,7 +14,8 @@ namespace Application.Features.Bookings.Commands.ChangeBookingStatus;
 public class ChangeBookingStatusHandler(
     IBookingRepository bookingRepository,
     INotificationRepository notificationRepository,
-    ICurrentUserService currentUser)
+    ICurrentUserService currentUser,
+    IPublisher publisher)
     : IRequestHandler<ChangeBookingStatusCommand, Result<BookingDto>>
 {
     public async Task<Result<BookingDto>> Handle(ChangeBookingStatusCommand request, CancellationToken ct)
@@ -41,7 +43,11 @@ public class ChangeBookingStatusHandler(
 
         await bookingRepository.UpdateAsync(booking);
 
-        if (request.NewStatus == BookingStatus.Confirmed)
+        if (request.NewStatus == BookingStatus.Cancelled)
+        {
+            await publisher.Publish(new BookingCancelledEvent(booking.Id), ct);
+        }
+        else if (request.NewStatus == BookingStatus.Confirmed)
         {
             await notificationRepository.AddAsync(new Notification
             {
@@ -50,6 +56,7 @@ public class ChangeBookingStatusHandler(
                 Message = $"Your booking #{booking.Id} has been confirmed.",
                 CreatedAtUtc = DateTimeOffset.UtcNow
             }, ct);
+            await publisher.Publish(new BookingConfirmedEvent(booking.Id), ct);
         }
 
         return BookingMappings.MapToDto(booking);
