@@ -7,11 +7,15 @@ RUN npm ci
 
 COPY . .
 
-# API URL and Sentry DSN are baked in at build time (Vite inlines VITE_* vars)
+# API URL, Sentry DSN and Umami analytics config are baked in at build time (Vite inlines VITE_* vars)
 ARG VITE_API_BASE_URL=http://localhost:5134/api
 ARG VITE_SENTRY_DSN=
+ARG VITE_UMAMI_SCRIPT_URL=
+ARG VITE_UMAMI_WEBSITE_ID=
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 ENV VITE_SENTRY_DSN=$VITE_SENTRY_DSN
+ENV VITE_UMAMI_SCRIPT_URL=$VITE_UMAMI_SCRIPT_URL
+ENV VITE_UMAMI_WEBSITE_ID=$VITE_UMAMI_WEBSITE_ID
 RUN npm run build
 
 FROM nginx:alpine AS runtime

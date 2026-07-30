@@ -58,6 +58,8 @@ services:
       args:
         VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:5134/api}
         VITE_SENTRY_DSN: ${FRONTEND_SENTRY_DSN:-}
+        VITE_UMAMI_SCRIPT_URL: ${VITE_UMAMI_SCRIPT_URL:-}
+        VITE_UMAMI_WEBSITE_ID: ${VITE_UMAMI_WEBSITE_ID:-}
     restart: unless-stopped
     depends_on:
       api:
@@ -65,6 +67,40 @@ services:
     ports:
       - "5173:80"
 
+  umami-db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: umami
+      POSTGRES_USER: umami
+      POSTGRES_PASSWORD: "${UMAMI_DB_PASSWORD:-change-me-to-a-strong-password}"
+    volumes:
+      - umami_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U umami -d umami"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Self-hosted, free analytics (no external account needed). After first start,
+  # log in at http://localhost:3001 (default admin/umami), add a website, then set
+  # VITE_UMAMI_WEBSITE_ID (and rebuild the frontend) to start tracking. See DEVOPS.md.
+  umami:
+    image: ghcr.io/umami-software/umami:postgresql-latest
+    restart: unless-stopped
+    depends_on:
+      umami-db:
+        condition: service_healthy
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1
+    environment:
+      DATABASE_URL: "postgresql://umami:${UMAMI_DB_PASSWORD:-change-me-to-a-strong-password}@umami-db:5432/umami"
+      APP_SECRET: "${UMAMI_APP_SECRET:?Set UMAMI_APP_SECRET in .env, see .env.example - generate with 'openssl rand -base64 32'}"
+      BASE_PATH: ${UMAMI_BASE_PATH:-}
+    ports:
+      - "3001:3000"
+
 volumes:
   pgdata:
   api_uploads:
+  umami_pgdata:

@@ -9,8 +9,10 @@ import { ErrorBoundary } from './ErrorBoundary';
 import { NotificationBridge } from './NotificationBridge';
 import { ThemeProvider, useTheme } from '@shared/theme/ThemeContext';
 import { initSentry } from './sentry';
+import { initAnalytics } from './analytics';
 
 initSentry();
+initAnalytics();
 
 function ThemedApp() {
   const { theme: mode } = useTheme();

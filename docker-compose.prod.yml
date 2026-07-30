@@ -27,6 +27,13 @@ services:
     build:
       args:
         VITE_API_BASE_URL: https://${DOMAIN}/api
+        VITE_UMAMI_SCRIPT_URL: https://${DOMAIN}/umami/script.js
+    ports: !reset []
+
+  umami:
+    # Served through Caddy at /umami instead of its own port; see Caddyfile.
+    environment:
+      BASE_PATH: /umami
     ports: !reset []
 
   caddy:

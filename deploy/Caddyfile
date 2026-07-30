@@ -13,6 +13,13 @@
 		reverse_proxy api:8080
 	}
 
+	# Self-hosted Umami analytics (admin UI + tracking script), served under a
+	# subpath so it doesn't need its own domain/port. Umami's BASE_PATH env var
+	# (set in docker-compose.prod.yml) must match this prefix.
+	handle_path /umami/* {
+		reverse_proxy umami:3000
+	}
+
 	handle {
 		reverse_proxy frontend:80
 	}

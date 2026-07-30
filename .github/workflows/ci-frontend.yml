@@ -83,6 +83,7 @@ jobs:
       JWT_KEY: ${{ secrets.E2E_JWT_KEY || 'ci-e2e-test-key-not-for-production-use-32chars' }}
       POSTGRES_PASSWORD: ${{ secrets.E2E_POSTGRES_PASSWORD || 'ci-e2e-postgres-password' }}
       ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD || 'ci-e2e-Admin@123456' }}
+      UMAMI_APP_SECRET: ${{ secrets.E2E_UMAMI_APP_SECRET || 'ci-e2e-umami-secret-not-for-production-use' }}
       # The Playwright spec reads its own E2E_-prefixed vars; keep them equal to the
       # ones docker-compose seeds the admin account with above.
       E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD || 'ci-e2e-Admin@123456' }}

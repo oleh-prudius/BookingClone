@@ -95,6 +95,13 @@ config file than the Docker path above.
   Both no-op cleanly when unset. The backend also forwards Serilog `Error`+ logs to
   Sentry. `FRONTEND_SENTRY_DSN` is baked in at frontend build time like `VITE_API_BASE_URL`
   — changing it requires rebuilding the frontend image.
+- **Analytics (Umami).** Optional, self-hosted, free — no external account needed.
+  `umami` + `umami-db` run alongside the rest of the stack. Set `UMAMI_DB_PASSWORD`
+  and `UMAMI_APP_SECRET` in `.env`, run `docker compose up -d`, then log in at
+  `http://localhost:3001` (default `admin`/`umami` — change the password immediately),
+  add a website, copy its Website ID into `VITE_UMAMI_WEBSITE_ID` in `.env`, and rebuild
+  the frontend (`docker compose up -d --build frontend`) to start tracking. In prod,
+  Umami is served through Caddy at `/umami` instead of its own port (see `Caddyfile`).
 - **Frontend API URL is build-time.** Vite inlines `VITE_API_BASE_URL` during
   `npm run build`, so it is passed as a Docker build arg. Change it → rebuild the image.
 - **CI tests** use Testcontainers, which starts a throwaway PostgreSQL via the runner's

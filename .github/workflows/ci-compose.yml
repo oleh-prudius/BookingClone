@@ -27,6 +27,7 @@ jobs:
           POSTGRES_PASSWORD: ci-validate-password
           JWT_KEY: ci-validate-jwt-key-not-for-production-use
           ADMIN_PASSWORD: ci-validate-Admin@123456
+          UMAMI_APP_SECRET: ci-validate-umami-secret-not-for-production-use
         run: docker compose -f docker-compose.yml config -q
 
       - name: Validate production overlay
@@ -34,5 +35,6 @@ jobs:
           POSTGRES_PASSWORD: ci-validate-password
           JWT_KEY: ci-validate-jwt-key-not-for-production-use
           ADMIN_PASSWORD: ci-validate-Admin@123456
+          UMAMI_APP_SECRET: ci-validate-umami-secret-not-for-production-use
           DOMAIN: ci-validate.example.com
         run: docker compose -f docker-compose.yml -f docker-compose.prod.yml config -q
