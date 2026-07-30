@@ -413,7 +413,8 @@ public class DbInitializer(
 				LastName  = "Realtor",
 				Email     = realtorEmail,
 				UserName  = "test_realtor",
-				Photo     = "default.jpg"
+				Photo     = "default.jpg",
+				EmailConfirmed = true
 			};
 			var result = await userManager.CreateAsync(realtor, "Realtor123");
 			if (!result.Succeeded)

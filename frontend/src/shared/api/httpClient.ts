@@ -21,6 +21,8 @@ httpClient.interceptors.request.use((config) => {
   return config;
 });
 
+const AUTH_ENDPOINTS_WITHOUT_SESSION = ['/auth/login', '/auth/register', '/auth/refresh'];
+
 httpClient.interceptors.response.use(
   (response) => response,
   (error: unknown) => {
@@ -29,8 +31,10 @@ httpClient.interceptors.response.use(
     }
 
     const status = error.response?.status;
+    const url = error.config?.url ?? '';
+    const isAuthEndpoint = AUTH_ENDPOINTS_WITHOUT_SESSION.some((path) => url.includes(path));
 
-    if (status === 401) {
+    if (status === 401 && !isAuthEndpoint) {
       tokenStorage.clear();
       notifyError('Your session has expired. Please log in again.');
       window.dispatchEvent(new Event('auth:logout'));
