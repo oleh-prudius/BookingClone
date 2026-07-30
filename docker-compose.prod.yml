@@ -1,0 +1,72 @@
+# Production overlay. Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# Adds a Caddy reverse proxy that terminates HTTPS (automatic Let's Encrypt
+# certificate + HTTP->HTTPS redirect) in front of api + frontend, and a
+# scheduled Postgres backup job. Requires DOMAIN to be set in .env.
+#
+# If you're using a managed/remote Postgres (e.g. Neon via
+# DATABASE_CONNECTION_STRING) instead of the local `db` container, that
+# provider already handles backups for you — run with
+# `docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build --scale db-backup=0`
+# to skip the db-backup service.
+
+services:
+  db:
+    # Only reachable from other containers on the compose network in prod.
+    ports: !reset []
+
+  api:
+    ports: !reset []
+    environment:
+      Frontend__Url: https://${DOMAIN:?Set DOMAIN in .env, see .env.example}
+      ServerRunUrl: https://${DOMAIN}
+      FileStorage__BaseUrl: https://${DOMAIN}
+
+  frontend:
+    build:
+      args:
+        VITE_API_BASE_URL: https://${DOMAIN}/api
+    ports: !reset []
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
+    environment:
+      DOMAIN: ${DOMAIN:?Set DOMAIN in .env, see .env.example}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+  db-backup:
+    image: prodrigestivill/postgres-backup-local:17-alpine
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_DB: ${POSTGRES_DB:-bookingclone}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      SCHEDULE: "@daily"
+      BACKUP_KEEP_DAYS: 7
+      BACKUP_KEEP_WEEKS: 4
+      BACKUP_KEEP_MONTHS: 6
+      HEALTHCHECK_PORT: 8080
+    volumes:
+      - db_backups:/backups
+
+volumes:
+  caddy_data:
+  caddy_config:
+  db_backups:

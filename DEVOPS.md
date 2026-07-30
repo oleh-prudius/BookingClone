@@ -11,7 +11,10 @@ Containerized setup for BookingClone: PostgreSQL + ASP.NET Core API + React/Vite
 | `backend/API/Dockerfile` | Multi-stage .NET 10 build → `aspnet` runtime (port 8080). |
 | `frontend/Dockerfile` | Vite build → nginx static serve (port 80). |
 | `frontend/nginx.conf` | SPA fallback routing + asset caching. |
-| `.github/workflows/ci.yml` | CI: backend build/test, frontend lint/build, docker image build. |
+| `.github/workflows/ci-backend.yml` | CI: backend build/test, docker image build. |
+| `.github/workflows/ci-frontend.yml` | CI: frontend lint/build, docker image build, E2E tests. |
+| `docker-compose.prod.yml` | Production overlay: Caddy reverse proxy (HTTPS), scheduled DB backups, no directly-exposed service ports. |
+| `deploy/Caddyfile` | Reverse proxy routing (`/api`, `/hubs`, `/uploads` → api; everything else → frontend) + automatic Let's Encrypt TLS. |
 
 ## Quick start
 
@@ -91,6 +94,77 @@ config file than the Docker path above.
   `npm run build`, so it is passed as a Docker build arg. Change it → rebuild the image.
 - **CI tests** use Testcontainers, which starts a throwaway PostgreSQL via the runner's
   Docker daemon; no separate service container is needed.
+
+## Production deployment
+
+Requires a real domain pointed (A record) at the server's IP — Caddy needs
+this to request a Let's Encrypt certificate. Deploying by IP only isn't
+supported by this setup (no cert authority will issue for a bare IP); drop
+the `docker-compose.prod.yml` overlay and use the base `docker-compose.yml`
+directly (over plain HTTP) if a domain genuinely isn't available.
+
+```bash
+cp .env.example .env
+# Set real (non-placeholder) values for: POSTGRES_PASSWORD, JWT_KEY,
+# ADMIN_PASSWORD, and DOMAIN=your.domain.example — see .env.example.
+
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+```
+
+This starts everything behind Caddy on ports 80/443 (HTTP requests
+redirect to HTTPS automatically); `db`, `api` and `frontend` no longer
+publish ports directly to the host. Uploaded hotel/avatar photos persist
+in the `api_uploads` named volume across container recreation.
+
+If pointing at a managed/remote Postgres (e.g. Neon) via
+`DATABASE_CONNECTION_STRING` instead of the local `db` container, that
+provider already handles backups — scale the bundled backup job to zero:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build --scale db-backup=0
+```
+
+### Backups
+
+The `db-backup` service (only relevant when using the local `db`
+container, see above) runs `pg_dump` once a day and prunes old dumps to a
+retention policy of 7 daily / 4 weekly / 6 monthly backups, stored in the
+`db_backups` named volume as gzipped SQL.
+
+List available backups:
+
+```bash
+docker compose exec db-backup ls -la /backups/daily /backups/weekly /backups/monthly
+```
+
+### Restore runbook
+
+1. Stop the API so it stops writing to the database:
+   ```bash
+   docker compose -f docker-compose.yml -f docker-compose.prod.yml stop api
+   ```
+2. Pick a backup file and restore it (the backup image ships a helper script):
+   ```bash
+   docker compose exec db-backup sh -c 'ls /backups/daily'
+   docker compose exec db-backup /restore.sh <filename>
+   ```
+3. Restart the API:
+   ```bash
+   docker compose -f docker-compose.yml -f docker-compose.prod.yml start api
+   ```
+
+### Rollback runbook (bad deploy)
+
+```bash
+git log --oneline -10                 # find the last known-good commit/tag
+git checkout <good-commit>
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+```
+
+EF Core migrations only ever add forward; rolling back application code
+while a *newer* migration has already run against the database is only
+safe if that migration didn't drop/rename anything the older code reads —
+check the migration before rolling back across one.
 
 ## Common commands
 

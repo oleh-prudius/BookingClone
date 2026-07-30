@@ -42,6 +42,8 @@ services:
       Smtp__EnableSsl: ${SMTP_ENABLE_SSL:-true}
     ports:
       - "5134:8080"
+    volumes:
+      - api_uploads:/app/wwwroot/uploads
 
   frontend:
     build:
@@ -58,3 +60,4 @@ services:
 
 volumes:
   pgdata:
+  api_uploads:

@@ -1,0 +1,19 @@
+{$DOMAIN} {
+	# API controllers, SignalR hub and uploaded file storage all live on the
+	# api container; everything else is the static frontend build.
+	handle /api/* {
+		reverse_proxy api:8080
+	}
+
+	handle /hubs/* {
+		reverse_proxy api:8080
+	}
+
+	handle /uploads/* {
+		reverse_proxy api:8080
+	}
+
+	handle {
+		reverse_proxy frontend:80
+	}
+}
