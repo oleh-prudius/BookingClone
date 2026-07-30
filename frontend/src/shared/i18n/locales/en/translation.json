@@ -385,5 +385,37 @@
       "sofas": "Sofas",
       "extraBeds": "Extra beds"
     }
+  },
+  "transport": {
+    "from": "From",
+    "to": "To",
+    "date": "Date",
+    "type": "Type",
+    "anyType": "Any type",
+    "selectCity": "Select a city",
+    "search": "Search",
+    "searchError": "Could not search transport routes. Please try again.",
+    "noRoutes": "No routes found for your search.",
+    "departure": "Departure",
+    "arrival": "Arrival",
+    "price": "Price",
+    "availableSeats": "Available seats",
+    "buyTicket": "Buy ticket",
+    "seats": "Seats",
+    "total": "Total",
+    "confirmPurchase": "Confirm purchase",
+    "ticketPurchased": "Ticket purchased",
+    "purchaseError": "Could not purchase the ticket. Please try again.",
+    "types": {
+      "Bus": "Bus",
+      "Train": "Train",
+      "Plane": "Plane"
+    }
+  },
+  "tickets": {
+    "noTickets": "You have not purchased any tickets yet.",
+    "seats_one": "{{count}} seat",
+    "seats_other": "{{count}} seats",
+    "purchasedOn": "Purchased on {{date}}"
   }
 }

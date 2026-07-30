@@ -22,6 +22,8 @@ import { AdminApp } from '@pages/admin';
 import { Page404 } from '@pages/Page404';
 import { ComingSoonPage } from '@pages/coming-soon/ComingSoonPage';
 import { UiKitPage } from '@pages/ui-kit';
+import { TransportPage } from '@pages/transport';
+import { MyTicketsPage } from '@pages/tickets';
 export default function App() {
   return (
     <BrowserRouter>
@@ -52,8 +54,8 @@ export default function App() {
                     <Route path="/host" element={<HostDashboardPage />} />
                     <Route path="/host/hotels/:id" element={<HostHotelDetailPage />} />
                     <Route path="/ui-kit" element={<UiKitPage />} />
-                    <Route path="/tickets" element={<ComingSoonPage titleKey="header.tickets" />} />
-                    <Route path="/transport" element={<ComingSoonPage titleKey="header.transport" />} />
+                    <Route path="/tickets" element={<MyTicketsPage />} />
+                    <Route path="/transport" element={<TransportPage />} />
                     <Route path="/nearby" element={<ComingSoonPage titleKey="header.nearby" />} />
                     <Route path="*" element={<Page404 />} />
                   </Routes>

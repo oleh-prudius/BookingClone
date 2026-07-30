@@ -401,5 +401,39 @@
       "sofas": "Дивани",
       "extraBeds": "Додаткові ліжка"
     }
+  },
+  "transport": {
+    "from": "Звідки",
+    "to": "Куди",
+    "date": "Дата",
+    "type": "Тип",
+    "anyType": "Будь-який тип",
+    "selectCity": "Оберіть місто",
+    "search": "Пошук",
+    "searchError": "Не вдалося знайти маршрути. Спробуйте ще раз.",
+    "noRoutes": "За вашим запитом маршрутів не знайдено.",
+    "departure": "Відправлення",
+    "arrival": "Прибуття",
+    "price": "Ціна",
+    "availableSeats": "Вільних місць",
+    "buyTicket": "Купити квиток",
+    "seats": "Місць",
+    "total": "Разом",
+    "confirmPurchase": "Підтвердити покупку",
+    "ticketPurchased": "Квиток придбано",
+    "purchaseError": "Не вдалося придбати квиток. Спробуйте ще раз.",
+    "types": {
+      "Bus": "Автобус",
+      "Train": "Потяг",
+      "Plane": "Літак"
+    }
+  },
+  "tickets": {
+    "noTickets": "Ви ще не купували квитки.",
+    "seats_one": "{{count}} місце",
+    "seats_few": "{{count}} місця",
+    "seats_many": "{{count}} місць",
+    "seats_other": "{{count}} місць",
+    "purchasedOn": "Придбано {{date}}"
   }
 }
