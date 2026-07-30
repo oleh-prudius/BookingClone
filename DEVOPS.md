@@ -11,8 +11,8 @@ Containerized setup for BookingClone: PostgreSQL + ASP.NET Core API + React/Vite
 | `backend/API/Dockerfile` | Multi-stage .NET 10 build → `aspnet` runtime (port 8080). |
 | `frontend/Dockerfile` | Vite build → nginx static serve (port 80). |
 | `frontend/nginx.conf` | SPA fallback routing + asset caching. |
-| `.github/workflows/ci-backend.yml` | CI: backend build/test, docker image build. |
-| `.github/workflows/ci-frontend.yml` | CI: frontend lint/build, docker image build, E2E tests. |
+| `.github/workflows/ci-backend.yml` | CI: backend build/test; builds (and on push to `main`, publishes to GHCR) the API image. |
+| `.github/workflows/ci-frontend.yml` | CI: frontend lint/build, E2E tests; builds (and on push to `main`, publishes to GHCR) the frontend image. |
 | `docker-compose.prod.yml` | Production overlay: Caddy reverse proxy (HTTPS), scheduled DB backups, no directly-exposed service ports. |
 | `deploy/Caddyfile` | Reverse proxy routing (`/api`, `/hubs`, `/uploads` → api; everything else → frontend) + automatic Let's Encrypt TLS. |
 
@@ -115,6 +115,22 @@ This starts everything behind Caddy on ports 80/443 (HTTP requests
 redirect to HTTPS automatically); `db`, `api` and `frontend` no longer
 publish ports directly to the host. Uploaded hotel/avatar photos persist
 in the `api_uploads` named volume across container recreation.
+
+### Prebuilt images (GHCR)
+
+Every push to `main` builds and publishes both images to GitHub Container
+Registry, tagged with the git SHA and `latest`:
+
+- `ghcr.io/studyprojectit/bookingclone-api:latest`
+- `ghcr.io/studyprojectit/bookingclone-frontend:latest`
+
+`docker-compose.yml` still builds both images locally (`build:`) rather than
+pulling these — building on the server keeps `VITE_API_BASE_URL` and other
+build-time config correct for whatever `.env` is in use there. The GHCR
+images are mainly useful for pulling a known-good version directly (e.g.
+`docker pull ghcr.io/studyprojectit/bookingclone-api:<git-sha>`) without a
+full source checkout + build on the server, such as during the rollback
+runbook below.
 
 If pointing at a managed/remote Postgres (e.g. Neon) via
 `DATABASE_CONNECTION_STRING` instead of the local `db` container, that
