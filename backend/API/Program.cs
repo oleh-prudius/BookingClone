@@ -3,6 +3,7 @@ using API.Middleware;
 using Application;
 using Domain.Interfaces;
 using Infrastructure;
+using Infrastructure.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
@@ -32,6 +33,9 @@ try
 
     builder.Services.AddInfrastructure(builder.Configuration);
     builder.Services.AddApplication();
+
+    builder.Services.AddHealthChecks()
+        .AddDbContextCheck<AppDbContext>("database");
     
     var jwtKey = builder.Configuration["Jwt:Key"]
         ?? throw new InvalidOperationException("Jwt:Key is not configured");
@@ -182,6 +186,7 @@ try
     app.UseRateLimiter();
     app.MapControllers();
     app.MapHub<ChatHub>("/hubs/chat");
+    app.MapHealthChecks("/health");
 
     await app.Services.GetRequiredService<IScopeCoveredDbInicializer>().InitializeAsync();
 

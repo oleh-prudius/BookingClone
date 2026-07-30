@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-bookingclone}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env, see .env.example}"
     ports:
       - "5432:5432"
     volumes:
@@ -28,12 +28,12 @@ services:
       ASPNETCORE_ENVIRONMENT: Production
       # Config keys use "__" as the section separator (ConnectionStrings:DefaultConnection -> ConnectionStrings__DefaultConnection)
       # Set DATABASE_CONNECTION_STRING in .env to point at a shared/remote Postgres instead of the local `db` container.
-      ConnectionStrings__DefaultConnection: ${DATABASE_CONNECTION_STRING:-Host=db;Port=5432;Database=bookingclone;Username=postgres;Password=postgres}
-      Jwt__Key: ${JWT_KEY}
+      ConnectionStrings__DefaultConnection: "${DATABASE_CONNECTION_STRING:-Host=db;Port=5432;Database=bookingclone;Username=postgres;Password=${POSTGRES_PASSWORD}}"
+      Jwt__Key: "${JWT_KEY:?Set JWT_KEY in .env, see .env.example - generate with 'openssl rand -base64 32'}"
       Frontend__Url: ${FRONTEND_URL:-http://localhost:5173}
       ServerRunUrl: ${SERVER_RUN_URL:-http://localhost:5134}
       Admin__Email: ${ADMIN_EMAIL:-admin@bookingclone.dev}
-      Admin__Password: ${ADMIN_PASSWORD:-Admin@123456}
+      Admin__Password: "${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env, see .env.example}"
       Smtp__Host: ${SMTP_HOST:-}
       Smtp__Port: ${SMTP_PORT:-587}
       Smtp__User: ${SMTP_USER:-}
@@ -51,7 +51,8 @@ services:
         VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:5134/api}
     restart: unless-stopped
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     ports:
       - "5173:80"
 
