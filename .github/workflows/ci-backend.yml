@@ -28,6 +28,16 @@ jobs:
       - name: Build
         run: dotnet build BookingClone.sln --no-restore -c Release
 
+      - name: Test
+        run: dotnet test BookingClone.sln --no-build -c Release --logger "trx;LogFileName=test-results.trx"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-results
+          path: backend/Tests/TestResults/test-results.trx
+
   docker:
     name: Docker API image
     runs-on: ubuntu-latest
