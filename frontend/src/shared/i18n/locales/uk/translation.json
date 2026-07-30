@@ -435,5 +435,19 @@
     "seats_many": "{{count}} місць",
     "seats_other": "{{count}} місць",
     "purchasedOn": "Придбано {{date}}"
+  },
+  "nearby": {
+    "selectCity": "Оберіть місто",
+    "selectCityHint": "Оберіть місто, щоб побачити місця поруч.",
+    "allCategories": "Усі категорії",
+    "noPlaces": "Місць не знайдено.",
+    "distanceKm": "{{km}} км",
+    "categories": {
+      "Restaurant": "Ресторан",
+      "Landmark": "Визначна пам’ятка",
+      "Museum": "Музей",
+      "Park": "Парк",
+      "Shopping": "Шопінг"
+    }
   }
 }

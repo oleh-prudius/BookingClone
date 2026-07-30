@@ -417,5 +417,19 @@
     "seats_one": "{{count}} seat",
     "seats_other": "{{count}} seats",
     "purchasedOn": "Purchased on {{date}}"
+  },
+  "nearby": {
+    "selectCity": "Select a city",
+    "selectCityHint": "Select a city to see nearby places.",
+    "allCategories": "All categories",
+    "noPlaces": "No places found.",
+    "distanceKm": "{{km}} km",
+    "categories": {
+      "Restaurant": "Restaurant",
+      "Landmark": "Landmark",
+      "Museum": "Museum",
+      "Park": "Park",
+      "Shopping": "Shopping"
+    }
   }
 }

@@ -24,6 +24,7 @@ import { ComingSoonPage } from '@pages/coming-soon/ComingSoonPage';
 import { UiKitPage } from '@pages/ui-kit';
 import { TransportPage } from '@pages/transport';
 import { MyTicketsPage } from '@pages/tickets';
+import { NearbyPage } from '@pages/nearby';
 export default function App() {
   return (
     <BrowserRouter>
@@ -56,7 +57,7 @@ export default function App() {
                     <Route path="/ui-kit" element={<UiKitPage />} />
                     <Route path="/tickets" element={<MyTicketsPage />} />
                     <Route path="/transport" element={<TransportPage />} />
-                    <Route path="/nearby" element={<ComingSoonPage titleKey="header.nearby" />} />
+                    <Route path="/nearby" element={<NearbyPage />} />
                     <Route path="*" element={<Page404 />} />
                   </Routes>
                 </main>

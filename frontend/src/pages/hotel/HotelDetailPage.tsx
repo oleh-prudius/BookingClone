@@ -6,6 +6,7 @@ import { EnvironmentOutlined, HeartOutlined, HeartFilled, StarFilled } from '@an
 import { hotelApi } from '@entities/hotel';
 import { hotelPhotoApi, type HotelPhoto } from '@entities/hotel-photo';
 import { MapPanel } from '@widgets/hotel-map';
+import { NearbyPlacesList } from '@widgets/nearby-places';
 import type { Hotel } from '@shared/types';
 import { AppButton } from '@shared/ui';
 import { toStars } from '@shared/lib/rating';
@@ -146,6 +147,11 @@ export function HotelDetailPage() {
       <Typography.Title level={4}>{t('hotel.location')}</Typography.Title>
       <div style={{ marginBottom: 24 }}>
         <MapPanel hotels={[hotel]} height="360px" sticky={false} />
+      </div>
+
+      <Typography.Title level={4}>{t('header.nearby')}</Typography.Title>
+      <div style={{ marginBottom: 24 }}>
+        <NearbyPlacesList hotelId={hotel.id} />
       </div>
 
       <Typography.Title level={4}>{t('hotel.reviews')}</Typography.Title>
