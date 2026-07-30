@@ -24,6 +24,11 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    sysctls:
+      # This host resolves external DNS names (Neon Postgres, Sentry ingest) to IPv6-only
+      # addresses that the container's network can't route, causing "Resource temporarily
+      # unavailable" on connect. Force IPv4-only so those connections actually succeed.
+      - net.ipv6.conf.all.disable_ipv6=1
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       # Config keys use "__" as the section separator (ConnectionStrings:DefaultConnection -> ConnectionStrings__DefaultConnection)
