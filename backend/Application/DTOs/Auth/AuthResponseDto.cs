@@ -15,5 +15,6 @@ public class UserDto
     public string Email { get; set; } = null!;
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
+    public string? Photo { get; set; }
     public IList<string> Roles { get; set; } = new List<string>();
 }

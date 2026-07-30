@@ -48,6 +48,7 @@ public class RefreshTokenHandler(
                 Email = user.Email ?? string.Empty,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                Photo = user.Photo,
                 Roles = roles
             }
         };

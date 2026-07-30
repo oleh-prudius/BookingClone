@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Navigate, useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Typography, Collapse, List, Tag, Space, Popconfirm, message, Empty, Spin } from 'antd';
+import { Typography, Collapse, List, Tag, Space, Popconfirm, message, Empty, Spin, Upload, Image } from 'antd';
+import type { UploadProps } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { useAuth } from '@features/auth';
 import { AppButton } from '@shared/ui';
 import { hotelApi } from '@entities/hotel';
+import { hotelPhotoApi, type HotelPhoto } from '@entities/hotel-photo';
 import { roomApi, type Room } from '@entities/room';
 import { roomVariantApi, type RoomVariant } from '@entities/room-variant';
 import type { Hotel } from '@shared/types';
@@ -21,6 +23,8 @@ export function HostHotelDetailPage() {
   const [hotel, setHotel] = useState<Hotel | null>(null);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [variantsByRoom, setVariantsByRoom] = useState<Record<number, RoomVariant[]>>({});
+  const [photos, setPhotos] = useState<HotelPhoto[]>([]);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const [roomModalOpen, setRoomModalOpen] = useState(false);
@@ -39,13 +43,17 @@ export function HostHotelDetailPage() {
     setVariantsByRoom(Object.fromEntries(entries));
   }, [hotelId]);
 
+  const loadPhotos = useCallback(async () => {
+    setPhotos(await hotelPhotoApi.getByHotelId(hotelId));
+  }, [hotelId]);
+
   const load = useCallback(() => {
     setLoading(true);
-    Promise.all([hotelApi.getById(hotelId), loadRooms()])
+    Promise.all([hotelApi.getById(hotelId), loadRooms(), loadPhotos()])
       .then(([h]) => setHotel(h))
       .catch(() => message.error(t('host.detail.loadError')))
       .finally(() => setLoading(false));
-  }, [hotelId, loadRooms]);
+  }, [hotelId, loadRooms, loadPhotos]);
 
   useEffect(() => {
     load();
@@ -53,6 +61,32 @@ export function HostHotelDetailPage() {
 
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   if (!user!.roles.includes('Realtor')) return <Navigate to="/" replace />;
+
+  const handleUploadPhoto: UploadProps['customRequest'] = async (options) => {
+    const { file, onSuccess, onError } = options;
+    setUploadingPhoto(true);
+    try {
+      await hotelPhotoApi.upload(hotelId, file as File, photos.length);
+      message.success(t('host.detail.photoUploaded'));
+      await loadPhotos();
+      onSuccess?.({});
+    } catch (err) {
+      message.error(t('host.detail.photoUploadError'));
+      onError?.(err as Error);
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
+
+  const handleDeletePhoto = async (photoId: number) => {
+    try {
+      await hotelPhotoApi.remove(photoId);
+      message.success(t('host.detail.photoRemoved'));
+      loadPhotos();
+    } catch {
+      message.error(t('host.detail.photoRemoveError'));
+    }
+  };
 
   const handleDeleteVariant = async (variantId: number) => {
     try {
@@ -75,6 +109,52 @@ export function HostHotelDetailPage() {
 
       <Typography.Title level={3} style={{ marginTop: 0 }}>{hotel.name}</Typography.Title>
       <Typography.Text type="secondary">{hotel.cityName}, {hotel.countryName}</Typography.Text>
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '24px 0 12px' }}>
+        <Typography.Title level={4} style={{ margin: 0 }}>{t('host.detail.photos')}</Typography.Title>
+        <Upload
+          accept="image/*"
+          showUploadList={false}
+          customRequest={handleUploadPhoto}
+          disabled={uploadingPhoto}
+        >
+          <AppButton variant="primary" icon={<PlusOutlined />} loading={uploadingPhoto}>
+            {t('host.detail.addPhoto')}
+          </AppButton>
+        </Upload>
+      </div>
+
+      {photos.length === 0 ? (
+        <Empty description={t('host.detail.noPhotosYet')} />
+      ) : (
+        <Image.PreviewGroup>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+            {photos.map((photo) => (
+              <div key={photo.id} style={{ position: 'relative', width: 140, height: 100 }}>
+                <Image
+                  src={photo.name}
+                  alt=""
+                  width={140}
+                  height={100}
+                  style={{ objectFit: 'cover', borderRadius: 6 }}
+                />
+                <Popconfirm
+                  title={t('host.detail.removePhotoConfirmTitle')}
+                  onConfirm={() => handleDeletePhoto(photo.id)}
+                >
+                  <AppButton
+                    variant="tertiary"
+                    danger
+                    size="small"
+                    icon={<DeleteOutlined />}
+                    style={{ position: 'absolute', top: 4, right: 4, background: 'rgba(255,255,255,0.9)' }}
+                  />
+                </Popconfirm>
+              </div>
+            ))}
+          </div>
+        </Image.PreviewGroup>
+      )}
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '24px 0 12px' }}>
         <Typography.Title level={4} style={{ margin: 0 }}>{t('host.detail.rooms')}</Typography.Title>

@@ -23,6 +23,7 @@ public class GetCurrentUserHandler(UserManager<AppUser> userManager)
             Email = user.Email ?? string.Empty,
             FirstName = user.FirstName,
             LastName = user.LastName,
+            Photo = user.Photo,
             Roles = roles
         };
     }

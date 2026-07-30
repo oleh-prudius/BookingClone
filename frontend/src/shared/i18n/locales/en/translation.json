@@ -218,6 +218,8 @@
   "profile": {
     "updateFailed": "Failed to update profile",
     "updateSuccess": "Profile updated!",
+    "avatarUpdated": "Profile photo updated",
+    "avatarUpdateError": "Could not update the profile photo",
     "usernameMinLength": "At least 3 characters",
     "saveChanges": "Save changes",
     "personalInformation": "Personal information",
@@ -316,7 +318,15 @@
       "noRatesYet": "No rates yet",
       "removeRateConfirmTitle": "Remove this rate?",
       "discountPrice": "${{price}} w/ discount",
-      "adultsChildren": "{{adults}} adults, {{children}} children"
+      "adultsChildren": "{{adults}} adults, {{children}} children",
+      "photos": "Photos",
+      "addPhoto": "Add photo",
+      "noPhotosYet": "No photos yet",
+      "photoUploaded": "Photo uploaded",
+      "photoUploadError": "Could not upload the photo",
+      "photoRemoved": "Photo removed",
+      "photoRemoveError": "Could not remove the photo",
+      "removePhotoConfirmTitle": "Remove this photo?"
     },
     "hotelForm": {
       "hotelUpdated": "Hotel updated",

@@ -10,6 +10,7 @@ using Application.Features.Auth.Commands.ResendConfirmationEmail;
 using Application.Features.Auth.Commands.ResetPassword;
 using Application.Features.Auth.Commands.RevokeToken;
 using Application.Features.Auth.Commands.UpdateProfile;
+using Application.Features.Auth.Commands.UploadAvatar;
 using Application.Features.Auth.Queries.GetCurrentUser;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -64,6 +65,35 @@ public class AuthController(IMediator mediator) : ControllerBase
             return Unauthorized();
 
         return (await mediator.Send(new UpdateProfileCommand(userId, dto), ct)).ToActionResult();
+    }
+
+    private const long MaxAvatarSizeBytes = 5 * 1024 * 1024;
+
+    private static readonly HashSet<string> AllowedAvatarContentTypes =
+    [
+        "image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif", "image/bmp"
+    ];
+
+    [HttpPost("avatar")]
+    [Authorize]
+    [RequestSizeLimit(5 * 1024 * 1024 + 4096)]
+    public async Task<IActionResult> UploadAvatar(IFormFile file, CancellationToken ct)
+    {
+        var idClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!long.TryParse(idClaim, out var userId))
+            return Unauthorized();
+
+        if (file is null || file.Length == 0)
+            return BadRequest("File is required.");
+
+        if (file.Length > MaxAvatarSizeBytes)
+            return BadRequest("File size must not exceed 5 MB.");
+
+        if (!AllowedAvatarContentTypes.Contains(file.ContentType.ToLowerInvariant()))
+            return BadRequest("Only image files are allowed (jpeg, png, webp, gif, bmp).");
+
+        var command = new UploadAvatarCommand(userId, file.OpenReadStream(), file.FileName, file.ContentType);
+        return (await mediator.Send(command, ct)).ToActionResult();
     }
 
     [HttpPost("confirm-email")]

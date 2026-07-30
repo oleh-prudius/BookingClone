@@ -230,6 +230,8 @@
   "profile": {
     "updateFailed": "Не вдалося оновити профіль",
     "updateSuccess": "Профіль оновлено!",
+    "avatarUpdated": "Фото профілю оновлено",
+    "avatarUpdateError": "Не вдалося оновити фото профілю",
     "usernameMinLength": "Щонайменше 3 символи",
     "saveChanges": "Зберегти зміни",
     "personalInformation": "Особиста інформація",
@@ -332,7 +334,15 @@
       "noRatesYet": "Ще немає тарифів",
       "removeRateConfirmTitle": "Видалити цей тариф?",
       "discountPrice": "${{price}} зі знижкою",
-      "adultsChildren": "дорослих: {{adults}}, дітей: {{children}}"
+      "adultsChildren": "дорослих: {{adults}}, дітей: {{children}}",
+      "photos": "Фото",
+      "addPhoto": "Додати фото",
+      "noPhotosYet": "Ще немає фото",
+      "photoUploaded": "Фото завантажено",
+      "photoUploadError": "Не вдалося завантажити фото",
+      "photoRemoved": "Фото видалено",
+      "photoRemoveError": "Не вдалося видалити фото",
+      "removePhotoConfirmTitle": "Видалити це фото?"
     },
     "hotelForm": {
       "hotelUpdated": "Готель оновлено",

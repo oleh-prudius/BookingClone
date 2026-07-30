@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Typography, Card, Avatar, Tag, Space, Tabs } from 'antd';
+import { Typography, Card, Avatar, Tag, Space, Tabs, Upload, message } from 'antd';
+import type { UploadProps } from 'antd';
 import {
   UserOutlined,
   CalendarOutlined,
@@ -8,6 +10,7 @@ import {
   LogoutOutlined,
   CreditCardOutlined,
   SettingOutlined,
+  CameraOutlined,
 } from '@ant-design/icons';
 import { useAuth, ProfileForm } from '@features/auth';
 import { AppButton } from '@shared/ui';
@@ -15,8 +18,9 @@ import { PaymentMethodsSection } from './PaymentMethodsSection';
 
 export function ProfilePage() {
   const { t } = useTranslation();
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user, logout, uploadAvatar } = useAuth();
   const navigate = useNavigate();
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   if (!isAuthenticated) return <Navigate to="/login" replace />;
 
@@ -25,11 +29,55 @@ export function ProfilePage() {
     navigate('/');
   };
 
+  const handleUploadAvatar: UploadProps['customRequest'] = async (options) => {
+    const { file, onSuccess, onError } = options;
+    setUploadingAvatar(true);
+    try {
+      await uploadAvatar(file as File);
+      message.success(t('profile.avatarUpdated'));
+      onSuccess?.({});
+    } catch (err) {
+      message.error(t('profile.avatarUpdateError'));
+      onError?.(err as Error);
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
+  const avatarSrc = user!.photo && user!.photo.startsWith('http') ? user!.photo : undefined;
+
   return (
     <section style={{ padding: 24, maxWidth: 900, margin: '0 auto' }}>
       <Card style={{ marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <Avatar size={64} icon={<UserOutlined />} />
+          <Upload
+            accept="image/*"
+            showUploadList={false}
+            customRequest={handleUploadAvatar}
+            disabled={uploadingAvatar}
+          >
+            <div style={{ position: 'relative', cursor: 'pointer' }}>
+              <Avatar size={64} src={avatarSrc} icon={avatarSrc ? undefined : <UserOutlined />} />
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: -2,
+                  right: -2,
+                  background: 'var(--triply-primary, #1677ff)',
+                  borderRadius: '50%',
+                  width: 22,
+                  height: 22,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  fontSize: 12,
+                }}
+              >
+                <CameraOutlined />
+              </div>
+            </div>
+          </Upload>
           <div>
             <Typography.Title level={4} style={{ margin: 0 }}>
               {user!.firstName} {user!.lastName}

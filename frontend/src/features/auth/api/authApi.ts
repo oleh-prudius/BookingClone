@@ -32,6 +32,14 @@ export const authApi = {
   updateProfile: (dto: UpdateProfileDto): Promise<User> =>
     httpClient.patch<User>('/auth/profile', dto).then((r) => r.data),
 
+  uploadAvatar: (file: File): Promise<User> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return httpClient
+      .post<User>('/auth/avatar', formData, { headers: { 'Content-Type': undefined } })
+      .then((r) => r.data);
+  },
+
   confirmEmail: (userId: number, token: string): Promise<string> =>
     httpClient.post<string>('/auth/confirm-email', { userId, token }).then((r) => r.data),
 

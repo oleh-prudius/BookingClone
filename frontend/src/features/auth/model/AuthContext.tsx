@@ -14,6 +14,7 @@ interface AuthContextValue {
   login: (dto: LoginDto) => Promise<void>;
   register: (dto: RegisterDto) => Promise<string>;
   updateProfile: (dto: UpdateProfileDto) => Promise<void>;
+  uploadAvatar: (file: File) => Promise<void>;
   logout: () => void;
 }
 
@@ -73,13 +74,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(updatedUser);
   };
 
+  const uploadAvatar = async (file: File) => {
+    const updatedUser = await authApi.uploadAvatar(file);
+    userStorage.set(updatedUser);
+    setUser(updatedUser);
+  };
+
   const logout = () => {
     tokenStorage.clear();
     setUser(null);
   };
 
   const value = useMemo<AuthContextValue>(
-    () => ({ user, isAuthenticated: !!user, loading, login, register, updateProfile, logout }),
+    () => ({ user, isAuthenticated: !!user, loading, login, register, updateProfile, uploadAvatar, logout }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [user, loading],
   );
