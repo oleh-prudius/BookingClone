@@ -1,16 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, Form, Input, InputNumber, Select, Row, Col, message } from 'antd';
+import { Modal, Form, Input, InputNumber, Select, Row, Col, message, Segmented } from 'antd';
 import { cityApi, type City } from '@entities/city';
 import { hotelCategoryApi, type HotelCategory } from '@entities/hotel-category';
 import { addressApi } from '@entities/address';
 import { hotelApi } from '@entities/hotel';
+import { LocationPicker } from '@shared/ui';
 import type { Hotel } from '@shared/types';
+
+const DEFAULT_MAP_CENTER = { latitude: 50.4501, longitude: 30.5234 }; // Kyiv
 
 interface FormValues {
   name: string;
   description: string;
   cityId: number;
+  countryName: string;
+  cityName: string;
   street: string;
   houseNumber: string;
   hotelCategoryId: number;
@@ -43,6 +48,8 @@ export function HotelFormModal({ open, onClose, onSaved, realtorId, editingHotel
   const [cities, setCities] = useState<City[]>([]);
   const [categories, setCategories] = useState<HotelCategory[]>([]);
   const [saving, setSaving] = useState(false);
+  const [cityMode, setCityMode] = useState<'existing' | 'new'>('existing');
+  const [newCityCoords, setNewCityCoords] = useState(DEFAULT_MAP_CENTER);
 
   useEffect(() => {
     if (!open) return;
@@ -66,6 +73,8 @@ export function HotelFormModal({ open, onClose, onSaved, realtorId, editingHotel
     } else {
       form.resetFields();
       form.setFieldsValue({ starRating: 3, arrivalFrom: '14:00', arrivalTo: '22:00', departureFrom: '07:00', departureTo: '12:00' });
+      setCityMode('existing');
+      setNewCityCoords(DEFAULT_MAP_CENTER);
     }
   }, [open, editingHotel, form]);
 
@@ -92,10 +101,19 @@ export function HotelFormModal({ open, onClose, onSaved, realtorId, editingHotel
           departureTimeUtcTo,
         });
       } else {
+        const cityId = cityMode === 'new'
+          ? (await cityApi.findOrCreate({
+              countryName: values.countryName,
+              cityName: values.cityName,
+              latitude: newCityCoords.latitude,
+              longitude: newCityCoords.longitude,
+            })).id
+          : values.cityId;
+
         const address = await addressApi.create({
           street: values.street,
           houseNumber: values.houseNumber,
-          cityId: values.cityId,
+          cityId,
         });
 
         await hotelApi.create({
@@ -143,14 +161,59 @@ export function HotelFormModal({ open, onClose, onSaved, realtorId, editingHotel
 
         {!editingHotel && (
           <>
-            <Form.Item label={t('host.hotelForm.city')} name="cityId" rules={[{ required: true, message: t('host.hotelForm.selectCity') }]}>
-              <Select
-                showSearch
-                placeholder={t('host.hotelForm.selectCity')}
-                optionFilterProp="label"
-                options={cities.map((c) => ({ value: c.id, label: `${c.name}, ${c.countryName}` }))}
+            <Form.Item label={t('host.hotelForm.city')}>
+              <Segmented
+                block
+                value={cityMode}
+                onChange={(v) => setCityMode(v as 'existing' | 'new')}
+                options={[
+                  { label: t('host.hotelForm.existingCity'), value: 'existing' },
+                  { label: t('host.hotelForm.newCity'), value: 'new' },
+                ]}
               />
             </Form.Item>
+
+            {cityMode === 'existing' ? (
+              <Form.Item name="cityId" rules={[{ required: cityMode === 'existing', message: t('host.hotelForm.selectCity') }]}>
+                <Select
+                  showSearch
+                  placeholder={t('host.hotelForm.selectCity')}
+                  optionFilterProp="label"
+                  options={cities.map((c) => ({ value: c.id, label: `${c.name}, ${c.countryName}` }))}
+                />
+              </Form.Item>
+            ) : (
+              <>
+                <Row gutter={12}>
+                  <Col span={12}>
+                    <Form.Item
+                      label={t('host.hotelForm.countryName')}
+                      name="countryName"
+                      rules={[{ required: cityMode === 'new', max: 200 }]}
+                    >
+                      <Input placeholder={t('host.hotelForm.countryNamePlaceholder')} />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      label={t('host.hotelForm.cityName')}
+                      name="cityName"
+                      rules={[{ required: cityMode === 'new', max: 200 }]}
+                    >
+                      <Input placeholder={t('host.hotelForm.cityNamePlaceholder')} />
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Form.Item label={t('host.hotelForm.pickLocation')}>
+                  <LocationPicker
+                    latitude={newCityCoords.latitude}
+                    longitude={newCityCoords.longitude}
+                    onChange={(lat, lng) => setNewCityCoords({ latitude: lat, longitude: lng })}
+                  />
+                </Form.Item>
+              </>
+            )}
+
             <Row gutter={12}>
               <Col span={16}>
                 <Form.Item label={t('host.hotelForm.street')} name="street" rules={[{ required: true }]}>

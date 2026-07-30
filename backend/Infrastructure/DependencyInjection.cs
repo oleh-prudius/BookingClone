@@ -54,6 +54,7 @@ public static class DependencyInjection
         services.AddScoped<IMessageRepository, MessageRepository>();
         services.AddScoped<IRoomVariantRepository, RoomVariantRepository>();
         services.AddScoped<ICityRepository, CityRepository>();
+        services.AddScoped<ICountryRepository, CountryRepository>();
         services.AddScoped<IAddressRepository, AddressRepository>();
         services.AddScoped<IHotelReviewRepository, HotelReviewRepository>();
         services.AddScoped<IRealtorReviewRepository, RealtorReviewRepository>();

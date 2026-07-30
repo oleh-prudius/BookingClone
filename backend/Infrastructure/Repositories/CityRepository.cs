@@ -24,4 +24,7 @@ public class CityRepository(AppDbContext context) : Repository<City>(context), I
     // No AsNoTracking — entity may be used for update
     public override async Task<City?> GetByIdAsync(long id, CancellationToken ct = default) =>
         await WithIncludes().FirstOrDefaultAsync(c => c.Id == id, ct);
+
+    public async Task<City?> GetByNameAndCountryIdAsync(string name, long countryId, CancellationToken ct = default) =>
+        await WithIncludes().FirstOrDefaultAsync(c => c.CountryId == countryId && c.Name.ToLower() == name.ToLower(), ct);
 }

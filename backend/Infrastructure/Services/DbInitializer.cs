@@ -7,6 +7,10 @@ using Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Globalization;
+using System.Reflection;
+using System.Text;
+using System.Text.Json;
 
 namespace Infrastructure.Services;
 
@@ -89,6 +93,7 @@ public class DbInitializer(
 	private async Task SeedReferenceDataAsync(CancellationToken ct)
 	{
 		await SeedCountriesAndCitiesAsync(ct);
+		await SeedWorldCountriesAndCitiesAsync(ct);
 		await SeedLookupTablesAsync(ct);
 		await SeedTestHotelAsync(ct);
 		await SeedGrandKyivPhotosAsync(ct);
@@ -273,6 +278,61 @@ public class DbInitializer(
 			], ct);
 			await context.SaveChangesAsync(ct);
 		}
+	}
+
+	private record WorldCitySeed(string Name, double Lat, double Lng);
+	private record WorldCountrySeed(string Name, string Iso2, List<WorldCitySeed> Cities);
+
+	/// <summary>
+	/// Adds every country/city not already seeded above, from a bundled reference dataset
+	/// (dr5hn/countries-states-cities-database), so realtors aren't limited to the ~10
+	/// hand-picked countries when creating a hotel.
+	/// </summary>
+	private async Task SeedWorldCountriesAndCitiesAsync(CancellationToken ct)
+	{
+		var existingNames = (await context.Countries.Select(c => c.Name).ToListAsync(ct)).ToHashSet();
+
+		await using var stream = Assembly.GetExecutingAssembly()
+			.GetManifestResourceStream("Infrastructure.Data.Seed.countries-cities.json")
+			?? throw new InvalidOperationException("Embedded resource countries-cities.json not found.");
+
+		var worldCountries = await JsonSerializer.DeserializeAsync<List<WorldCountrySeed>>(
+			stream, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, ct)
+			?? [];
+
+		var newCountries = worldCountries
+			.Where(wc => !existingNames.Contains(wc.Name))
+			.Select(wc => new Country
+			{
+				Name = wc.Name,
+				Image = $"https://flagcdn.com/w320/{wc.Iso2.ToLowerInvariant()}.png",
+				Cities = wc.Cities.Select(wci => new City
+				{
+					Name = wci.Name,
+					Latitude = wci.Lat,
+					Longitude = wci.Lng,
+					Image = $"https://picsum.photos/seed/{Slugify(wci.Name)}/800/600"
+				}).ToList()
+			})
+			.ToList();
+
+		if (newCountries.Count > 0)
+		{
+			await context.Countries.AddRangeAsync(newCountries, ct);
+			await context.SaveChangesAsync(ct);
+		}
+	}
+
+	private static string Slugify(string name)
+	{
+		var normalized = name.Normalize(NormalizationForm.FormD);
+		var sb = new StringBuilder();
+		foreach (var ch in normalized)
+		{
+			if (CharUnicodeInfo.GetUnicodeCategory(ch) != UnicodeCategory.NonSpacingMark && char.IsLetterOrDigit(ch))
+				sb.Append(ch);
+		}
+		return sb.ToString().ToLowerInvariant();
 	}
 
 	private async Task SeedLookupTablesAsync(CancellationToken ct)

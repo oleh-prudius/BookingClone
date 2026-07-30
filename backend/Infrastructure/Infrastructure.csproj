@@ -12,6 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Data/Seed/countries-cities.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\Application\Application.csproj" />
   </ItemGroup>
