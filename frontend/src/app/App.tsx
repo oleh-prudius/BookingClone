@@ -20,6 +20,7 @@ import { ResetPasswordPage } from '@pages/reset-password';
 import { ResendConfirmationPage } from '@pages/resend-confirmation';
 import { AdminApp } from '@pages/admin';
 import { Page404 } from '@pages/Page404';
+import { ComingSoonPage } from '@pages/coming-soon/ComingSoonPage';
 import { UiKitPage } from '@pages/ui-kit';
 export default function App() {
   return (
@@ -51,6 +52,9 @@ export default function App() {
                     <Route path="/host" element={<HostDashboardPage />} />
                     <Route path="/host/hotels/:id" element={<HostHotelDetailPage />} />
                     <Route path="/ui-kit" element={<UiKitPage />} />
+                    <Route path="/tickets" element={<ComingSoonPage titleKey="header.tickets" />} />
+                    <Route path="/transport" element={<ComingSoonPage titleKey="header.transport" />} />
+                    <Route path="/nearby" element={<ComingSoonPage titleKey="header.nearby" />} />
                     <Route path="*" element={<Page404 />} />
                   </Routes>
                 </main>
