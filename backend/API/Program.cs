@@ -31,14 +31,15 @@ try
         config.ReadFrom.Configuration(context.Configuration)
               .Enrich.FromLogContext());
 
+    ValidateStartupConfiguration(builder.Configuration);
+
     builder.Services.AddInfrastructure(builder.Configuration);
     builder.Services.AddApplication();
 
     builder.Services.AddHealthChecks()
         .AddDbContextCheck<AppDbContext>("database");
-    
-    var jwtKey = builder.Configuration["Jwt:Key"]
-        ?? throw new InvalidOperationException("Jwt:Key is not configured");
+
+    var jwtKey = builder.Configuration["Jwt:Key"]!;
 
     builder.Services.AddAuthentication(options =>
     {
@@ -199,4 +200,24 @@ catch (Exception ex)
 finally
 {
     Log.CloseAndFlush();
+}
+
+static void ValidateStartupConfiguration(IConfiguration configuration)
+{
+    var errors = new List<string>();
+
+    var jwtKey = configuration["Jwt:Key"];
+    if (string.IsNullOrWhiteSpace(jwtKey))
+        errors.Add("Jwt:Key is not configured.");
+    else if (jwtKey.Length < 32)
+        errors.Add($"Jwt:Key must be at least 32 characters (got {jwtKey.Length}). Generate one with: openssl rand -base64 32");
+
+    var connectionString = configuration.GetConnectionString("DefaultConnection");
+    if (string.IsNullOrWhiteSpace(connectionString))
+        errors.Add("ConnectionStrings:DefaultConnection is not configured.");
+
+    if (errors.Count > 0)
+        throw new InvalidOperationException(
+            "Invalid startup configuration:" + Environment.NewLine +
+            string.Join(Environment.NewLine, errors.Select(e => $"  - {e}")));
 }
