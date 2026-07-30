@@ -28,6 +28,7 @@ public class RegisterHandler(
         if (await userManager.FindByNameAsync(dto.UserName) is not null)
             return Error.Conflict("Username is already taken.");
 
+        var createdAtUtc = DateTimeOffset.UtcNow;
         AppUser user = dto.AccountType == Roles.Realtor
             ? new Realtor
             {
@@ -35,7 +36,8 @@ public class RegisterHandler(
                 UserName = dto.UserName,
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
-                Photo = "default.jpg"
+                Photo = "default.jpg",
+                CreatedAtUtc = createdAtUtc
             }
             : new Customer
             {
@@ -43,7 +45,8 @@ public class RegisterHandler(
                 UserName = dto.UserName,
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
-                Photo = "default.jpg"
+                Photo = "default.jpg",
+                CreatedAtUtc = createdAtUtc
             };
 
         var createResult = await userManager.CreateAsync(user, dto.Password);

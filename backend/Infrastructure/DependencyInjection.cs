@@ -58,6 +58,7 @@ public static class DependencyInjection
         services.AddScoped<IHotelReviewRepository, HotelReviewRepository>();
         services.AddScoped<IRealtorReviewRepository, RealtorReviewRepository>();
         services.AddScoped<IUserAdminRepository, UserAdminRepository>();
+        services.AddScoped<IAdminStatsRepository, AdminStatsRepository>();
         
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 

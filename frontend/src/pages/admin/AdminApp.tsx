@@ -35,6 +35,7 @@ import { RoomCreate } from './rooms/RoomCreate';
 import { RoomEdit } from './rooms/RoomEdit';
 import { UserList } from './users/UserList';
 import { UserEdit } from './users/UserEdit';
+import { DashboardPage } from './dashboard/DashboardPage';
 
 export function AdminApp() {
   return (
@@ -45,6 +46,11 @@ export function AdminApp() {
         authProvider={authProvider}
         notificationProvider={useNotificationProvider}
         resources={[
+          {
+            name: 'dashboard',
+            list: '/admin/dashboard',
+            meta: { label: 'Dashboard' },
+          },
           {
             name: 'hotels',
             list: '/admin/hotels',
@@ -110,7 +116,9 @@ export function AdminApp() {
               </Authenticated>
             }
           >
-            <Route index element={<NavigateToResource resource="hotels" />} />
+            <Route index element={<NavigateToResource resource="dashboard" />} />
+
+            <Route path="dashboard" element={<DashboardPage />} />
 
             <Route path="hotels">
               <Route index element={<HotelList />} />

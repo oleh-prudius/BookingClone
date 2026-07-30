@@ -6,6 +6,8 @@ namespace Domain.Entities;
 public class Booking {
 	public long Id { get; set; }
 
+	public DateTimeOffset CreatedAtUtc { get; set; }
+
 	public DateOnly DateFrom { get; set; }
 
 	public DateOnly DateTo { get; set; }

@@ -64,6 +64,7 @@ public class CreateBookingHandler(
         var booking = new Booking
         {
             CustomerId = request.CustomerId,
+            CreatedAtUtc = DateTimeOffset.UtcNow,
             DateFrom = checkIn,
             DateTo = checkOut,
             AmountToPay = request.TotalPrice + breakfastsTotal,
