@@ -62,6 +62,13 @@ Path aliases (`vite.config.js`): `@`, `@app`, `@pages`, `@widgets`,
 
 ## Getting started
 
+Clone the repo:
+
+```bash
+git clone git@github.com:oleh-prudius/BookingClone.git
+cd BookingClone
+```
+
 The fastest way to run everything (API + frontend + PostgreSQL) is Docker:
 
 ```bash

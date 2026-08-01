@@ -133,14 +133,14 @@ in the `api_uploads` named volume across container recreation.
 Every push to `main` builds and publishes both images to GitHub Container
 Registry, tagged with the git SHA and `latest`:
 
-- `ghcr.io/studyprojectit/bookingclone-api:latest`
-- `ghcr.io/studyprojectit/bookingclone-frontend:latest`
+- `ghcr.io/oleh-prudius/bookingclone-api:latest`
+- `ghcr.io/oleh-prudius/bookingclone-frontend:latest`
 
 `docker-compose.yml` still builds both images locally (`build:`) rather than
 pulling these — building on the server keeps `VITE_API_BASE_URL` and other
 build-time config correct for whatever `.env` is in use there. The GHCR
 images are mainly useful for pulling a known-good version directly (e.g.
-`docker pull ghcr.io/studyprojectit/bookingclone-api:<git-sha>`) without a
+`docker pull ghcr.io/oleh-prudius/bookingclone-api:<git-sha>`) without a
 full source checkout + build on the server, such as during the rollback
 runbook below.
 
