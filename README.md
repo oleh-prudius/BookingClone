@@ -13,6 +13,9 @@ Identity + JWT, Serilog, rate limiting.
 **Frontend** — React 19, TypeScript, Vite, Ant Design, Refine (admin panel),
 Feature-Sliced Design.
 
+**Observability** — Sentry (error monitoring, backend + frontend), self-hosted
+Umami (privacy-friendly analytics).
+
 ## Features
 
 - Hotel search with filters (destination, dates, guests, star rating,
