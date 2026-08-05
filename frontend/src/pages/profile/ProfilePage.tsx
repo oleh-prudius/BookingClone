@@ -48,8 +48,8 @@ export function ProfilePage() {
 
   return (
     <section style={{ padding: 24, maxWidth: 900, margin: '0 auto' }}>
-      <Card style={{ marginBottom: 16 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <Card styles={{ body: { padding: 0 } }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '24px 24px 0' }}>
           <Upload
             accept="image/*"
             showUploadList={false}
@@ -90,12 +90,10 @@ export function ProfilePage() {
             </div>
           </div>
         </div>
-      </Card>
 
-      <Card styles={{ body: { padding: 0 } }}>
         <Tabs
           tabPosition="left"
-          style={{ minHeight: 360 }}
+          style={{ minHeight: 360, marginTop: 16 }}
           items={[
             {
               key: 'profile',
