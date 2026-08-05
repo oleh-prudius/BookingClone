@@ -11,7 +11,7 @@ export function HomePage() {
   return (
     <>
       <section style={{
-          background: 'var(--triply-navyDarkest)',
+          background: 'var(--triply-navyDark)',
           padding: '48px 24px',
           display: 'flex',
           flexDirection: 'column',

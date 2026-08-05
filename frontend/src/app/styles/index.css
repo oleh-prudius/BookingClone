@@ -114,3 +114,12 @@ code {
   .desktop-nav {display: none; }
   .burger-btn {display: block; }
 }
+
+.triply-pill-input,
+.triply-pill-input input {
+  color: white;
+}
+.triply-pill-input::placeholder,
+.triply-pill-input input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
