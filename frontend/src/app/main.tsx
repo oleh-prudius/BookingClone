@@ -21,7 +21,14 @@ function ThemedApp() {
   return (
     <ConfigProvider theme={{
         algorithm: mode === 'dark' ? theme.darkAlgorithm : theme.defaultAlgorithm,
-        token: { colorPrimary: palette.primary }
+        token: { colorPrimary: palette.primary },
+        components: {
+          Button: {
+            controlHeight: 44,
+            controlHeightLG: 52,
+            fontWeight: 600,
+          },
+        },
     }}>
       <AntApp>
         <NotificationBridge />
