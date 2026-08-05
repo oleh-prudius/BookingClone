@@ -21,12 +21,15 @@ function ThemedApp() {
   return (
     <ConfigProvider theme={{
         algorithm: mode === 'dark' ? theme.darkAlgorithm : theme.defaultAlgorithm,
-        token: { colorPrimary: palette.primary },
+        token: { colorPrimary: palette.primary, borderRadius: 12 },
         components: {
           Button: {
             controlHeight: 44,
             controlHeightLG: 52,
             fontWeight: 600,
+          },
+          Card: {
+            borderRadiusLG: 16,
           },
         },
     }}>
