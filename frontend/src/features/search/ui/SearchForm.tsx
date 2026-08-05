@@ -111,10 +111,17 @@ export function SearchForm() {
     </div>
   );
 
+  const pillFieldStyle = {
+    background: 'var(--triply-navyDark)',
+    borderColor: 'transparent',
+    borderRadius: 999,
+    color: 'white',
+  };
+
   return (
     <div style={{
-      background: 'white',
-      borderRadius: 8,
+      background: 'var(--triply-blue)',
+      borderRadius: 20,
       padding: 16,
       display: 'flex',
       gap: 8,
@@ -130,10 +137,15 @@ export function SearchForm() {
         onSelect={setDestination}
         style={{ flex: 2, minWidth: 200 }}
       >
-        <Input placeholder={t('search.destinationPlaceholder')} prefix={<SearchOutlined />} />
+        <Input
+          placeholder={t('search.destinationPlaceholder')}
+          prefix={<SearchOutlined style={{ color: 'white' }} />}
+          style={pillFieldStyle}
+          className="triply-pill-input"
+        />
       </AutoComplete>
       <DatePicker.RangePicker
-        style={{ flex: 2, minWidth: 240 }}
+        style={{ ...pillFieldStyle, flex: 2, minWidth: 240 }}
         placeholder={[t('search.checkIn'), t('search.checkOut')]}
       />
       <Popover
@@ -145,7 +157,7 @@ export function SearchForm() {
       >
         <Button
           icon={<UserOutlined />}
-          style={{ flex: 1, minWidth: 160, textAlign: 'left' }}
+          style={{ ...pillFieldStyle, flex: 1, minWidth: 160, textAlign: 'left' }}
         >
           {guestLabel}
         </Button>
