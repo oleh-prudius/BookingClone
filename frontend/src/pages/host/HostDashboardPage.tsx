@@ -87,12 +87,26 @@ export function HostDashboardPage() {
                 ]}
               >
                 <List.Item.Meta
+                  avatar={
+                    <img
+                      src={hotel.coverPhotoUrl ?? 'https://placehold.co/96x72?text=No+Photo'}
+                      alt={hotel.name}
+                      style={{ width: 96, height: 72, objectFit: 'cover', borderRadius: 12 }}
+                    />
+                  }
                   title={hotel.name}
                   description={
-                    <Space>
-                      <span>{hotel.cityName}, {hotel.countryName}</span>
-                      <Tag>{hotel.hotelCategoryName}</Tag>
-                      <Tag>{hotel.starRating}★</Tag>
+                    <Space direction="vertical" size={4}>
+                      <Space>
+                        <span>{hotel.cityName}, {hotel.countryName}</span>
+                        <Tag>{hotel.hotelCategoryName}</Tag>
+                        <Tag>{hotel.starRating}★</Tag>
+                      </Space>
+                      {hotel.pricePerNight != null && (
+                        <span style={{ fontWeight: 700, color: 'var(--triply-primary)' }}>
+                          ${hotel.pricePerNight}
+                        </span>
+                      )}
                     </Space>
                   }
                 />
