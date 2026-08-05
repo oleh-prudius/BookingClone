@@ -16,9 +16,15 @@ export function Header() {
   const iconStyle = { fontSize: 18 as const, cursor: 'pointer' as const};
   const navLinkStyle = ({isActive}: {isActive:boolean} )=> ({
           color: 'inherit' as const,
-          fontWeight: isActive ? 700 : 400,
-          textDecoration: 'none' as const
+          fontWeight: isActive ? 700 : 500,
+          textDecoration: 'none' as const,
+          borderBottom: isActive ? '2px solid white' : '2px solid transparent',
+          paddingBottom: 4,
       });
+  const iconButtonStyle = {
+    color: 'inherit' as const,
+    backgroundColor: 'rgba(255, 255, 255, 0.16)',
+  };
   const [isOpen, setIsOpen] = useState(false);
 
 
@@ -28,9 +34,8 @@ export function Header() {
       display: 'flex',
       gap: 16,
       alignItems: 'center',
-      padding: '12px 24px',
-      borderBottom: '1px solid var(--border)',
-        background: 'var(--triply-navyDarkest)',
+      padding: '14px 24px',
+        background: 'var(--triply-blue)',
         color: 'white'
     }}>
         <NavLink to="/" style={{textDecoration: 'none'}}>
@@ -72,7 +77,13 @@ export function Header() {
             </>
           ) : (
             <>
-              <Button ghost shape="round" href="/register">{t('header.registration')}</Button>
+              <Button
+                shape="round"
+                href="/register"
+                style={{ backgroundColor: 'var(--triply-navyDark)', color: 'white', border: 'none' }}
+              >
+                {t('header.registration')}
+              </Button>
               <Button ghost shape="round" href="/login">{t('header.signIn')}</Button>
             </>
           )}
@@ -80,17 +91,17 @@ export function Header() {
             <Button
               type="text"
               shape="circle"
-              style={{ color: 'inherit' }}
+              style={iconButtonStyle}
               aria-label={t('header.messages')}
               icon={<SendOutlined style={iconStyle} />}
               onClick={() => navigate('/messages')}
             />
           )}
-          <Button type="text" shape="circle" style={{ color: 'inherit' }} aria-label={t('header.notifications')} icon={<BellOutlined style={iconStyle} />} />
+          <Button type="text" shape="circle" style={iconButtonStyle} aria-label={t('header.notifications')} icon={<BellOutlined style={iconStyle} />} />
           <Button
             type="text"
             shape="circle"
-            style={{ color: 'inherit' }}
+            style={iconButtonStyle}
             aria-label={isAuthenticated ? t('header.myProfile') : t('header.signIn')}
             icon={<UserOutlined style={iconStyle} />}
             onClick={() => navigate(isAuthenticated ? '/profile' : '/login')}
