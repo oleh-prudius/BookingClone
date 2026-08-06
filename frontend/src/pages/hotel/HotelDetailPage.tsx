@@ -109,7 +109,7 @@ export function HotelDetailPage() {
 
         <div style={{ textAlign: 'right' }}>
           {hotel.pricePerNight != null && (
-            <Typography.Title level={3} style={{ margin: 0, color: 'var(--triply-primary)' }}>
+            <Typography.Title level={3} style={{ margin: 0, color: 'var(--triply-textAccent)' }}>
               ${hotel.pricePerNight}<Typography.Text type="secondary" style={{ fontSize: 14 }}>{t('hotel.perNight')}</Typography.Text>
             </Typography.Title>
           )}
