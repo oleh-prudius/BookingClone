@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from '@features/auth';
 import { FavoritesProvider } from '@features/favorites';
+import { ChatNotificationsProvider } from '@features/chat';
 import { Header } from '@widgets/header';
 import { Footer } from '@widgets/footer';
 import { HomePage } from '@pages/home';
@@ -35,6 +36,7 @@ export default function App() {
           element={
             <AuthProvider>
               <FavoritesProvider>
+              <ChatNotificationsProvider>
                 <Header />
                 <main>
                   <Routes>
@@ -62,6 +64,7 @@ export default function App() {
                   </Routes>
                 </main>
                 <Footer />
+              </ChatNotificationsProvider>
               </FavoritesProvider>
             </AuthProvider>
           }

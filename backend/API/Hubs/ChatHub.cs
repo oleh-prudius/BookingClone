@@ -11,6 +11,12 @@ namespace API.Hubs;
 [Authorize]
 public class ChatHub(IMediator mediator, IRepository<Chat> chatRepository) : Hub
 {
+    public override async Task OnConnectedAsync()
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, UserGroupName(GetUserId()));
+        await base.OnConnectedAsync();
+    }
+
     public async Task JoinChat(long chatId)
     {
         var chat = await RequireAccessAsync(chatId);
@@ -26,6 +32,11 @@ public class ChatHub(IMediator mediator, IRepository<Chat> chatRepository) : Hub
             throw new HubException(result.Error.Message);
 
         await Clients.Group(GroupName(chat.Id)).SendAsync("ReceiveMessage", result.Value);
+
+        // Separate event on a per-user group (not the chat group above) so the header's
+        // unread badge updates even when the recipient doesn't have this chat open.
+        var recipientId = chat.CustomerId == GetUserId() ? chat.RealtorId : chat.CustomerId;
+        await Clients.Group(UserGroupName(recipientId)).SendAsync("NewMessageNotification", result.Value);
     }
 
     private async Task<Chat> RequireAccessAsync(long chatId)
@@ -44,4 +55,6 @@ public class ChatHub(IMediator mediator, IRepository<Chat> chatRepository) : Hub
     private long GetUserId() => long.Parse(Context.User!.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
     private static string GroupName(long chatId) => $"chat-{chatId}";
+
+    private static string UserGroupName(long userId) => $"user-{userId}";
 }
