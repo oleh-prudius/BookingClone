@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Card, Typography, Input, Alert, Divider, Radio } from 'antd';
 import { AppButton } from '@shared/ui';
 import { formatCardNumber, formatExpiry, luhnCheck, maskCardNumber } from '@shared/lib/cardFormat';
+import { formatPrice } from '@shared/lib/currency';
+import { useCurrency } from '@shared/theme/CurrencyContext';
 import { useAuth } from '@features/auth';
 import { bankCardApi, type BankCard } from '@entities/bank-card';
 
@@ -30,6 +32,7 @@ function dateOnlyToExpiry(dateOnly: string): string {
 export function PaymentForm({ order, onBack, onPay }: PaymentFormProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { currency } = useCurrency();
   const [savedCards, setSavedCards] = useState<BankCard[]>([]);
   const [selectedCardId, setSelectedCardId] = useState<number | 'new'>('new');
 
@@ -128,8 +131,8 @@ export function PaymentForm({ order, onBack, onPay }: PaymentFormProps) {
         <Typography.Text type="secondary">{order.checkIn} – {order.checkOut}</Typography.Text>
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-        <Typography.Text type="secondary">{t('booking.priceTimesNights', { price: order.pricePerNight, count: order.nights })}</Typography.Text>
-        <Typography.Title level={4} style={{ margin: 0 }}>${order.total}</Typography.Title>
+        <Typography.Text type="secondary">{t('booking.priceTimesNights', { price: formatPrice(order.pricePerNight, currency), count: order.nights })}</Typography.Text>
+        <Typography.Title level={4} style={{ margin: 0 }}>{formatPrice(order.total, currency)}</Typography.Title>
       </div>
 
       <Divider />
@@ -209,7 +212,7 @@ export function PaymentForm({ order, onBack, onPay }: PaymentFormProps) {
           {t('common.back')}
         </AppButton>
         <AppButton variant="primary" onClick={handleSubmit} loading={submitting} block>
-          {t('booking.payment.payAmount', { amount: order.total })}
+          {t('booking.payment.payAmount', { amount: formatPrice(order.total, currency) })}
         </AppButton>
       </div>
     </Card>

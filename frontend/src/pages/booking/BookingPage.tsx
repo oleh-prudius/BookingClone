@@ -10,6 +10,8 @@ import { roomVariantApi, type RoomVariant } from '@entities/room-variant';
 import { bookingApi } from '@entities/booking';
 import type { Hotel } from '@shared/types';
 import { AppButton } from '@shared/ui';
+import { formatPrice } from '@shared/lib/currency';
+import { useCurrency } from '@shared/theme/CurrencyContext';
 import { PaymentForm } from './PaymentForm';
 
 interface BookableVariant {
@@ -22,6 +24,7 @@ export function BookingPage() {
   const { id } = useParams<{ id: string }>();
   const hotelId = Number(id);
   const { isAuthenticated } = useAuth();
+  const { currency } = useCurrency();
   const navigate = useNavigate();
 
   const [hotel, setHotel] = useState<Hotel | null>(null);
@@ -221,7 +224,7 @@ export function BookingPage() {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
               <Typography.Text>{pricePerNight ? t('booking.priceTimesNights', { price: pricePerNight, count: nights }) : '—'}</Typography.Text>
-              <Typography.Title level={4} style={{ margin: 0 }}>${total}</Typography.Title>
+              <Typography.Title level={4} style={{ margin: 0 }}>{formatPrice(total, currency)}</Typography.Title>
             </div>
 
             {formError && <Alert type="error" message={formError} style={{ marginBottom: 16 }} />}

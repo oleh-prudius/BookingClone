@@ -122,8 +122,8 @@
     "maxGuests": "max {{maxGuests}}",
     "personalWishes": "Personal wishes (optional)",
     "continueToPayment": "Continue to payment",
-    "priceTimesNights_one": "${{price}} × {{count}} night",
-    "priceTimesNights_other": "${{price}} × {{count}} nights",
+    "priceTimesNights_one": "{{price}} × {{count}} night",
+    "priceTimesNights_other": "{{price}} × {{count}} nights",
     "errors": {
       "selectRoom": "Please select a room.",
       "selectDates": "Please select check-in and check-out dates.",
@@ -141,7 +141,7 @@
       "expiry": "Expiry",
       "cvv": "CVV",
       "savedCardLabel": "{{masked}} · {{owner}} · exp {{expiry}}",
-      "payAmount": "Pay ${{amount}}",
+      "payAmount": "Pay {{amount}}",
       "errors": {
         "cardholderNameRequired": "Please enter the cardholder name.",
         "cardNumberInvalid": "Card number is invalid.",

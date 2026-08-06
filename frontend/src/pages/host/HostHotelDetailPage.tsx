@@ -11,6 +11,8 @@ import { hotelPhotoApi, type HotelPhoto } from '@entities/hotel-photo';
 import { roomApi, type Room } from '@entities/room';
 import { roomVariantApi, type RoomVariant } from '@entities/room-variant';
 import type { Hotel } from '@shared/types';
+import { formatPrice } from '@shared/lib/currency';
+import { useCurrency } from '@shared/theme/CurrencyContext';
 import { RoomFormModal } from './RoomFormModal';
 import { RoomVariantFormModal } from './RoomVariantFormModal';
 
@@ -19,6 +21,7 @@ export function HostHotelDetailPage() {
   const { id } = useParams<{ id: string }>();
   const hotelId = Number(id);
   const { isAuthenticated, user } = useAuth();
+  const { currency } = useCurrency();
 
   const [hotel, setHotel] = useState<Hotel | null>(null);
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -228,7 +231,7 @@ export function HostHotelDetailPage() {
                       ]}
                     >
                       <Space>
-                        <strong>${variant.price}</strong>
+                        <strong>{formatPrice(variant.price, currency)}</strong>
                         {variant.discountPrice != null && <Tag color="green">{t('host.detail.discountPrice', { price: variant.discountPrice })}</Tag>}
                         <Tag>{t('host.detail.adultsChildren', { adults: variant.adultCount, children: variant.childCount })}</Tag>
                       </Space>

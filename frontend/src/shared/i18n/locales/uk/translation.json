@@ -132,10 +132,10 @@
     "maxGuests": "макс. {{maxGuests}}",
     "personalWishes": "Побажання (необов'язково)",
     "continueToPayment": "Перейти до оплати",
-    "priceTimesNights_one": "${{price}} × {{count}} ніч",
-    "priceTimesNights_few": "${{price}} × {{count}} ночі",
-    "priceTimesNights_many": "${{price}} × {{count}} ночей",
-    "priceTimesNights_other": "${{price}} × {{count}} ночі",
+    "priceTimesNights_one": "{{price}} × {{count}} ніч",
+    "priceTimesNights_few": "{{price}} × {{count}} ночі",
+    "priceTimesNights_many": "{{price}} × {{count}} ночей",
+    "priceTimesNights_other": "{{price}} × {{count}} ночі",
     "errors": {
       "selectRoom": "Будь ласка, оберіть номер.",
       "selectDates": "Будь ласка, оберіть дати заїзду та виїзду.",
@@ -153,7 +153,7 @@
       "expiry": "Термін дії",
       "cvv": "CVV",
       "savedCardLabel": "{{masked}} · {{owner}} · дійсна до {{expiry}}",
-      "payAmount": "Сплатити ${{amount}}",
+      "payAmount": "Сплатити {{amount}}",
       "errors": {
         "cardholderNameRequired": "Будь ласка, введіть ім'я власника картки.",
         "cardNumberInvalid": "Номер картки недійсний.",

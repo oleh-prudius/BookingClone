@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, Slider, Checkbox, Typography, Divider } from 'antd';
 import { hotelCategoryApi, type HotelCategory } from '@entities/hotel-category';
+import { formatPrice } from '@shared/lib/currency';
+import { useCurrency } from '@shared/theme/CurrencyContext';
 
 export interface HotelFilters {
   priceRange: [number, number];
@@ -16,6 +18,7 @@ interface Props {
 
 export function FiltersSidebar({ value, onChange }: Props) {
   const { t } = useTranslation();
+  const { currency } = useCurrency();
   const [categories, setCategories] = useState<HotelCategory[]>([]);
 
   const starOptions = [5, 4, 3, 2, 1].map((n) => ({ label: t('hotels.starsCount', { count: n }), value: n }));
@@ -37,7 +40,7 @@ export function FiltersSidebar({ value, onChange }: Props) {
         min={0}
         max={1000}
         step={10}
-        tooltip={{ formatter: (v) => `$${v}` }}
+        tooltip={{ formatter: (v) => (v != null ? formatPrice(v, currency) : '') }}
       />
 
       <Divider style={{ margin: '12px 0' }} />

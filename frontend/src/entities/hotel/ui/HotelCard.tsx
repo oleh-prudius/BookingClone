@@ -5,6 +5,8 @@ import { EnvironmentOutlined, HeartOutlined, HeartFilled, StarFilled } from '@an
 import type { Hotel } from '@shared/types';
 import { AppButton } from '@shared/ui';
 import { toStars } from '@shared/lib/rating';
+import { formatPrice } from '@shared/lib/currency';
+import { useCurrency } from '@shared/theme/CurrencyContext';
 
 interface Props {
   hotel: Hotel;
@@ -16,6 +18,7 @@ interface Props {
 export function HotelCard({ hotel, variant = 'grid', isFavorite, onToggleFavorite }: Props) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { currency } = useCurrency();
 
   const starClassBlock = hotel.starRating > 0 && (
     <span aria-label={t('hotels.starHotel', { count: hotel.starRating })} style={{ color: '#faad14', fontSize: 12, letterSpacing: 1 }}>
@@ -33,7 +36,7 @@ export function HotelCard({ hotel, variant = 'grid', isFavorite, onToggleFavorit
         {t('hotels.priceForOneNight')}
       </Typography.Text>
       <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--triply-primary)', lineHeight: 1.2 }}>
-        ${hotel.pricePerNight}
+        {formatPrice(hotel.pricePerNight, currency)}
       </div>
     </div>
   );
