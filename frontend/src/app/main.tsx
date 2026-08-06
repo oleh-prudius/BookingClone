@@ -8,6 +8,7 @@ import App from './App';
 import { ErrorBoundary } from './ErrorBoundary';
 import { NotificationBridge } from './NotificationBridge';
 import { ThemeProvider, useTheme } from '@shared/theme/ThemeContext';
+import { CurrencyProvider } from '@shared/theme/CurrencyContext';
 import { initSentry } from './sentry';
 import { initAnalytics } from './analytics';
 
@@ -46,7 +47,9 @@ function ThemedApp() {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider>
-      <ThemedApp />
+      <CurrencyProvider>
+        <ThemedApp />
+      </CurrencyProvider>
     </ThemeProvider>
   </StrictMode>,
 );
