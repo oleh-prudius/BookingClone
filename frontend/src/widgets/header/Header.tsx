@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@features/auth';
 import { useChatNotifications } from '@features/chat';
 import { Logo } from "@shared/ui/Logo";
+import { SettingsMenu } from "@shared/ui";
 import { Drawer, Button, Badge, Avatar } from "antd";
 import { UserOutlined, SendOutlined, MenuOutlined } from '@ant-design/icons';
 
@@ -63,6 +64,7 @@ export function Header() {
         />
 
       <div className='desktop-nav' style={{ gap: 12, alignItems: 'center' }}>
+          <SettingsMenu buttonStyle={iconButtonStyle} />
           {isAuthenticated ? (
             <>
               {user!.roles.includes('Realtor') && (
@@ -117,6 +119,10 @@ export function Header() {
             <NavLink to="/nearby" style={navLinkStyle}>{t('header.nearby')}</NavLink>
         </nav>
         <div style={{marginTop:24, display:'flex', flexDirection:'column', gap:12}}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <SettingsMenu />
+                <span>{t('profile.tabs.preferences')}</span>
+            </div>
             {isAuthenticated ? (
                 <>
                     {user!.roles.includes('Realtor') && <Button href="/host">{t('header.myHotels')}</Button>}
