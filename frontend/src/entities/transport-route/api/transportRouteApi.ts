@@ -15,6 +15,8 @@ export interface TransportRoute {
   price: number;
   totalSeats: number;
   availableSeats: number;
+  carrierName: string;
+  vehicleModel: string;
 }
 
 export interface SearchTransportRoutesParams {

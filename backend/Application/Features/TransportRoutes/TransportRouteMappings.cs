@@ -17,6 +17,8 @@ internal static class TransportRouteMappings
         ArrivalUtc = r.ArrivalUtc,
         Price = r.Price,
         TotalSeats = r.TotalSeats,
-        AvailableSeats = r.TotalSeats - bookedSeats
+        AvailableSeats = r.TotalSeats - bookedSeats,
+        CarrierName = r.CarrierName,
+        VehicleModel = r.VehicleModel
     };
 }

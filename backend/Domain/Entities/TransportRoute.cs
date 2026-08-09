@@ -22,5 +22,9 @@ public class TransportRoute
 
     public int TotalSeats { get; set; }
 
+    public string CarrierName { get; set; } = string.Empty;
+
+    public string VehicleModel { get; set; } = string.Empty;
+
     public ICollection<Ticket> Tickets { get; set; } = null!;
 }

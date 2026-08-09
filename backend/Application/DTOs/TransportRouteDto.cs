@@ -13,4 +13,6 @@ public class TransportRouteDto
     public decimal Price { get; set; }
     public int TotalSeats { get; set; }
     public int AvailableSeats { get; set; }
+    public string CarrierName { get; set; } = string.Empty;
+    public string VehicleModel { get; set; } = string.Empty;
 }
