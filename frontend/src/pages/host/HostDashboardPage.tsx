@@ -7,11 +7,14 @@ import { useAuth } from '@features/auth';
 import { AppButton } from '@shared/ui';
 import { hotelApi } from '@entities/hotel';
 import type { Hotel } from '@shared/types';
+import { formatPrice } from '@shared/lib/currency';
+import { useCurrency } from '@shared/theme/CurrencyContext';
 import { HotelFormModal } from './HotelFormModal';
 
 export function HostDashboardPage() {
   const { t } = useTranslation();
   const { isAuthenticated, user } = useAuth();
+  const { currency } = useCurrency();
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -104,7 +107,7 @@ export function HostDashboardPage() {
                       </Space>
                       {hotel.pricePerNight != null && (
                         <span style={{ fontWeight: 700, color: 'var(--triply-textAccent)' }}>
-                          ${hotel.pricePerNight}
+                          {formatPrice(hotel.pricePerNight, currency)}
                         </span>
                       )}
                     </Space>

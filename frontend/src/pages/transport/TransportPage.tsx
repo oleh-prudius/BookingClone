@@ -20,6 +20,8 @@ import { cityApi, type City } from '@entities/city';
 import { transportRouteApi, type TransportRoute, type TransportType } from '@entities/transport-route';
 import { ticketApi } from '@entities/ticket';
 import { useAuth } from '@features/auth';
+import { formatPrice } from '@shared/lib/currency';
+import { useCurrency } from '@shared/theme/CurrencyContext';
 
 interface SearchFormValues {
   fromCityId?: number;
@@ -40,6 +42,7 @@ export function TransportPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const { currency } = useCurrency();
   const [form] = Form.useForm<SearchFormValues>();
 
   const [cities, setCities] = useState<City[]>([]);
@@ -156,7 +159,7 @@ export function TransportPage() {
             { title: t('transport.to'), dataIndex: 'toCityName' },
             { title: t('transport.departure'), dataIndex: 'departureUtc', render: (v: string) => dayjs(v).format('DD.MM.YYYY HH:mm') },
             { title: t('transport.arrival'), dataIndex: 'arrivalUtc', render: (v: string) => dayjs(v).format('DD.MM.YYYY HH:mm') },
-            { title: t('transport.price'), dataIndex: 'price', render: (v: number) => `$${v.toFixed(2)}` },
+            { title: t('transport.price'), dataIndex: 'price', render: (v: number) => formatPrice(v, currency) },
             { title: t('transport.availableSeats'), dataIndex: 'availableSeats' },
             {
               title: '',
@@ -199,7 +202,7 @@ export function TransportPage() {
                 />
               </Form.Item>
               <Typography.Text strong>
-                {t('transport.total')}: ${(purchasing.price * seats).toFixed(2)}
+                {t('transport.total')}: {formatPrice(purchasing.price * seats, currency)}
               </Typography.Text>
             </Form>
           </>

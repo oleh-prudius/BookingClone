@@ -10,6 +10,8 @@ import { NearbyPlacesList } from '@widgets/nearby-places';
 import type { Hotel } from '@shared/types';
 import { AppButton } from '@shared/ui';
 import { toStars } from '@shared/lib/rating';
+import { formatPrice } from '@shared/lib/currency';
+import { useCurrency } from '@shared/theme/CurrencyContext';
 import { useAuth } from '@features/auth';
 import { useFavorites } from '@features/favorites';
 import { ReviewsSection } from './ReviewsSection';
@@ -21,6 +23,7 @@ export function HotelDetailPage() {
   const hotelId = Number(id);
   const { isAuthenticated } = useAuth();
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { currency } = useCurrency();
 
   const [hotel, setHotel] = useState<Hotel | null>(null);
   const [photos, setPhotos] = useState<HotelPhoto[]>([]);
@@ -110,7 +113,7 @@ export function HotelDetailPage() {
         <div style={{ textAlign: 'right' }}>
           {hotel.pricePerNight != null && (
             <Typography.Title level={3} style={{ margin: 0, color: 'var(--triply-textAccent)' }}>
-              ${hotel.pricePerNight}<Typography.Text type="secondary" style={{ fontSize: 14 }}>{t('hotel.perNight')}</Typography.Text>
+              {formatPrice(hotel.pricePerNight, currency)}<Typography.Text type="secondary" style={{ fontSize: 14 }}>{t('hotel.perNight')}</Typography.Text>
             </Typography.Title>
           )}
           <div style={{ display: 'flex', gap: 8, marginTop: 8, justifyContent: 'flex-end' }}>

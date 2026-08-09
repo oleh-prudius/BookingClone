@@ -8,6 +8,8 @@ import { bookingApi } from '@entities/booking';
 import { hotelApi } from '@entities/hotel';
 import { AppButton } from '@shared/ui';
 import type { Booking, BookingStatus } from '@shared/types';
+import { formatPrice } from '@shared/lib/currency';
+import { useCurrency } from '@shared/theme/CurrencyContext';
 
 const STATUS_COLORS: Record<BookingStatus, string> = {
   Pending: 'gold',
@@ -28,6 +30,7 @@ function categorize(booking: Booking): BookingTab {
 export function MyBookingsPage() {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
+  const { currency } = useCurrency();
   const { modal, message } = App.useApp();
 
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -121,7 +124,7 @@ export function MyBookingsPage() {
               description={`${new Date(b.checkIn).toLocaleDateString()} – ${new Date(b.checkOut).toLocaleDateString()} · ${t('myBookings.guestsCount', { count: b.guests })}`}
             />
             <div style={{ textAlign: 'right' }}>
-              <Typography.Text strong>${b.totalPrice}</Typography.Text>
+              <Typography.Text strong>{formatPrice(b.totalPrice, currency)}</Typography.Text>
               <div>
                 <Tag color={STATUS_COLORS[b.status]}>{statusLabels[b.status]}</Tag>
               </div>
@@ -162,7 +165,7 @@ export function MyBookingsPage() {
             <Descriptions.Item label={t('search.checkIn')}>{new Date(selected.checkIn).toLocaleDateString()}</Descriptions.Item>
             <Descriptions.Item label={t('search.checkOut')}>{new Date(selected.checkOut).toLocaleDateString()}</Descriptions.Item>
             <Descriptions.Item label={t('booking.guests')}>{selected.guests}</Descriptions.Item>
-            <Descriptions.Item label={t('myBookings.totalPrice')}>${selected.totalPrice}</Descriptions.Item>
+            <Descriptions.Item label={t('myBookings.totalPrice')}>{formatPrice(selected.totalPrice, currency)}</Descriptions.Item>
             <Descriptions.Item label={t('myBookings.statusLabel')}>
               <Tag color={STATUS_COLORS[selected.status]}>{statusLabels[selected.status]}</Tag>
             </Descriptions.Item>

@@ -5,10 +5,13 @@ import { Typography, List, Card, Tag, Spin, Empty } from 'antd';
 import dayjs from 'dayjs';
 import { ticketApi, type Ticket } from '@entities/ticket';
 import { useAuth } from '@features/auth';
+import { formatPrice } from '@shared/lib/currency';
+import { useCurrency } from '@shared/theme/CurrencyContext';
 
 export function MyTicketsPage() {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
+  const { currency } = useCurrency();
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -48,7 +51,7 @@ export function MyTicketsPage() {
                     </div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <Typography.Text strong>${ticket.totalPrice.toFixed(2)}</Typography.Text>
+                    <Typography.Text strong>{formatPrice(ticket.totalPrice, currency)}</Typography.Text>
                     <div>
                       <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                         {t('tickets.purchasedOn', { date: dayjs(ticket.purchasedAtUtc).format('DD.MM.YYYY') })}
