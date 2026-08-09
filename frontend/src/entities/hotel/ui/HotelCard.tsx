@@ -35,7 +35,7 @@ export function HotelCard({ hotel, variant = 'grid', isFavorite, onToggleFavorit
       <Typography.Text type="secondary" style={{ fontSize: 12, whiteSpace: 'nowrap' }}>
         {t('hotels.priceForOneNight')}
       </Typography.Text>
-      <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--triply-primary)', lineHeight: 1.2 }}>
+      <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--triply-textAccent)', lineHeight: 1.2 }}>
         {formatPrice(hotel.pricePerNight, currency)}
       </div>
     </div>

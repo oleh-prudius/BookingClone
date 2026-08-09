@@ -32,6 +32,12 @@ interface SearchFormValues {
 
 const TRANSPORT_TYPES: TransportType[] = ['Bus', 'Train', 'Plane'];
 
+const TRANSPORT_TYPE_ICONS: Record<TransportType, string> = {
+  Bus: '🚌',
+  Train: '🚆',
+  Plane: '✈️',
+};
+
 export function TransportPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -130,7 +136,7 @@ export function TransportPage() {
             allowClear
             placeholder={t('transport.anyType')}
             style={{ width: 140 }}
-            options={TRANSPORT_TYPES.map((v) => ({ value: v, label: t(`transport.types.${v}`) }))}
+            options={TRANSPORT_TYPES.map((v) => ({ value: v, label: `${TRANSPORT_TYPE_ICONS[v]} ${t(`transport.types.${v}`)}` }))}
           />
         </Form.Item>
         <Form.Item>
@@ -148,7 +154,7 @@ export function TransportPage() {
           rowKey="id"
           pagination={false}
           columns={[
-            { title: t('transport.type'), dataIndex: 'type', render: (v: TransportType) => <Tag>{t(`transport.types.${v}`)}</Tag> },
+            { title: t('transport.type'), dataIndex: 'type', render: (v: TransportType) => <Tag>{TRANSPORT_TYPE_ICONS[v]} {t(`transport.types.${v}`)}</Tag> },
             { title: t('transport.from'), dataIndex: 'fromCityName' },
             { title: t('transport.to'), dataIndex: 'toCityName' },
             { title: t('transport.departure'), dataIndex: 'departureUtc', render: (v: string) => dayjs(v).format('DD.MM.YYYY HH:mm') },
@@ -183,7 +189,7 @@ export function TransportPage() {
         {purchasing && (
           <>
             <Typography.Paragraph>
-              {purchasing.fromCityName} → {purchasing.toCityName}, {dayjs(purchasing.departureUtc).format('DD.MM.YYYY HH:mm')}
+              {TRANSPORT_TYPE_ICONS[purchasing.type]} {purchasing.fromCityName} → {purchasing.toCityName}, {dayjs(purchasing.departureUtc).format('DD.MM.YYYY HH:mm')}
             </Typography.Paragraph>
             <Form layout="vertical">
               <Form.Item label={t('transport.seats')}>

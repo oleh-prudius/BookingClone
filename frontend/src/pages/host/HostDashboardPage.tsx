@@ -106,7 +106,7 @@ export function HostDashboardPage() {
                         <Tag>{hotel.starRating}★</Tag>
                       </Space>
                       {hotel.pricePerNight != null && (
-                        <span style={{ fontWeight: 700, color: 'var(--triply-primary)' }}>
+                        <span style={{ fontWeight: 700, color: 'var(--triply-textAccent)' }}>
                           {formatPrice(hotel.pricePerNight, currency)}
                         </span>
                       )}
