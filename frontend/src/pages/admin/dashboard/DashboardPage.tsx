@@ -136,7 +136,7 @@ export function DashboardPage() {
                   <XAxis type="number" />
                   <YAxis type="category" dataKey="hotelName" width={140} />
                   <Tooltip />
-                  <Bar dataKey="revenue" name="Revenue ($)" fill="#0071C2" />
+                  <Bar dataKey="revenue" name="Revenue ($)" fill="#2F86F0" />
                 </BarChart>
               </ResponsiveContainer>
             )}

@@ -4,8 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@features/auth';
 import { useChatNotifications } from '@features/chat';
 import { Logo } from "@shared/ui/Logo";
-import { LanguageSwitcher, ThemeToggle, CurrencySwitcher } from "@shared/ui";
-import { Drawer, Button, Badge } from "antd";
+import { Drawer, Button, Badge, Avatar } from "antd";
 import { UserOutlined, SendOutlined, MenuOutlined } from '@ant-design/icons';
 
 
@@ -28,6 +27,7 @@ export function Header() {
   };
   const [isOpen, setIsOpen] = useState(false);
   const { unreadCount } = useChatNotifications();
+  const avatarSrc = user?.photo && user.photo.startsWith('http') ? user.photo : undefined;
 
 
   return (
@@ -52,12 +52,6 @@ export function Header() {
             <NavLink to="/nearby" style={navLinkStyle}>{t('header.nearby')}</NavLink>
         </nav>
 
-        <div className="desktop-nav" style={{ marginLeft: 'auto', gap: 4, alignItems: 'center' }}>
-          <ThemeToggle />
-          <CurrencySwitcher />
-          <LanguageSwitcher />
-        </div>
-
         <Button
             className="burger-btn"
             type="text"
@@ -74,9 +68,24 @@ export function Header() {
               {user!.roles.includes('Realtor') && (
                 <NavLink to="/host" style={navLinkStyle}>{t('header.myHotels')}</NavLink>
               )}
-              <NavLink to="/profile" style={navLinkStyle}>
-                {user!.firstName} {user!.lastName}
-              </NavLink>
+              <Badge count={unreadCount} size="small" offset={[-4, 4]}>
+                <Button
+                  type="text"
+                  shape="circle"
+                  style={iconButtonStyle}
+                  aria-label={t('header.messages')}
+                  icon={<SendOutlined style={iconStyle} />}
+                  onClick={() => navigate('/messages')}
+                />
+              </Badge>
+              <Avatar
+                size={36}
+                src={avatarSrc}
+                icon={avatarSrc ? undefined : <UserOutlined />}
+                style={{ cursor: 'pointer', border: '2px solid rgba(255,255,255,0.5)' }}
+                onClick={() => navigate('/profile')}
+                aria-label={t('header.myProfile')}
+              />
             </>
           ) : (
             <>
@@ -87,29 +96,15 @@ export function Header() {
               >
                 {t('header.registration')}
               </Button>
-              <Button ghost shape="round" href="/login">{t('header.signIn')}</Button>
+              <Button
+                shape="round"
+                href="/login"
+                style={{ backgroundColor: 'transparent', color: 'white', border: '1.5px solid var(--triply-navyDark)' }}
+              >
+                {t('header.signIn')}
+              </Button>
             </>
           )}
-          {isAuthenticated && (
-            <Badge count={unreadCount} size="small" offset={[-4, 4]}>
-              <Button
-                type="text"
-                shape="circle"
-                style={iconButtonStyle}
-                aria-label={t('header.messages')}
-                icon={<SendOutlined style={iconStyle} />}
-                onClick={() => navigate('/messages')}
-              />
-            </Badge>
-          )}
-          <Button
-            type="text"
-            shape="circle"
-            style={iconButtonStyle}
-            aria-label={isAuthenticated ? t('header.myProfile') : t('header.signIn')}
-            icon={<UserOutlined style={iconStyle} />}
-            onClick={() => navigate(isAuthenticated ? '/profile' : '/login')}
-          />
       </div>
     </header>
 
@@ -122,11 +117,6 @@ export function Header() {
             <NavLink to="/nearby" style={navLinkStyle}>{t('header.nearby')}</NavLink>
         </nav>
         <div style={{marginTop:24, display:'flex', flexDirection:'column', gap:12}}>
-            <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                <ThemeToggle />
-                <CurrencySwitcher />
-                <LanguageSwitcher />
-            </div>
             {isAuthenticated ? (
                 <>
                     {user!.roles.includes('Realtor') && <Button href="/host">{t('header.myHotels')}</Button>}

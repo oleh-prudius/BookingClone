@@ -230,11 +230,17 @@
     "favoritesDescription": "Hotels you've saved for later.",
     "viewMyFavorites": "View my favorites",
     "signOut": "Sign out",
+    "preferences": {
+      "theme": "Theme",
+      "currency": "Currency",
+      "language": "Language"
+    },
     "tabs": {
       "profile": "Profile",
       "paymentMethods": "Payment methods",
       "bookings": "Bookings",
       "favorites": "Favorites",
+      "preferences": "Preferences",
       "account": "Account"
     },
     "paymentMethods": {
