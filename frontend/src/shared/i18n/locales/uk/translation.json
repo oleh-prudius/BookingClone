@@ -242,11 +242,17 @@
     "favoritesDescription": "Готелі, які ви зберегли на потім.",
     "viewMyFavorites": "Переглянути обране",
     "signOut": "Вийти",
+    "preferences": {
+      "theme": "Тема",
+      "currency": "Валюта",
+      "language": "Мова"
+    },
     "tabs": {
       "profile": "Профіль",
       "paymentMethods": "Способи оплати",
       "bookings": "Бронювання",
       "favorites": "Обране",
+      "preferences": "Налаштування",
       "account": "Акаунт"
     },
     "paymentMethods": {

@@ -11,9 +11,10 @@ import {
   CreditCardOutlined,
   SettingOutlined,
   CameraOutlined,
+  BgColorsOutlined,
 } from '@ant-design/icons';
 import { useAuth, ProfileForm } from '@features/auth';
-import { AppButton } from '@shared/ui';
+import { AppButton, ThemeToggle, CurrencySwitcher, LanguageSwitcher } from '@shared/ui';
 import { PaymentMethodsSection } from './PaymentMethodsSection';
 
 export function ProfilePage() {
@@ -63,7 +64,7 @@ export function ProfilePage() {
                   position: 'absolute',
                   bottom: -2,
                   right: -2,
-                  background: 'var(--triply-primary, #1677ff)',
+                  background: 'var(--triply-primary)',
                   borderRadius: '50%',
                   width: 22,
                   height: 22,
@@ -142,6 +143,27 @@ export function ProfilePage() {
                   <AppButton variant="primary" onClick={() => navigate('/favorites')}>
                     {t('profile.viewMyFavorites')}
                   </AppButton>
+                </div>
+              ),
+            },
+            {
+              key: 'preferences',
+              label: <span><BgColorsOutlined /> {t('profile.tabs.preferences')}</span>,
+              children: (
+                <div style={{ padding: '8px 24px', display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 360 }}>
+                  <Typography.Title level={5} style={{ marginTop: 0 }}>{t('profile.tabs.preferences')}</Typography.Title>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography.Text>{t('profile.preferences.theme')}</Typography.Text>
+                    <ThemeToggle />
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography.Text>{t('profile.preferences.currency')}</Typography.Text>
+                    <CurrencySwitcher />
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography.Text>{t('profile.preferences.language')}</Typography.Text>
+                    <LanguageSwitcher />
+                  </div>
                 </div>
               ),
             },
