@@ -12,6 +12,9 @@ internal class TransportRouteEntityTypeConfiguration : IEntityTypeConfiguration<
 
         builder.HasIndex(r => new { r.FromCityId, r.ToCityId, r.DepartureUtc });
 
+        builder.Property(r => r.CarrierName).HasMaxLength(120);
+        builder.Property(r => r.VehicleModel).HasMaxLength(120);
+
         builder.HasOne(r => r.FromCity)
             .WithMany()
             .HasForeignKey(r => r.FromCityId)

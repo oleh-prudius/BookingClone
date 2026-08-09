@@ -391,6 +391,7 @@
     "to": "To",
     "date": "Date",
     "type": "Type",
+    "carrier": "Carrier",
     "anyType": "Any type",
     "selectCity": "Select a city",
     "search": "Search",

@@ -122,25 +122,29 @@ public class DbInitializer(
 			{
 				Type = TransportType.Train, FromCityId = kyiv.Id, ToCityId = lviv.Id,
 				DepartureUtc = today.AddDays(1).AddHours(8), ArrivalUtc = today.AddDays(1).AddHours(14),
-				Price = 25, TotalSeats = 40
+				Price = 25, TotalSeats = 40,
+				CarrierName = "Ukrainian Railways", VehicleModel = "Intercity+ EMU"
 			},
 			new TransportRoute
 			{
 				Type = TransportType.Bus, FromCityId = kyiv.Id, ToCityId = lviv.Id,
 				DepartureUtc = today.AddDays(1).AddHours(9), ArrivalUtc = today.AddDays(1).AddHours(17),
-				Price = 12, TotalSeats = 50
+				Price = 12, TotalSeats = 50,
+				CarrierName = "FlixBus", VehicleModel = "Setra S 517 HD"
 			},
 			new TransportRoute
 			{
 				Type = TransportType.Plane, FromCityId = kyiv.Id, ToCityId = paris.Id,
 				DepartureUtc = today.AddDays(2).AddHours(10), ArrivalUtc = today.AddDays(2).AddHours(13),
-				Price = 150, TotalSeats = 180
+				Price = 150, TotalSeats = 180,
+				CarrierName = "Ukraine International Airlines", VehicleModel = "Boeing 737-800"
 			},
 			new TransportRoute
 			{
 				Type = TransportType.Plane, FromCityId = paris.Id, ToCityId = rome.Id,
 				DepartureUtc = today.AddDays(3).AddHours(11), ArrivalUtc = today.AddDays(3).AddHours(13),
-				Price = 90, TotalSeats = 150
+				Price = 90, TotalSeats = 150,
+				CarrierName = "Air France", VehicleModel = "Airbus A320"
 			},
 		], ct);
 		await context.SaveChangesAsync(ct);

@@ -155,6 +155,18 @@ export function TransportPage() {
           pagination={false}
           columns={[
             { title: t('transport.type'), dataIndex: 'type', render: (v: TransportType) => <Tag>{TRANSPORT_TYPE_ICONS[v]} {t(`transport.types.${v}`)}</Tag> },
+            {
+              title: t('transport.carrier'),
+              dataIndex: 'carrierName',
+              render: (v: string, route: TransportRoute) => (
+                <div>
+                  <div>{v}</div>
+                  {route.vehicleModel && (
+                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>{route.vehicleModel}</Typography.Text>
+                  )}
+                </div>
+              ),
+            },
             { title: t('transport.from'), dataIndex: 'fromCityName' },
             { title: t('transport.to'), dataIndex: 'toCityName' },
             { title: t('transport.departure'), dataIndex: 'departureUtc', render: (v: string) => dayjs(v).format('DD.MM.YYYY HH:mm') },
@@ -190,6 +202,9 @@ export function TransportPage() {
           <>
             <Typography.Paragraph>
               {TRANSPORT_TYPE_ICONS[purchasing.type]} {purchasing.fromCityName} → {purchasing.toCityName}, {dayjs(purchasing.departureUtc).format('DD.MM.YYYY HH:mm')}
+            </Typography.Paragraph>
+            <Typography.Paragraph type="secondary" style={{ marginTop: -12 }}>
+              {purchasing.carrierName}{purchasing.vehicleModel ? ` · ${purchasing.vehicleModel}` : ''}
             </Typography.Paragraph>
             <Form layout="vertical">
               <Form.Item label={t('transport.seats')}>
