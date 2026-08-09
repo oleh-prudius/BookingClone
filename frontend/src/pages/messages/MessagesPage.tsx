@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Typography, List, Empty, Input, Spin } from 'antd';
 import { SendOutlined } from '@ant-design/icons';
 import { useAuth } from '@features/auth';
-import { useChatHub } from '@features/chat';
+import { useChatHub, useChatNotifications } from '@features/chat';
 import { chatApi, type Chat } from '@entities/chat';
 import { messageApi, type Message } from '@entities/message';
 import { AppButton } from '@shared/ui';
@@ -12,6 +12,7 @@ import { AppButton } from '@shared/ui';
 export function MessagesPage() {
   const { t } = useTranslation();
   const { isAuthenticated, user } = useAuth();
+  const { markChatRead } = useChatNotifications();
 
   const [chats, setChats] = useState<Chat[]>([]);
   const [loadingChats, setLoadingChats] = useState(true);
@@ -41,10 +42,12 @@ export function MessagesPage() {
       return;
     }
     setLoadingMessages(true);
+    markChatRead(selectedChatId);
     messageApi.getByChatId(selectedChatId)
       .then(setMessages)
       .catch(() => setMessages([]))
       .finally(() => setLoadingMessages(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedChatId]);
 
   const handleIncomingMessage = useCallback((message: Message) => {

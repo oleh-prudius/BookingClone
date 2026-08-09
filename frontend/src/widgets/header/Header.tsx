@@ -2,10 +2,11 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useState } from "react";
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@features/auth';
+import { useChatNotifications } from '@features/chat';
 import { Logo } from "@shared/ui/Logo";
 import { LanguageSwitcher, ThemeToggle } from "@shared/ui";
-import { Drawer, Button } from "antd";
-import { BellOutlined, UserOutlined, SendOutlined, MenuOutlined } from '@ant-design/icons';
+import { Drawer, Button, Badge } from "antd";
+import { UserOutlined, SendOutlined, MenuOutlined } from '@ant-design/icons';
 
 
 export function Header() {
@@ -26,6 +27,7 @@ export function Header() {
     backgroundColor: 'rgba(255, 255, 255, 0.16)',
   };
   const [isOpen, setIsOpen] = useState(false);
+  const { unreadCount } = useChatNotifications();
 
 
   return (
@@ -88,16 +90,17 @@ export function Header() {
             </>
           )}
           {isAuthenticated && (
-            <Button
-              type="text"
-              shape="circle"
-              style={iconButtonStyle}
-              aria-label={t('header.messages')}
-              icon={<SendOutlined style={iconStyle} />}
-              onClick={() => navigate('/messages')}
-            />
+            <Badge count={unreadCount} size="small" offset={[-4, 4]}>
+              <Button
+                type="text"
+                shape="circle"
+                style={iconButtonStyle}
+                aria-label={t('header.messages')}
+                icon={<SendOutlined style={iconStyle} />}
+                onClick={() => navigate('/messages')}
+              />
+            </Badge>
           )}
-          <Button type="text" shape="circle" style={iconButtonStyle} aria-label={t('header.notifications')} icon={<BellOutlined style={iconStyle} />} />
           <Button
             type="text"
             shape="circle"
