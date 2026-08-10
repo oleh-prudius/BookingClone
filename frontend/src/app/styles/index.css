@@ -119,3 +119,11 @@ code {
 .triply-pill-input input::placeholder {
   color: rgba(255, 255, 255, 0.7);
 }
+.triply-pill-input .ant-picker-separator,
+.triply-pill-input .ant-picker-suffix,
+.triply-pill-input .ant-picker-clear {
+  color: rgba(255, 255, 255, 0.7);
+}
+.triply-pill-input .ant-picker-clear {
+  background: var(--triply-navyDark);
+}

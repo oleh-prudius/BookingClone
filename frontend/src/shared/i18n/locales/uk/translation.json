@@ -83,6 +83,9 @@
   "hotels": {
     "title": "Готелі",
     "titleInDestination": "Готелі в місті {{destination}}",
+    "titleInCountry": "Готелі в країні {{country}}",
+    "showAllCountries": "Показати готелі з усіх країн",
+    "showOnlyMyCountry": "Показати лише {{country}}",
     "gridView": "Сітка",
     "listView": "Список",
     "noResults": "Готелів не знайдено",
