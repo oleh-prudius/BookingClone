@@ -101,7 +101,7 @@ export function Header() {
               <Button
                 shape="round"
                 href="/login"
-                style={{ backgroundColor: 'transparent', color: 'white', border: '1.5px solid var(--triply-navyDark)' }}
+                style={{ backgroundColor: 'var(--triply-navyDark)', color: 'white', border: 'none' }}
               >
                 {t('header.signIn')}
               </Button>
@@ -130,8 +130,8 @@ export function Header() {
                 </>
             ) : (
                 <>
-                <Button href='/login'>{t('header.signIn')}</Button>
-                <Button type = 'primary' href="/register">{t('header.registration')}</Button>
+                <Button type="primary" href='/login'>{t('header.signIn')}</Button>
+                <Button type="primary" href="/register">{t('header.registration')}</Button>
                 </>
             )}
         </div>

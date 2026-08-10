@@ -60,6 +60,12 @@ export default function App() {
                     <Route path="/tickets" element={<MyTicketsPage />} />
                     <Route path="/transport" element={<TransportPage />} />
                     <Route path="/nearby" element={<NearbyPage />} />
+                    <Route path="/about" element={<ComingSoonPage titleKey="footer.about" />} />
+                    <Route path="/careers" element={<ComingSoonPage titleKey="footer.careers" />} />
+                    <Route path="/contact" element={<ComingSoonPage titleKey="footer.contact" />} />
+                    <Route path="/help" element={<ComingSoonPage titleKey="footer.help" />} />
+                    <Route path="/terms" element={<ComingSoonPage titleKey="footer.terms" />} />
+                    <Route path="/privacy" element={<ComingSoonPage titleKey="footer.privacy" />} />
                     <Route path="*" element={<Page404 />} />
                   </Routes>
                 </main>
