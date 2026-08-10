@@ -116,7 +116,10 @@ code {
   color: white;
 }
 .triply-pill-input::placeholder,
-.triply-pill-input input::placeholder {
+.triply-pill-input input::placeholder,
+/* antd's own .ant-picker .ant-picker-input > input::placeholder rule is more specific
+   than a plain class selector, so it wins the cascade unless we match its shape here. */
+.triply-pill-input.ant-picker .ant-picker-input > input::placeholder {
   color: rgba(255, 255, 255, 0.7);
 }
 .triply-pill-input .ant-picker-separator,
