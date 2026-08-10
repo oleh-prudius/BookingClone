@@ -26,6 +26,11 @@ export function Header() {
     color: 'inherit' as const,
     backgroundColor: 'rgba(255, 255, 255, 0.16)',
   };
+  const outlineButtonStyle = {
+    backgroundColor: 'transparent' as const,
+    color: 'white' as const,
+    border: '1.5px solid var(--triply-navyDark)',
+  };
   const [isOpen, setIsOpen] = useState(false);
   const { unreadCount } = useChatNotifications();
   const avatarSrc = user?.photo && user.photo.startsWith('http') ? user.photo : undefined;
@@ -90,23 +95,15 @@ export function Header() {
             </>
           ) : (
             <>
-              <Button
-                shape="round"
-                href="/register"
-                style={{ backgroundColor: 'var(--triply-navyDark)', color: 'white', border: 'none' }}
-              >
+              <Button shape="round" href="/register" style={outlineButtonStyle}>
                 {t('header.registration')}
               </Button>
-              <Button
-                shape="round"
-                href="/login"
-                style={{ backgroundColor: 'var(--triply-navyDark)', color: 'white', border: 'none' }}
-              >
+              <Button shape="round" href="/login" style={outlineButtonStyle}>
                 {t('header.signIn')}
               </Button>
             </>
           )}
-          <SettingsMenu buttonStyle={iconButtonStyle} />
+          <SettingsMenu buttonStyle={outlineButtonStyle} />
       </div>
     </header>
 
