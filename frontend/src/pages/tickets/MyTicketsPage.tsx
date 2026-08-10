@@ -6,10 +6,11 @@ import dayjs from 'dayjs';
 import { ticketApi, type Ticket } from '@entities/ticket';
 import { useAuth } from '@features/auth';
 import { formatPrice } from '@shared/lib/currency';
+import { localizeCityName } from '@shared/lib/geoNames';
 import { useCurrency } from '@shared/theme/CurrencyContext';
 
 export function MyTicketsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { isAuthenticated } = useAuth();
   const { currency } = useCurrency();
   const [tickets, setTickets] = useState<Ticket[]>([]);
@@ -40,7 +41,7 @@ export function MyTicketsPage() {
               <Card style={{ width: '100%' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
-                    <Typography.Text strong>{ticket.fromCityName} → {ticket.toCityName}</Typography.Text>
+                    <Typography.Text strong>{localizeCityName(ticket.fromCityName, i18n.language)} → {localizeCityName(ticket.toCityName, i18n.language)}</Typography.Text>
                     <div>
                       <Typography.Text type="secondary">
                         {dayjs(ticket.departureUtc).format('DD.MM.YYYY HH:mm')} — {dayjs(ticket.arrivalUtc).format('DD.MM.YYYY HH:mm')}

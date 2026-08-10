@@ -11,13 +11,14 @@ import type { Hotel } from '@shared/types';
 import { AppButton } from '@shared/ui';
 import { toStars } from '@shared/lib/rating';
 import { formatPrice } from '@shared/lib/currency';
+import { localizeCityName, localizeCountryName } from '@shared/lib/geoNames';
 import { useCurrency } from '@shared/theme/CurrencyContext';
 import { useAuth } from '@features/auth';
 import { useFavorites } from '@features/favorites';
 import { ReviewsSection } from './ReviewsSection';
 
 export function HotelDetailPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const hotelId = Number(id);
@@ -101,7 +102,7 @@ export function HotelDetailPage() {
             )}
           </div>
           <Typography.Text type="secondary">
-            <EnvironmentOutlined /> {hotel.street}, {hotel.cityName}, {hotel.countryName}
+            <EnvironmentOutlined /> {hotel.street}, {localizeCityName(hotel.cityName, i18n.language)}, {localizeCountryName(hotel.countryName, i18n.language)}
           </Typography.Text>
           <div style={{ marginTop: 8 }}>
             {hotel.rating != null

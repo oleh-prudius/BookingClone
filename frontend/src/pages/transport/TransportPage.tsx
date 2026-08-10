@@ -20,6 +20,7 @@ import { transportRouteApi, type TransportRoute, type TransportType } from '@ent
 import { ticketApi } from '@entities/ticket';
 import { useAuth } from '@features/auth';
 import { formatPrice } from '@shared/lib/currency';
+import { localizeCityName, localizeCountryName } from '@shared/lib/geoNames';
 import { useCurrency } from '@shared/theme/CurrencyContext';
 import { AppButton } from '@shared/ui';
 
@@ -39,7 +40,7 @@ const TRANSPORT_TYPE_ICONS: Record<TransportType, string> = {
 };
 
 export function TransportPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { currency } = useCurrency();
@@ -101,7 +102,10 @@ export function TransportPage() {
     }
   };
 
-  const cityOptions = cities.map((c) => ({ value: c.id, label: `${c.name}, ${c.countryName}` }));
+  const cityOptions = cities.map((c) => ({
+    value: c.id,
+    label: `${localizeCityName(c.name, i18n.language)}, ${localizeCountryName(c.countryName, i18n.language)}`,
+  }));
 
   return (
     <section style={{ padding: 24, maxWidth: 1000, margin: '0 auto' }}>
@@ -167,8 +171,8 @@ export function TransportPage() {
                 </div>
               ),
             },
-            { title: t('transport.from'), dataIndex: 'fromCityName' },
-            { title: t('transport.to'), dataIndex: 'toCityName' },
+            { title: t('transport.from'), dataIndex: 'fromCityName', render: (v: string) => localizeCityName(v, i18n.language) },
+            { title: t('transport.to'), dataIndex: 'toCityName', render: (v: string) => localizeCityName(v, i18n.language) },
             { title: t('transport.departure'), dataIndex: 'departureUtc', render: (v: string) => dayjs(v).format('DD.MM.YYYY HH:mm') },
             { title: t('transport.arrival'), dataIndex: 'arrivalUtc', render: (v: string) => dayjs(v).format('DD.MM.YYYY HH:mm') },
             { title: t('transport.price'), dataIndex: 'price', render: (v: number) => formatPrice(v, currency) },
@@ -200,7 +204,7 @@ export function TransportPage() {
         {purchasing && (
           <>
             <Typography.Paragraph>
-              {TRANSPORT_TYPE_ICONS[purchasing.type]} {purchasing.fromCityName} → {purchasing.toCityName}, {dayjs(purchasing.departureUtc).format('DD.MM.YYYY HH:mm')}
+              {TRANSPORT_TYPE_ICONS[purchasing.type]} {localizeCityName(purchasing.fromCityName, i18n.language)} → {localizeCityName(purchasing.toCityName, i18n.language)}, {dayjs(purchasing.departureUtc).format('DD.MM.YYYY HH:mm')}
             </Typography.Paragraph>
             <Typography.Paragraph type="secondary" style={{ marginTop: -12 }}>
               {purchasing.carrierName}{purchasing.vehicleModel ? ` · ${purchasing.vehicleModel}` : ''}

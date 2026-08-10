@@ -6,6 +6,7 @@ import type { Hotel } from '@shared/types';
 import { AppButton } from '@shared/ui';
 import { toStars } from '@shared/lib/rating';
 import { formatPrice } from '@shared/lib/currency';
+import { localizeCityName, localizeCountryName } from '@shared/lib/geoNames';
 import { useCurrency } from '@shared/theme/CurrencyContext';
 
 interface Props {
@@ -17,8 +18,10 @@ interface Props {
 
 export function HotelCard({ hotel, variant = 'grid', isFavorite, onToggleFavorite }: Props) {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { currency } = useCurrency();
+  const cityName = localizeCityName(hotel.cityName, i18n.language);
+  const countryName = localizeCountryName(hotel.countryName, i18n.language);
 
   const starClassBlock = hotel.starRating > 0 && (
     <span aria-label={t('hotels.starHotel', { count: hotel.starRating })} style={{ color: '#faad14', fontSize: 12, letterSpacing: 1 }}>
@@ -87,7 +90,7 @@ export function HotelCard({ hotel, variant = 'grid', isFavorite, onToggleFavorit
                 {starClassBlock && <span style={{ flexShrink: 0 }}>{starClassBlock}</span>}
               </div>
               <div style={{ color: 'var(--text)', marginTop: 4 }}>
-                <EnvironmentOutlined /> {hotel.cityName}, {hotel.countryName}
+                <EnvironmentOutlined /> {cityName}, {countryName}
               </div>
               <div style={{ marginTop: 8 }}>{ratingBlock}</div>
             </div>
@@ -144,7 +147,7 @@ export function HotelCard({ hotel, variant = 'grid', isFavorite, onToggleFavorit
         }
         description={
           <span>
-            <EnvironmentOutlined /> {hotel.cityName}, {hotel.countryName}
+            <EnvironmentOutlined /> {cityName}, {countryName}
           </span>
         }
       />
