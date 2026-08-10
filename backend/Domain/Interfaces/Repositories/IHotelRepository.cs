@@ -10,6 +10,7 @@ public interface IHotelRepository
         string? name,
         long? categoryId,
         string? cityName,
+        string? countryName,
         decimal? priceMin,
         decimal? priceMax,
         string? sortBy,
