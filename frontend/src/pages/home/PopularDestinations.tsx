@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Typography, Skeleton } from 'antd';
 import { hotelApi } from '@entities/hotel';
 import type { Hotel } from '@shared/types';
+import { localizeCityName } from '@shared/lib/geoNames';
 
 interface Destination {
   cityName: string;
@@ -33,7 +34,7 @@ function buildDestinations(hotels: Hotel[]): Destination[] {
 
 export function PopularDestinations() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -55,12 +56,14 @@ export function PopularDestinations() {
         gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
         gap: 16,
       }}>
-        {destinations.map((d) => (
+        {destinations.map((d) => {
+          const localizedCity = localizeCityName(d.cityName, i18n.language);
+          return (
           <div
             key={d.cityName}
             role="button"
             tabIndex={0}
-            aria-label={t('home.searchHotelsIn', { city: d.cityName })}
+            aria-label={t('home.searchHotelsIn', { city: localizedCity })}
             onClick={() => navigate(`/hotels?destination=${encodeURIComponent(d.cityName)}`)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
@@ -72,7 +75,7 @@ export function PopularDestinations() {
           >
             <img
               src={d.photoUrl ?? 'https://placehold.co/300x200?text=No+Photo'}
-              alt={d.cityName}
+              alt={localizedCity}
               style={{ width: '100%', height: 140, objectFit: 'cover', display: 'block' }}
             />
             <div style={{
@@ -85,11 +88,12 @@ export function PopularDestinations() {
               padding: 12,
               color: 'white',
             }}>
-              <div style={{ fontWeight: 600 }}>{d.cityName}</div>
+              <div style={{ fontWeight: 600 }}>{localizedCity}</div>
               <div style={{ fontSize: 12, opacity: 0.85 }}>{t('home.hotelCount', { count: d.hotelCount })}</div>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );

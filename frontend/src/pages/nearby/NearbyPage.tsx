@@ -3,9 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { Typography, Select, Empty } from 'antd';
 import { cityApi, type City } from '@entities/city';
 import { NearbyPlacesList } from '@widgets/nearby-places';
+import { localizeCityName, localizeCountryName } from '@shared/lib/geoNames';
 
 export function NearbyPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [cities, setCities] = useState<City[]>([]);
   const [cityId, setCityId] = useState<number | undefined>(undefined);
 
@@ -25,7 +26,10 @@ export function NearbyPage() {
         style={{ width: 280, marginBottom: 16 }}
         value={cityId}
         onChange={setCityId}
-        options={cities.map((c) => ({ value: c.id, label: `${c.name}, ${c.countryName}` }))}
+        options={cities.map((c) => ({
+          value: c.id,
+          label: `${localizeCityName(c.name, i18n.language)}, ${localizeCountryName(c.countryName, i18n.language)}`,
+        }))}
       />
 
       {cityId ? (

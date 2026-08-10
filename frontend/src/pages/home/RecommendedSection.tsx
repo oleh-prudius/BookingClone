@@ -6,9 +6,10 @@ import type { Hotel } from '@shared/types';
 import { useAuth } from '@features/auth';
 import { useFavorites } from '@features/favorites';
 import { useGeoLocation } from '@shared/lib/useGeoLocation';
+import { localizeCityName, localizeCountryName } from '@shared/lib/geoNames';
 
 export function RecommendedSection() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { location, loading: locLoading } = useGeoLocation();
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [matchedBy, setMatchedBy] = useState<'city' | 'country' | null>(null);
@@ -53,8 +54,8 @@ export function RecommendedSection() {
   if (hotels.length === 0 || !matchedBy) return null;
 
   const title = matchedBy === 'city'
-    ? t('home.recommendedInCity', { city: location!.city })
-    : t('home.recommendedInCountry', { country: location!.country });
+    ? t('home.recommendedInCity', { city: localizeCityName(location!.city!, i18n.language) })
+    : t('home.recommendedInCountry', { country: localizeCountryName(location!.country!, i18n.language) });
 
   return (
     <section style={{ padding: '32px 24px', maxWidth: 1200, margin: '0 auto' }}>

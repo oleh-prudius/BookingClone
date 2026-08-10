@@ -11,6 +11,7 @@ import { MapPanel } from '@widgets/hotel-map';
 import { useAuth } from '@features/auth';
 import { useFavorites } from '@features/favorites';
 import { useGeoLocation } from '@shared/lib/useGeoLocation';
+import { localizeCityName, localizeCountryName } from '@shared/lib/geoNames';
 
 const PAGE_SIZE = 10;
 const PRICE_MIN = 0;
@@ -47,7 +48,7 @@ function readFiltersFromParams(searchParams: URLSearchParams): HotelFilters {
 }
 
 export function HotelsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const destination = searchParams.get('destination') || undefined;
 
@@ -140,9 +141,9 @@ export function HotelsPage() {
             <div>
               <Typography.Title level={3} style={{ margin: 0 }}>
                 {destination
-                  ? t('hotels.titleInDestination', { destination })
+                  ? t('hotels.titleInDestination', { destination: localizeCityName(destination, i18n.language) })
                   : effectiveCountry
-                    ? t('hotels.titleInCountry', { country: effectiveCountry })
+                    ? t('hotels.titleInCountry', { country: localizeCountryName(effectiveCountry, i18n.language) })
                     : t('hotels.title')}
               </Typography.Title>
               {effectiveCountry && (
@@ -152,7 +153,7 @@ export function HotelsPage() {
               )}
               {allCountries && !destination && geoLocation?.country && (
                 <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => setAllCountries(false)}>
-                  {t('hotels.showOnlyMyCountry', { country: geoLocation.country })}
+                  {t('hotels.showOnlyMyCountry', { country: localizeCountryName(geoLocation.country, i18n.language) })}
                 </Button>
               )}
             </div>

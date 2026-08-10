@@ -5,6 +5,7 @@ import { AutoComplete, Input, DatePicker, Popover, Button } from 'antd';
 import { AppButton } from '@shared/ui';
 import { SearchOutlined, UserOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { cityApi, type City } from '@entities/city';
+import { localizeCityName, localizeCountryName } from '@shared/lib/geoNames';
 
 const DESTINATION_DEBOUNCE_MS = 250;
 
@@ -52,8 +53,12 @@ export function GuestCounter({
 }
 
 export function SearchForm() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  // `destination` is the canonical English city name sent to the backend for search.
+  // `inputText` is what's shown in the box — translated once a city is picked, so the
+  // visible label matches the current UI language without changing what gets searched.
   const [destination, setDestination] = useState('');
+  const [inputText, setInputText] = useState('');
   const [destinationQuery, setDestinationQuery] = useState('');
   const [cities, setCities] = useState<City[]>([]);
   const [adults, setAdults] = useState(2);
@@ -67,18 +72,40 @@ export function SearchForm() {
 
   // Debounce the typed query before filtering, so fast typing doesn't re-filter on every keystroke
   useEffect(() => {
-    const timeout = setTimeout(() => setDestinationQuery(destination), DESTINATION_DEBOUNCE_MS);
+    const timeout = setTimeout(() => setDestinationQuery(inputText), DESTINATION_DEBOUNCE_MS);
     return () => clearTimeout(timeout);
-  }, [destination]);
+  }, [inputText]);
 
   const options = useMemo(() => {
     const query = destinationQuery.trim().toLowerCase();
     if (!query) return [];
     return cities
-      .filter((c) => c.name.toLowerCase().includes(query) || c.countryName.toLowerCase().includes(query))
+      .filter((c) => {
+        const localizedCity = localizeCityName(c.name, i18n.language).toLowerCase();
+        const localizedCountry = localizeCountryName(c.countryName, i18n.language).toLowerCase();
+        return (
+          c.name.toLowerCase().includes(query) ||
+          c.countryName.toLowerCase().includes(query) ||
+          localizedCity.includes(query) ||
+          localizedCountry.includes(query)
+        );
+      })
       .slice(0, 8)
-      .map((c) => ({ value: c.name, label: `${c.name}, ${c.countryName}` }));
-  }, [cities, destinationQuery]);
+      .map((c) => ({
+        value: c.name,
+        label: `${localizeCityName(c.name, i18n.language)}, ${localizeCountryName(c.countryName, i18n.language)}`,
+      }));
+  }, [cities, destinationQuery, i18n.language]);
+
+  const handleInputChange = (value: string) => {
+    setInputText(value);
+    setDestination(value);
+  };
+
+  const handleSelect = (value: string) => {
+    setDestination(value);
+    setInputText(localizeCityName(value, i18n.language));
+  };
 
   const guestLabel = children > 0
     ? `${t('search.adultsCount', { count: adults })} · ${t('search.childrenCount', { count: children })}`
@@ -132,9 +159,9 @@ export function SearchForm() {
     }}>
       <AutoComplete
         options={options}
-        value={destination}
-        onChange={setDestination}
-        onSelect={setDestination}
+        value={inputText}
+        onChange={handleInputChange}
+        onSelect={handleSelect}
         style={{ flex: 2, minWidth: 200 }}
       >
         <Input
