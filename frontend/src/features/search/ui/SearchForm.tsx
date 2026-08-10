@@ -146,6 +146,7 @@ export function SearchForm() {
       </AutoComplete>
       <DatePicker.RangePicker
         style={{ ...pillFieldStyle, flex: 2, minWidth: 240 }}
+        className="triply-pill-input"
         placeholder={[t('search.checkIn'), t('search.checkOut')]}
       />
       <Popover

@@ -77,6 +77,9 @@
   "hotels": {
     "title": "Hotels",
     "titleInDestination": "Hotels in {{destination}}",
+    "titleInCountry": "Hotels in {{country}}",
+    "showAllCountries": "Show hotels from all countries",
+    "showOnlyMyCountry": "Show only {{country}}",
     "gridView": "Grid",
     "listView": "List",
     "noResults": "No hotels found",

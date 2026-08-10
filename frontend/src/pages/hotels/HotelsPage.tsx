@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Row, Col, Typography, Pagination, Empty, Spin, Alert, Segmented } from 'antd';
+import { Row, Col, Typography, Pagination, Empty, Spin, Alert, Segmented, Button } from 'antd';
 import { AppstoreOutlined, BarsOutlined } from '@ant-design/icons';
 import { hotelApi, HotelCard } from '@entities/hotel';
 import type { Hotel } from '@shared/types';
@@ -10,6 +10,7 @@ import { SortTabs, type SortBy } from './SortTabs';
 import { MapPanel } from '@widgets/hotel-map';
 import { useAuth } from '@features/auth';
 import { useFavorites } from '@features/favorites';
+import { useGeoLocation } from '@shared/lib/useGeoLocation';
 
 const PAGE_SIZE = 10;
 const PRICE_MIN = 0;
@@ -54,6 +55,12 @@ export function HotelsPage() {
   const [debouncedFilters, setDebouncedFilters] = useState<HotelFilters>(filters);
   const [sortBy, setSortBy] = useState<SortBy>(() => readSortFromParams(searchParams));
   const [view, setView] = useState<ViewMode>(() => readViewFromParams(searchParams));
+  const [allCountries, setAllCountries] = useState(() => searchParams.get('allCountries') === '1');
+  const { location: geoLocation } = useGeoLocation();
+
+  // Only auto-restrict to the visitor's own country when they haven't searched a
+  // specific destination and haven't explicitly asked to see every country.
+  const effectiveCountry = !destination && !allCountries ? geoLocation?.country ?? undefined : undefined;
 
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [total, setTotal] = useState(0);
@@ -81,12 +88,13 @@ export function HotelsPage() {
     if (sortBy !== DEFAULT_SORT) next.set('sortBy', sortBy);
     if (view !== DEFAULT_VIEW) next.set('view', view);
     if (page > 1) next.set('page', String(page));
+    if (allCountries) next.set('allCountries', '1');
     setSearchParams(next, { replace: true });
-  }, [debouncedFilters, destination, sortBy, view, page, setSearchParams]);
+  }, [debouncedFilters, destination, sortBy, view, page, allCountries, setSearchParams]);
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedFilters, destination, sortBy]);
+  }, [debouncedFilters, destination, sortBy, effectiveCountry]);
 
   useEffect(() => {
     setLoading(true);
@@ -95,6 +103,7 @@ export function HotelsPage() {
       page,
       pageSize: PAGE_SIZE,
       city: destination,
+      country: effectiveCountry,
       priceMin: debouncedFilters.priceRange[0] > PRICE_MIN ? debouncedFilters.priceRange[0] : undefined,
       priceMax: debouncedFilters.priceRange[1] < PRICE_MAX ? debouncedFilters.priceRange[1] : undefined,
       categoryIds: debouncedFilters.categoryIds.length ? debouncedFilters.categoryIds : undefined,
@@ -110,7 +119,7 @@ export function HotelsPage() {
         setError(axiosErr.response?.data?.error ?? axiosErr.message ?? t('hotels.loadError'));
       })
       .finally(() => setLoading(false));
-  }, [page, destination, debouncedFilters, sortBy]);
+  }, [page, destination, effectiveCountry, debouncedFilters, sortBy]);
 
   return (
     <section style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
@@ -128,9 +137,25 @@ export function HotelsPage() {
             flexWrap: 'wrap',
             gap: 12,
           }}>
-            <Typography.Title level={3} style={{ margin: 0 }}>
-              {destination ? t('hotels.titleInDestination', { destination }) : t('hotels.title')}
-            </Typography.Title>
+            <div>
+              <Typography.Title level={3} style={{ margin: 0 }}>
+                {destination
+                  ? t('hotels.titleInDestination', { destination })
+                  : effectiveCountry
+                    ? t('hotels.titleInCountry', { country: effectiveCountry })
+                    : t('hotels.title')}
+              </Typography.Title>
+              {effectiveCountry && (
+                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => setAllCountries(true)}>
+                  {t('hotels.showAllCountries')}
+                </Button>
+              )}
+              {allCountries && !destination && geoLocation?.country && (
+                <Button type="link" style={{ padding: 0, height: 'auto' }} onClick={() => setAllCountries(false)}>
+                  {t('hotels.showOnlyMyCountry', { country: geoLocation.country })}
+                </Button>
+              )}
+            </div>
             <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
               <SortTabs value={sortBy} onChange={setSortBy} />
               <Segmented
