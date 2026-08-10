@@ -20,7 +20,17 @@
     "switchToLightTheme": "Перемкнути на світлу тему"
   },
   "footer": {
-    "copyright": "Triply v{{version}} © {{year}}"
+    "copyright": "Triply v{{version}} © {{year}}",
+    "tagline": "Знаходьте житло, квитки та транспорт для подорожей в одному місці.",
+    "explore": "Розділи",
+    "company": "Компанія",
+    "support": "Підтримка",
+    "about": "Про нас",
+    "careers": "Кар'єра",
+    "contact": "Контакти",
+    "help": "Довідковий центр",
+    "terms": "Умови використання",
+    "privacy": "Політика конфіденційності"
   },
   "common": {
     "save": "Зберегти",

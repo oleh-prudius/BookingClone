@@ -20,7 +20,17 @@
     "switchToLightTheme": "Switch to light theme"
   },
   "footer": {
-    "copyright": "Triply v{{version}} © {{year}}"
+    "copyright": "Triply v{{version}} © {{year}}",
+    "tagline": "Find stays, tickets, and transport for your trips, all in one place.",
+    "explore": "Explore",
+    "company": "Company",
+    "support": "Support",
+    "about": "About us",
+    "careers": "Careers",
+    "contact": "Contact",
+    "help": "Help center",
+    "terms": "Terms of use",
+    "privacy": "Privacy policy"
   },
   "common": {
     "save": "Save",
