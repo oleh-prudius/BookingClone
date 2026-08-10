@@ -613,10 +613,12 @@ public class DbInitializer(
 		["Dubrovnik"] = ["https://upload.wikimedia.org/wikipedia/commons/6/67/The_walls_of_the_fortress_and_View_of_the_old_city._panorama.jpg"],
 	};
 
-	private static IEnumerable<HotelPhoto> BuildPhotos(string cityName, long hotelId) =>
+	// Cities without a curated landmark photo set fall back to the city's own stock photo,
+	// so every seeded hotel still shows a cover image instead of a "No Photo" placeholder.
+	private static IEnumerable<HotelPhoto> BuildPhotos(string cityName, string cityFallbackImage, long hotelId) =>
 		CityPhotos.TryGetValue(cityName, out var urls)
 			? urls.Select((url, i) => new HotelPhoto { Name = url, Priority = i, HotelId = hotelId })
-			: [];
+			: [new HotelPhoto { Name = cityFallbackImage, Priority = 0, HotelId = hotelId }];
 
 	private async Task SeedGrandKyivPhotosAsync(CancellationToken ct)
 	{
@@ -625,7 +627,8 @@ public class DbInitializer(
 
 		if (await context.HotelPhotos.AnyAsync(p => p.HotelId == hotel.Id, ct)) return;
 
-		await context.HotelPhotos.AddRangeAsync(BuildPhotos("Kyiv", hotel.Id), ct);
+		var kyivCity = await context.Cities.FirstAsync(c => c.Name == "Kyiv", ct);
+		await context.HotelPhotos.AddRangeAsync(BuildPhotos("Kyiv", kyivCity.Image, hotel.Id), ct);
 		await context.SaveChangesAsync(ct);
 	}
 
@@ -694,6 +697,224 @@ public class DbInitializer(
 				"Historic hotel within Dubrovnik's ancient city walls, near the Adriatic coast.",
 				["Wi-Fi", "Restaurant", "Air Conditioning"],
 				[("Standard Room", "Standard", 9, (90m, null, 2, 0)), ("Superior Room", "Superior", 5, (130m, 115m, 2, 1))],
+				4),
+
+			// A second hotel in each city that already had one, plus first hotels for every
+			// remaining seeded city, so the catalog has believable depth everywhere.
+			new("Podil Riverside Hotel", "Kyiv", "Hotel",
+				"Riverside hotel in Kyiv's historic Podil district.",
+				["Wi-Fi", "Restaurant", "Parking"],
+				[("Standard Room", "Standard", 10, (50m, null, 2, 0)), ("Superior Room", "Superior", 5, (75m, 65m, 2, 1))],
+				3),
+
+			new("Rynok Square Apartments", "Lviv", "Apartment",
+				"Cozy apartments overlooking Lviv's Rynok Square.",
+				["Wi-Fi", "Air Conditioning"],
+				[("Studio", "Standard", 6, (45m, null, 2, 0)), ("One-Bedroom Suite", "Suite", 3, (70m, 60m, 2, 1))],
+				3),
+
+			new("Montmartre Charm Hotel", "Paris", "Hotel",
+				"Romantic hotel near Sacré-Cœur in artistic Montmartre.",
+				["Wi-Fi", "Restaurant"],
+				[("Standard Room", "Standard", 8, (130m, null, 2, 0)), ("Deluxe Room", "Deluxe", 4, (190m, 165m, 2, 1))],
+				4),
+
+			new("Trastevere Boutique Hotel", "Rome", "Hotel",
+				"Boutique hotel in Rome's bohemian Trastevere neighborhood.",
+				["Wi-Fi", "Restaurant", "Air Conditioning"],
+				[("Standard Room", "Standard", 8, (110m, null, 2, 0)), ("Superior Room", "Superior", 5, (160m, 140m, 2, 1))],
+				4),
+
+			new("Gothic Quarter Hostel", "Barcelona", "Hostel",
+				"Lively hostel in Barcelona's Gothic Quarter.",
+				["Wi-Fi", "Air Conditioning"],
+				[("Economy Room", "Economy", 14, (28m, null, 1, 0)), ("Standard Room", "Standard", 6, (40m, null, 2, 0))],
+				2),
+
+			new("Sultanahmet Heritage Hotel", "Istanbul", "Hotel",
+				"Ottoman-era hotel steps from the Hagia Sophia and Blue Mosque.",
+				["Wi-Fi", "Restaurant", "Air Conditioning"],
+				[("Standard Room", "Standard", 9, (85m, null, 2, 0)), ("Deluxe Room", "Deluxe", 4, (135m, 115m, 2, 1))],
+				4),
+
+			new("Downtown Dubai Suites", "Dubai", "Apartment",
+				"Modern serviced apartments near the Burj Khalifa and Dubai Mall.",
+				["Pool", "Gym", "Air Conditioning"],
+				[("Studio", "Standard", 6, (160m, null, 2, 0)), ("One-Bedroom Suite", "Suite", 3, (240m, 210m, 2, 1))],
+				4),
+
+			new("Sukhumvit Skyline Hotel", "Bangkok", "Hotel",
+				"High-rise hotel on Sukhumvit with skyline views and BTS access.",
+				["Pool", "Gym", "Restaurant", "Air Conditioning"],
+				[("Superior Room", "Superior", 10, (55m, null, 2, 0)), ("Deluxe Room", "Deluxe", 5, (85m, 70m, 2, 1))],
+				4),
+
+			new("Fira Sunset Suites", "Santorini", "Villa",
+				"Cliffside suites in Fira with unobstructed caldera sunset views.",
+				["Pool", "Wi-Fi", "Spa"],
+				[("Caldera Suite", "Deluxe", 4, (260m, null, 2, 1)), ("Honeymoon Suite", "Suite", 2, (330m, 290m, 2, 0))],
+				5),
+
+			new("Lapad Bay Resort", "Dubrovnik", "Resort",
+				"Family-friendly resort on Dubrovnik's Lapad Bay beach.",
+				["Pool", "Beach Access", "Restaurant"],
+				[("Sea View Room", "Superior", 10, (110m, null, 2, 1)), ("Family Suite", "Suite", 4, (175m, 155m, 4, 2))],
+				4),
+
+			new("Odesa Seaside Hotel", "Odesa", "Hotel",
+				"Seaside hotel near Odesa's historic Potemkin Stairs and beaches.",
+				["Wi-Fi", "Beach Access", "Restaurant"],
+				[("Standard Room", "Standard", 9, (55m, null, 2, 0)), ("Superior Room", "Superior", 5, (85m, 70m, 2, 1))],
+				4),
+
+			new("Deribasivska Boutique Hostel", "Odesa", "Hostel",
+				"Cozy hostel just off Odesa's lively Deribasivska Street.",
+				["Wi-Fi", "Air Conditioning"],
+				[("Economy Room", "Economy", 12, (20m, null, 1, 0)), ("Standard Room", "Standard", 6, (30m, null, 2, 0))],
+				2),
+
+			new("Kharkiv City Center Hotel", "Kharkiv", "Hotel",
+				"Business-friendly hotel in downtown Kharkiv, close to Freedom Square.",
+				["Wi-Fi", "Parking", "Restaurant"],
+				[("Standard Room", "Standard", 10, (45m, null, 2, 0)), ("Deluxe Room", "Deluxe", 4, (75m, 65m, 2, 1))],
+				3),
+
+			new("Promenade des Anglais Hotel", "Nice", "Hotel",
+				"Elegant hotel along Nice's famous Promenade des Anglais, steps from the beach.",
+				["Wi-Fi", "Beach Access", "Restaurant", "Air Conditioning"],
+				[("Superior Room", "Superior", 8, (150m, null, 2, 0)), ("Deluxe Room", "Deluxe", 4, (210m, 185m, 2, 1))],
+				4),
+
+			new("Nice Old Town Apartments", "Nice", "Apartment",
+				"Charming self-catering apartments in Nice's Old Town.",
+				["Wi-Fi", "Air Conditioning"],
+				[("Studio", "Standard", 6, (95m, null, 2, 0)), ("One-Bedroom Suite", "Suite", 3, (140m, 120m, 2, 1))],
+				3),
+
+			new("Lyon Presqu'île Hotel", "Lyon", "Hotel",
+				"Central hotel between Lyon's two rivers, near Place Bellecour.",
+				["Wi-Fi", "Restaurant", "Parking"],
+				[("Standard Room", "Standard", 9, (90m, null, 2, 0)), ("Superior Room", "Superior", 4, (130m, 110m, 2, 1))],
+				3),
+
+			new("Milano Fashion District Hotel", "Milan", "Hotel",
+				"Chic hotel in Milan's fashion district, near the Duomo.",
+				["Wi-Fi", "Gym", "Restaurant"],
+				[("Superior Room", "Superior", 8, (140m, null, 2, 0)), ("Deluxe Room", "Deluxe", 4, (210m, 180m, 2, 1))],
+				4),
+
+			new("Navigli Loft Apartments", "Milan", "Apartment",
+				"Trendy loft apartments along Milan's Navigli canals.",
+				["Wi-Fi", "Air Conditioning"],
+				[("Studio", "Standard", 6, (100m, null, 2, 0)), ("One-Bedroom Suite", "Suite", 3, (150m, 130m, 2, 1))],
+				3),
+
+			new("Canal Grande Palazzo Hotel", "Venice", "Hotel",
+				"Historic palazzo hotel with views over the Grand Canal.",
+				["Wi-Fi", "Restaurant", "Air Conditioning"],
+				[("Superior Room", "Superior", 6, (220m, null, 2, 0)), ("Suite", "Suite", 3, (350m, 300m, 2, 1))],
+				5),
+
+			new("Florence Duomo View Hotel", "Florence", "Hotel",
+				"Boutique hotel with rooftop views of the Florence Duomo.",
+				["Wi-Fi", "Restaurant"],
+				[("Standard Room", "Standard", 8, (120m, null, 2, 0)), ("Deluxe Room", "Deluxe", 4, (180m, 160m, 2, 1))],
+				4),
+
+			new("Gran Via Madrid Hotel", "Madrid", "Hotel",
+				"Modern hotel on Madrid's Gran Vía, close to nightlife and shopping.",
+				["Wi-Fi", "Gym", "Restaurant", "Air Conditioning"],
+				[("Superior Room", "Superior", 9, (110m, null, 2, 0)), ("Deluxe Room", "Deluxe", 4, (165m, 140m, 2, 1))],
+				4),
+
+			new("Retiro Park Apartments", "Madrid", "Apartment",
+				"Quiet apartments near Madrid's Retiro Park.",
+				["Wi-Fi", "Air Conditioning"],
+				[("Studio", "Standard", 6, (80m, null, 2, 0)), ("One-Bedroom Suite", "Suite", 3, (120m, 100m, 2, 1))],
+				3),
+
+			new("Valencia Beach Resort", "Valencia", "Resort",
+				"Beachfront resort near Valencia's City of Arts and Sciences.",
+				["Pool", "Beach Access", "Restaurant", "Spa"],
+				[("Sea View Room", "Superior", 10, (130m, null, 2, 1)), ("Family Suite", "Suite", 4, (200m, null, 4, 2))],
+				4),
+
+			new("Antalya All-Inclusive Resort", "Antalya", "Resort",
+				"All-inclusive beach resort on the Turkish Riviera.",
+				["Pool", "Beach Access", "Spa", "Restaurant", "Gym"],
+				[("Deluxe Room", "Deluxe", 12, (140m, 120m, 2, 1)), ("Suite", "Suite", 4, (220m, null, 4, 2))],
+				5),
+
+			new("Kaleici Old Town Hotel", "Antalya", "Hotel",
+				"Boutique hotel in Antalya's historic Kaleiçi old town.",
+				["Wi-Fi", "Restaurant"],
+				[("Standard Room", "Standard", 8, (60m, null, 2, 0)), ("Superior Room", "Superior", 4, (90m, 75m, 2, 1))],
+				3),
+
+			new("Bodrum Marina Villas", "Bodrum", "Villa",
+				"Private villas overlooking Bodrum's yacht marina.",
+				["Pool", "Beach Access", "Wi-Fi"],
+				[("Villa Suite", "Deluxe", 5, (260m, null, 2, 1)), ("Honeymoon Villa", "Suite", 2, (320m, 280m, 2, 0))],
+				5),
+
+			new("Corniche Abu Dhabi Hotel", "Abu Dhabi", "Hotel",
+				"Waterfront hotel along Abu Dhabi's Corniche promenade.",
+				["Pool", "Gym", "Restaurant", "Air Conditioning"],
+				[("Deluxe Room", "Deluxe", 8, (200m, null, 2, 1)), ("Executive Suite", "Suite", 3, (340m, 300m, 2, 2))],
+				5),
+
+			new("Patong Beach Resort", "Phuket", "Resort",
+				"Beachfront resort steps from Phuket's Patong Beach nightlife.",
+				["Pool", "Beach Access", "Spa", "Restaurant"],
+				[("Sea View Room", "Superior", 10, (95m, null, 2, 1)), ("Family Suite", "Suite", 4, (160m, 140m, 4, 2))],
+				4),
+
+			new("Phuket Old Town Hostel", "Phuket", "Hostel",
+				"Backpacker hostel in colorful Phuket Old Town.",
+				["Wi-Fi", "Air Conditioning"],
+				[("Economy Room", "Economy", 14, (18m, null, 1, 0)), ("Standard Room", "Standard", 6, (28m, null, 2, 0))],
+				2),
+
+			new("Chiang Mai Riverside Hotel", "Chiang Mai", "Hotel",
+				"Peaceful hotel on the Ping River, near Chiang Mai's Old City temples.",
+				["Wi-Fi", "Pool", "Restaurant"],
+				[("Standard Room", "Standard", 9, (35m, null, 2, 0)), ("Superior Room", "Superior", 4, (55m, 45m, 2, 1))],
+				3),
+
+			new("Mitte Central Hotel", "Berlin", "Hotel",
+				"Modern hotel in Berlin-Mitte, near Museum Island and Alexanderplatz.",
+				["Wi-Fi", "Gym", "Restaurant"],
+				[("Superior Room", "Superior", 9, (105m, null, 2, 0)), ("Deluxe Room", "Deluxe", 4, (155m, 135m, 2, 1))],
+				4),
+
+			new("Kreuzberg Loft Apartments", "Berlin", "Apartment",
+				"Industrial-chic apartments in Berlin's Kreuzberg district.",
+				["Wi-Fi", "Air Conditioning", "Pet Friendly"],
+				[("Studio", "Standard", 6, (75m, null, 2, 0)), ("One-Bedroom Suite", "Suite", 3, (110m, 95m, 2, 1))],
+				3),
+
+			new("Marienplatz Hotel", "Munich", "Hotel",
+				"Traditional Bavarian hotel steps from Munich's Marienplatz.",
+				["Wi-Fi", "Restaurant", "Parking"],
+				[("Standard Room", "Standard", 8, (115m, null, 2, 0)), ("Deluxe Room", "Deluxe", 4, (170m, 150m, 2, 1))],
+				4),
+
+			new("Acropolis View Hotel", "Athens", "Hotel",
+				"Rooftop hotel with panoramic views of the Acropolis.",
+				["Wi-Fi", "Restaurant", "Air Conditioning"],
+				[("Superior Room", "Superior", 8, (100m, null, 2, 0)), ("Deluxe Room", "Deluxe", 4, (150m, 130m, 2, 1))],
+				4),
+
+			new("Plaka Boutique Hostel", "Athens", "Hostel",
+				"Friendly hostel in Athens' historic Plaka neighborhood.",
+				["Wi-Fi", "Air Conditioning"],
+				[("Economy Room", "Economy", 12, (22m, null, 1, 0)), ("Standard Room", "Standard", 6, (32m, null, 2, 0))],
+				2),
+
+			new("Diocletian's Palace Hotel", "Split", "Hotel",
+				"Historic hotel within the walls of Split's Diocletian's Palace.",
+				["Wi-Fi", "Restaurant", "Air Conditioning"],
+				[("Standard Room", "Standard", 8, (95m, null, 2, 0)), ("Superior Room", "Superior", 4, (135m, 115m, 2, 1))],
 				4),
 		];
 
@@ -770,7 +991,7 @@ public class DbInitializer(
 			}
 			await context.SaveChangesAsync(ct);
 
-			await context.HotelPhotos.AddRangeAsync(BuildPhotos(spec.CityName, hotel.Id), ct);
+			await context.HotelPhotos.AddRangeAsync(BuildPhotos(spec.CityName, city.Image, hotel.Id), ct);
 			await context.SaveChangesAsync(ct);
 		}
 	}
