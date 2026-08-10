@@ -54,7 +54,9 @@
     "hotelCount_one": "{{count}} hotel",
     "hotelCount_other": "{{count}} hotels",
     "browseByPropertyType": "Browse by property type",
-    "browseCategoryHotels": "Browse {{category}} hotels"
+    "browseCategoryHotels": "Browse {{category}} hotels",
+    "recommendedInCity": "Recommended in {{city}}",
+    "recommendedInCountry": "Recommended in {{country}}"
   },
   "search": {
     "destinationPlaceholder": "Where are you going?",

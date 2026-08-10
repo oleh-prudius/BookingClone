@@ -14,6 +14,7 @@ public class GetAllHotelsHandler(IHotelRepository hotelRepository)
             name: request.Name,
             categoryId: request.CategoryId,
             cityName: request.CityName,
+            countryName: request.CountryName,
             priceMin: request.PriceMin,
             priceMax: request.PriceMax,
             sortBy: request.SortBy,

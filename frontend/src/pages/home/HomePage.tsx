@@ -4,6 +4,7 @@ import {SearchForm} from "@features/search/ui/SearchForm";
 import { PopularDestinations } from './PopularDestinations';
 import { DealsSection } from './DealsSection';
 import { PropertyTypes } from './PropertyTypes';
+import { RecommendedSection } from './RecommendedSection';
 
 export function HomePage() {
   const { t } = useTranslation();
@@ -29,6 +30,7 @@ export function HomePage() {
           <SearchForm/>
       </section>
 
+      <RecommendedSection />
       <PopularDestinations />
       <DealsSection />
       <PropertyTypes />

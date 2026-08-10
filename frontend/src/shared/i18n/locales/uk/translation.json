@@ -56,7 +56,9 @@
     "hotelCount_many": "{{count}} готелів",
     "hotelCount_other": "{{count}} готелю",
     "browseByPropertyType": "Перегляд за типом житла",
-    "browseCategoryHotels": "Переглянути готелі типу «{{category}}»"
+    "browseCategoryHotels": "Переглянути готелі типу «{{category}}»",
+    "recommendedInCity": "Рекомендуємо в місті {{city}}",
+    "recommendedInCountry": "Рекомендуємо в країні {{country}}"
   },
   "search": {
     "destinationPlaceholder": "Куди ви їдете?",

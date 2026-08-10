@@ -37,6 +37,7 @@ public class HotelRepository(AppDbContext context) : IHotelRepository
         string? name,
         long? categoryId,
         string? cityName,
+        string? countryName,
         decimal? priceMin,
         decimal? priceMax,
         string? sortBy,
@@ -63,6 +64,9 @@ public class HotelRepository(AppDbContext context) : IHotelRepository
 
         if (!string.IsNullOrWhiteSpace(cityName))
             query = query.Where(h => h.Address.City.Name.ToLower() == cityName.ToLower());
+
+        if (!string.IsNullOrWhiteSpace(countryName))
+            query = query.Where(h => h.Address.City.Country.Name.ToLower() == countryName.ToLower());
 
         if (priceMin.HasValue || priceMax.HasValue)
             query = query.Where(h => h.Rooms

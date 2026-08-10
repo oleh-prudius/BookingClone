@@ -10,6 +10,7 @@ public record GetAllHotelsQuery(
     string? Name = null,
     long? CategoryId = null,
     string? CityName = null,
+    string? CountryName = null,
     decimal? PriceMin = null,
     decimal? PriceMax = null,
     string? SortBy = null,

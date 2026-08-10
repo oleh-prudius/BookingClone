@@ -64,7 +64,6 @@ export function Header() {
         />
 
       <div className='desktop-nav' style={{ gap: 12, alignItems: 'center' }}>
-          <SettingsMenu buttonStyle={iconButtonStyle} />
           {isAuthenticated ? (
             <>
               {user!.roles.includes('Realtor') && (
@@ -107,6 +106,7 @@ export function Header() {
               </Button>
             </>
           )}
+          <SettingsMenu buttonStyle={iconButtonStyle} />
       </div>
     </header>
 

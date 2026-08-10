@@ -9,6 +9,7 @@ export interface HotelSearchParams {
   categoryIds?: number[];
   starRatings?: number[];
   city?: string;
+  country?: string;
   priceMin?: number;
   priceMax?: number;
   sortBy?: string;

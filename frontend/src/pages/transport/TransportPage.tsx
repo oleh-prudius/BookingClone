@@ -6,7 +6,6 @@ import {
   Form,
   Select,
   DatePicker,
-  Button,
   Table,
   Tag,
   InputNumber,
@@ -22,6 +21,7 @@ import { ticketApi } from '@entities/ticket';
 import { useAuth } from '@features/auth';
 import { formatPrice } from '@shared/lib/currency';
 import { useCurrency } from '@shared/theme/CurrencyContext';
+import { AppButton } from '@shared/ui';
 
 interface SearchFormValues {
   fromCityId?: number;
@@ -140,7 +140,7 @@ export function TransportPage() {
           />
         </Form.Item>
         <Form.Item>
-          <Button type="primary" htmlType="submit">{t('transport.search')}</Button>
+          <AppButton htmlType="submit">{t('transport.search')}</AppButton>
         </Form.Item>
       </Form>
 
@@ -176,14 +176,13 @@ export function TransportPage() {
             {
               title: '',
               render: (_: unknown, route: TransportRoute) => (
-                <Button
-                  type="primary"
+                <AppButton
                   size="small"
                   disabled={route.availableSeats < 1}
                   onClick={() => openPurchase(route)}
                 >
                   {t('transport.buyTicket')}
-                </Button>
+                </AppButton>
               ),
             },
           ]}
