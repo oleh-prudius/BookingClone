@@ -5,7 +5,7 @@ import { Row, Col, Typography, Pagination, Empty, Spin, Alert, Segmented, Button
 import { AppstoreOutlined, BarsOutlined } from '@ant-design/icons';
 import { hotelApi, HotelCard } from '@entities/hotel';
 import type { Hotel } from '@shared/types';
-import { FiltersSidebar, type HotelFilters } from './FiltersSidebar';
+import { FiltersSidebar, MAX_DISTANCE_KM, type HotelFilters } from './FiltersSidebar';
 import { SortTabs, type SortBy } from './SortTabs';
 import { MapPanel } from '@widgets/hotel-map';
 import { useAuth } from '@features/auth';
@@ -45,6 +45,7 @@ function readFiltersFromParams(searchParams: URLSearchParams): HotelFilters {
     stars: parseNumberList(searchParams.get('stars')),
     categoryIds: parseNumberList(searchParams.get('categoryIds')),
     amenityIds: parseNumberList(searchParams.get('amenityIds')),
+    maxDistanceKm: Number(searchParams.get('maxDistanceKm')) || MAX_DISTANCE_KM,
   };
 }
 
@@ -88,6 +89,7 @@ export function HotelsPage() {
     if (debouncedFilters.stars.length) next.set('stars', debouncedFilters.stars.join(','));
     if (debouncedFilters.categoryIds.length) next.set('categoryIds', debouncedFilters.categoryIds.join(','));
     if (debouncedFilters.amenityIds.length) next.set('amenityIds', debouncedFilters.amenityIds.join(','));
+    if (debouncedFilters.maxDistanceKm < MAX_DISTANCE_KM) next.set('maxDistanceKm', String(debouncedFilters.maxDistanceKm));
     if (sortBy !== DEFAULT_SORT) next.set('sortBy', sortBy);
     if (view !== DEFAULT_VIEW) next.set('view', view);
     if (page > 1) next.set('page', String(page));
@@ -112,6 +114,7 @@ export function HotelsPage() {
       categoryIds: debouncedFilters.categoryIds.length ? debouncedFilters.categoryIds : undefined,
       starRatings: debouncedFilters.stars.length ? debouncedFilters.stars : undefined,
       amenityIds: debouncedFilters.amenityIds.length ? debouncedFilters.amenityIds : undefined,
+      maxDistanceFromCityCenterKm: debouncedFilters.maxDistanceKm < MAX_DISTANCE_KM ? debouncedFilters.maxDistanceKm : undefined,
       sortBy,
     })
       .then(({ items, totalCount }) => {

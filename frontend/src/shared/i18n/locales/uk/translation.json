@@ -100,6 +100,9 @@
     "propertyType": "Тип житла",
     "comfort": "Комфорт",
     "special": "Спеціальні",
+    "distance": "Відстань",
+    "distanceKm": "До {{km}} км від центру",
+    "distanceNoLimit": "Без обмежень",
     "amenityNames": {
       "Wi-Fi": "Wi-Fi",
       "Air Conditioning": "Кондиціонер",

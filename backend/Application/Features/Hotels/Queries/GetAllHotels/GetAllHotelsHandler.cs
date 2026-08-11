@@ -25,6 +25,7 @@ public class GetAllHotelsHandler(IHotelRepository hotelRepository)
             categoryIds: request.CategoryIds,
             starRatings: request.StarRatings,
             amenityIds: request.AmenityIds,
+            maxDistanceFromCityCenterKm: request.MaxDistanceFromCityCenterKm,
             page: request.Page,
             pageSize: request.PageSize,
             ct: ct);
