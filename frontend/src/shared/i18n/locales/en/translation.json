@@ -92,6 +92,9 @@
     "propertyType": "Property type",
     "comfort": "Comfort",
     "special": "Special",
+    "distance": "Distance",
+    "distanceKm": "Within {{km}} km of center",
+    "distanceNoLimit": "No limit",
     "amenityNames": {
       "Wi-Fi": "Wi-Fi",
       "Air Conditioning": "Air conditioning",

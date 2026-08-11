@@ -16,11 +16,15 @@ const STAR_EMPTY_COLOR = '#D7D7D7';
 const COMFORT_AMENITIES = ['Wi-Fi', 'Air Conditioning', 'Kitchen', 'TV', 'Pool'];
 const SPECIAL_AMENITIES = ['Parking', 'Pet Friendly', 'Breakfast Included', 'Work-friendly'];
 
+// "Відстань" slider: 1-30km from the hotel's city center; MAX_DISTANCE_KM means "no limit".
+export const MAX_DISTANCE_KM = 30;
+
 export interface HotelFilters {
   priceRange: [number, number];
   stars: number[];
   categoryIds: number[];
   amenityIds: number[];
+  maxDistanceKm: number;
 }
 
 interface Props {
@@ -109,6 +113,17 @@ export function FiltersSidebar({ value, onChange }: Props) {
         value={value.categoryIds}
         onChange={(categoryIds) => onChange({ ...value, categoryIds: categoryIds as number[] })}
         style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}
+      />
+
+      <Divider style={{ margin: '12px 0' }} />
+      <Typography.Text strong>{t('hotels.distance')}</Typography.Text>
+      <Slider
+        value={value.maxDistanceKm}
+        onChange={(km) => onChange({ ...value, maxDistanceKm: km })}
+        min={1}
+        max={MAX_DISTANCE_KM}
+        step={1}
+        tooltip={{ formatter: (km) => (km === MAX_DISTANCE_KM ? t('hotels.distanceNoLimit') : t('hotels.distanceKm', { km })) }}
       />
 
       {amenities.length > 0 && (

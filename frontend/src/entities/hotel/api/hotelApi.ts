@@ -9,6 +9,7 @@ export interface HotelSearchParams {
   categoryIds?: number[];
   starRatings?: number[];
   amenityIds?: number[];
+  maxDistanceFromCityCenterKm?: number;
   city?: string;
   country?: string;
   priceMin?: number;

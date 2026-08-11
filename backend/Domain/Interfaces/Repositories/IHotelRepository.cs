@@ -21,6 +21,7 @@ public interface IHotelRepository
         IReadOnlyList<long>? categoryIds,
         IReadOnlyList<int>? starRatings,
         IReadOnlyList<long>? amenityIds,
+        double? maxDistanceFromCityCenterKm,
         int page,
         int pageSize,
         CancellationToken ct = default);

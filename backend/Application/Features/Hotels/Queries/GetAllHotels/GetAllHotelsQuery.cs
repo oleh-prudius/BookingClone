@@ -20,5 +20,6 @@ public record GetAllHotelsQuery(
     int? Children = null,
     IReadOnlyList<long>? CategoryIds = null,
     IReadOnlyList<int>? StarRatings = null,
-    IReadOnlyList<long>? AmenityIds = null
+    IReadOnlyList<long>? AmenityIds = null,
+    double? MaxDistanceFromCityCenterKm = null
 ) : IRequest<Result<PagedResult<HotelDto>>>;
