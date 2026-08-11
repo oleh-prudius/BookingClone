@@ -528,6 +528,7 @@ public class DbInitializer(
 			DepartureTimeUtcFrom  = new DateTimeOffset(2000, 1, 1,  7, 0, 0, TimeSpan.Zero),
 			DepartureTimeUtcTo    = new DateTimeOffset(2000, 1, 1, 12, 0, 0, TimeSpan.Zero),
 			IsArchived            = false,
+			IsVerified            = true,
 			AddressId             = address.Id,
 			HotelCategoryId       = category.Id,
 			RealtorId             = realtor.Id,
@@ -765,6 +766,8 @@ public class DbInitializer(
 		if (hotel is null) return;
 
 		await RefreshSeededHotelPhotosAsync("Kyiv", hotel.Id, ct);
+		hotel.IsVerified = true;
+		await context.SaveChangesAsync(ct);
 	}
 
 	private record HotelSeedSpec(
@@ -1062,6 +1065,8 @@ public class DbInitializer(
 			if (existingHotel is not null)
 			{
 				await RefreshSeededHotelPhotosAsync(spec.CityName, existingHotel.Id, ct);
+				existingHotel.IsVerified = spec.StarRating >= 4;
+				await context.SaveChangesAsync(ct);
 				continue;
 			}
 
@@ -1088,6 +1093,9 @@ public class DbInitializer(
 				DepartureTimeUtcFrom = new DateTimeOffset(2000, 1, 1, 7, 0, 0, TimeSpan.Zero),
 				DepartureTimeUtcTo = new DateTimeOffset(2000, 1, 1, 12, 0, 0, TimeSpan.Zero),
 				IsArchived = false,
+				// Curated trust badge: seeded hotels with a 4-5 star rating count as "verified"
+				// for the demo; real hosts' hotels default to false until manually verified.
+				IsVerified = spec.StarRating >= 4,
 				AddressId = address.Id,
 				HotelCategoryId = category.Id,
 				RealtorId = realtor.Id,

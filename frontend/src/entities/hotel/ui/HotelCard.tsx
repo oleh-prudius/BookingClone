@@ -16,6 +16,12 @@ interface Props {
   onToggleFavorite?: () => void;
 }
 
+// "Popular" (Figma Component11) has no backend flag — derived from having both a strong
+// rating and a handful of reviews behind it, so a single 5-star review doesn't qualify.
+function isPopular(hotel: Hotel): boolean {
+  return (hotel.rating ?? 0) >= 4.5 && (hotel.reviewCount ?? 0) >= 3;
+}
+
 export function HotelCard({ hotel, variant = 'grid', isFavorite, onToggleFavorite }: Props) {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
@@ -41,6 +47,34 @@ export function HotelCard({ hotel, variant = 'grid', isFavorite, onToggleFavorit
       <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--triply-textAccent)', lineHeight: 1.2 }}>
         {formatPrice(hotel.pricePerNight, currency)}
       </div>
+    </div>
+  );
+
+  const badges = (
+    <div style={{ position: 'absolute', top: 8, left: 8, display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-start' }}>
+      {hotel.isVerified && (
+        <span style={{
+          background: '#2EB605',
+          color: '#fff',
+          fontSize: 12,
+          fontWeight: 500,
+          padding: '3px 10px',
+          borderRadius: 12,
+        }}>
+          {t('hotels.verified')}
+        </span>
+      )}
+      {isPopular(hotel) && (
+        <span style={{
+          background: 'rgba(20,20,20,0.8)',
+          color: '#fff',
+          fontSize: 12,
+          padding: '3px 6px',
+          borderRadius: 5,
+        }}>
+          {t('hotels.popular')}
+        </span>
+      )}
     </div>
   );
 
@@ -76,6 +110,7 @@ export function HotelCard({ hotel, variant = 'grid', isFavorite, onToggleFavorit
               alt={hotel.name}
               style={{ width: 240, minWidth: 200, height: 180, objectFit: 'cover', display: 'block' }}
             />
+            {badges}
             {favoriteButton && (
               <div style={{ position: 'absolute', top: 8, right: 8 }}>{favoriteButton}</div>
             )}
@@ -130,6 +165,7 @@ export function HotelCard({ hotel, variant = 'grid', isFavorite, onToggleFavorit
             alt={hotel.name}
             style={{ height: 200, objectFit: 'cover', width: '100%', display: 'block' }}
           />
+          {badges}
           {favoriteButton && (
             <div style={{ position: 'absolute', top: 8, right: 8 }}>{favoriteButton}</div>
           )}

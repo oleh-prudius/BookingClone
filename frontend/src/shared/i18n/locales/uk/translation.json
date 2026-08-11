@@ -103,6 +103,8 @@
     "distance": "Відстань",
     "distanceKm": "До {{km}} км від центру",
     "distanceNoLimit": "Без обмежень",
+    "verified": "Верифіковано",
+    "popular": "Популярне",
     "amenityNames": {
       "Wi-Fi": "Wi-Fi",
       "Air Conditioning": "Кондиціонер",

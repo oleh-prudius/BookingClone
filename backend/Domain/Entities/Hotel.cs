@@ -19,6 +19,9 @@ public class Hotel {
 
 	public bool IsArchived { get; set; }
 
+	/// Manually curated trust badge (Figma Component9) — not tied to any automated check.
+	public bool IsVerified { get; set; }
+
 	/// Official hotel classification (1-5 stars), independent of guest review scores.
 	public int StarRating { get; set; }
 

@@ -27,6 +27,7 @@ export interface Hotel {
   hotelCategoryName: string;
   realtorId: number;
   isArchived: boolean;
+  isVerified: boolean;
   starRating: number;
   arrivalTimeUtcFrom: string;
   arrivalTimeUtcTo: string;
@@ -34,6 +35,7 @@ export interface Hotel {
   departureTimeUtcTo: string;
   coverPhotoUrl?: string | null;
   rating?: number | null;
+  reviewCount?: number;
   pricePerNight?: number | null;
   latitude?: number | null;
   longitude?: number | null;
