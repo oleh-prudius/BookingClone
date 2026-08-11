@@ -6,10 +6,10 @@ import {
   Form,
   Select,
   DatePicker,
-  Table,
   Tag,
   InputNumber,
   Modal,
+  Radio,
   message,
   Empty,
   Spin,
@@ -52,6 +52,7 @@ export function TransportPage() {
   const [searched, setSearched] = useState(false);
   const [purchasing, setPurchasing] = useState<TransportRoute | null>(null);
   const [seats, setSeats] = useState(1);
+  const [paymentMethod, setPaymentMethod] = useState<'visa' | 'mastercard'>('visa');
   const [buying, setBuying] = useState(false);
 
   useEffect(() => {
@@ -85,6 +86,7 @@ export function TransportPage() {
     }
     setPurchasing(route);
     setSeats(1);
+    setPaymentMethod('visa');
   };
 
   const confirmPurchase = async () => {
@@ -153,44 +155,68 @@ export function TransportPage() {
       ) : !searched ? null : routes.length === 0 ? (
         <Empty description={t('transport.noRoutes')} />
       ) : (
-        <Table
-          dataSource={routes}
-          rowKey="id"
-          pagination={false}
-          columns={[
-            { title: t('transport.type'), dataIndex: 'type', render: (v: TransportType) => <Tag>{TRANSPORT_TYPE_ICONS[v]} {t(`transport.types.${v}`)}</Tag> },
-            {
-              title: t('transport.carrier'),
-              dataIndex: 'carrierName',
-              render: (v: string, route: TransportRoute) => (
-                <div>
-                  <div>{v}</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {routes.map((route) => (
+            <div
+              key={route.id}
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 16,
+                background: 'var(--bg)',
+                border: '1px solid var(--border)',
+                borderRadius: 15,
+                boxShadow: '0 0 8px rgba(0,0,0,0.15)',
+                padding: 16,
+              }}
+            >
+              <div style={{
+                width: 245,
+                height: 150,
+                flexShrink: 0,
+                borderRadius: 10,
+                background: 'var(--triply-backgroundLight)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 64,
+              }}>
+                {TRANSPORT_TYPE_ICONS[route.type]}
+              </div>
+
+              <div style={{ flex: 1, minWidth: 220, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 6 }}>
+                <div style={{ fontSize: 24, fontWeight: 600 }}>
+                  {route.carrierName}
                   {route.vehicleModel && (
-                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>{route.vehicleModel}</Typography.Text>
+                    <span style={{ fontWeight: 400, fontSize: 16, color: 'var(--text)' }}> · {route.vehicleModel}</span>
                   )}
                 </div>
-              ),
-            },
-            { title: t('transport.from'), dataIndex: 'fromCityName', render: (v: string) => localizeCityName(v, i18n.language) },
-            { title: t('transport.to'), dataIndex: 'toCityName', render: (v: string) => localizeCityName(v, i18n.language) },
-            { title: t('transport.departure'), dataIndex: 'departureUtc', render: (v: string) => dayjs(v).format('DD.MM.YYYY HH:mm') },
-            { title: t('transport.arrival'), dataIndex: 'arrivalUtc', render: (v: string) => dayjs(v).format('DD.MM.YYYY HH:mm') },
-            { title: t('transport.price'), dataIndex: 'price', render: (v: number) => formatPrice(v, currency) },
-            { title: t('transport.availableSeats'), dataIndex: 'availableSeats' },
-            {
-              title: '',
-              render: (_: unknown, route: TransportRoute) => (
+                <div style={{ fontSize: 18, color: 'var(--text)' }}>
+                  {localizeCityName(route.fromCityName, i18n.language)} → <strong>{localizeCityName(route.toCityName, i18n.language)}</strong>
+                </div>
+                <div style={{ fontSize: 14, fontStyle: 'italic', color: 'var(--text)' }}>
+                  {dayjs(route.departureUtc).format('DD.MM.YYYY HH:mm')} — {dayjs(route.arrivalUtc).format('DD.MM.YYYY HH:mm')}
+                </div>
+                <div>
+                  <Tag>{t(`transport.types.${route.type}`)}</Tag>
+                  <Tag>{t('transport.availableSeats')}: {route.availableSeats}</Tag>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12, minWidth: 180 }}>
+                <div style={{ fontSize: 24, fontWeight: 600 }}>{formatPrice(route.price, currency)}</div>
                 <AppButton
-                  size="small"
+                  variant="primary"
                   disabled={route.availableSeats < 1}
                   onClick={() => openPurchase(route)}
+                  style={{ minWidth: 180 }}
                 >
                   {t('transport.buyTicket')}
                 </AppButton>
-              ),
-            },
-          ]}
-        />
+              </div>
+            </div>
+          ))}
+        </div>
       )}
 
       <Modal
@@ -222,6 +248,19 @@ export function TransportPage() {
               <Typography.Text strong>
                 {t('transport.total')}: {formatPrice(purchasing.price * seats, currency)}
               </Typography.Text>
+
+              <Form.Item label={t('transport.paymentMethod')} style={{ marginTop: 16, marginBottom: 0 }}>
+                <Radio.Group
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  optionType="button"
+                  buttonStyle="solid"
+                  options={[
+                    { label: 'Visa', value: 'visa' },
+                    { label: 'Mastercard', value: 'mastercard' },
+                  ]}
+                />
+              </Form.Item>
             </Form>
           </>
         )}

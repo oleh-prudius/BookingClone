@@ -426,6 +426,7 @@
     }
   },
   "transport": {
+    "paymentMethod": "Payment method",
     "from": "From",
     "to": "To",
     "date": "Date",
