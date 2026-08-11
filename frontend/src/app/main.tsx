@@ -32,6 +32,17 @@ function ThemedApp() {
           Card: {
             borderRadiusLG: 16,
           },
+          // Rounder, larger boxes to match the Figma design system's flat filled
+          // checkbox/toggle shapes (Rectangle38, Component4/5) instead of antd's default.
+          Checkbox: {
+            borderRadiusSM: 5,
+            controlInteractiveSize: 20,
+          },
+          Switch: {
+            trackHeight: 20,
+            trackMinWidth: 38,
+            handleSize: 18,
+          },
         },
     }}>
       <AntApp>
