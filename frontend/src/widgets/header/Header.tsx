@@ -22,15 +22,14 @@ export function Header() {
           borderBottom: isActive ? '2px solid white' : '2px solid transparent',
           paddingBottom: 4,
       });
-  const iconButtonStyle = {
-    color: 'inherit' as const,
-    backgroundColor: 'rgba(255, 255, 255, 0.16)',
+  // Solid blue pill, matching the Figma design system's header buttons (Frame202) and
+  // icon buttons (Group108/109) — replaces the earlier transparent/outlined style.
+  const solidButtonStyle = {
+    backgroundColor: '#2563EB' as const,
+    color: '#F8FAFF' as const,
+    border: 'none' as const,
   };
-  const outlineButtonStyle = {
-    backgroundColor: 'transparent' as const,
-    color: 'white' as const,
-    border: '1.5px solid var(--triply-navyDark)',
-  };
+  const iconButtonStyle = solidButtonStyle;
   const [isOpen, setIsOpen] = useState(false);
   const { unreadCount } = useChatNotifications();
   const avatarSrc = user?.photo && user.photo.startsWith('http') ? user.photo : undefined;
@@ -95,15 +94,15 @@ export function Header() {
             </>
           ) : (
             <>
-              <Button shape="round" href="/register" style={outlineButtonStyle}>
+              <Button shape="round" href="/register" style={solidButtonStyle}>
                 {t('header.registration')}
               </Button>
-              <Button shape="round" href="/login" style={outlineButtonStyle}>
+              <Button shape="round" href="/login" style={solidButtonStyle}>
                 {t('header.signIn')}
               </Button>
             </>
           )}
-          <SettingsMenu buttonStyle={outlineButtonStyle} />
+          <SettingsMenu buttonStyle={solidButtonStyle} />
       </div>
     </header>
 

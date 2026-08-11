@@ -11,7 +11,14 @@ export function AppButton({ variant = 'primary', style, ...props }: AppButtonPro
   const { token } = theme.useToken();
 
   if (variant === 'primary') {
-    return <Button type="primary" shape="round" style={style} {...props} />;
+    return (
+      <Button
+        type="primary"
+        shape="round"
+        style={{ textTransform: 'uppercase', letterSpacing: 0.3, ...style }}
+        {...props}
+      />
+    );
   }
   if (variant === 'secondary') {
     return <Button type="default" shape="round" style={style} {...props} />;
