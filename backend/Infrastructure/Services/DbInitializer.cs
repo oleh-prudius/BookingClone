@@ -153,7 +153,10 @@ public class DbInitializer(
 	private async Task SeedPlacesAsync(CancellationToken ct)
 	{
 		if (await context.Places.AnyAsync(ct))
+		{
+			await RefreshSeededPlacePhotosAsync(ct);
 			return;
+		}
 
 		var kyiv = await context.Cities.FirstOrDefaultAsync(c => c.Name == "Kyiv", ct);
 		var paris = await context.Cities.FirstOrDefaultAsync(c => c.Name == "Paris", ct);
@@ -165,39 +168,39 @@ public class DbInitializer(
 		if (kyiv is not null)
 		{
 			places.AddRange([
-				new Place { Name = "Saint Sophia Cathedral", Category = PlaceCategories.Landmark, Latitude = 50.4526, Longitude = 30.5147, CityId = kyiv.Id },
-				new Place { Name = "Mystetskyi Arsenal",     Category = PlaceCategories.Museum,   Latitude = 50.4425, Longitude = 30.5461, CityId = kyiv.Id },
-				new Place { Name = "Mariinsky Park",         Category = PlaceCategories.Park,     Latitude = 50.4477, Longitude = 30.5442, CityId = kyiv.Id },
-				new Place { Name = "Ostannya Barykada",      Category = PlaceCategories.Restaurant, Latitude = 50.4488, Longitude = 30.5238, CityId = kyiv.Id },
-				new Place { Name = "TSUM Kyiv",              Category = PlaceCategories.Shopping, Latitude = 50.4479, Longitude = 30.5236, CityId = kyiv.Id },
+				new Place { Name = "Saint Sophia Cathedral", Category = PlaceCategories.Landmark, PhotoUrl = PlacePhotoUrls["Saint Sophia Cathedral"], Latitude = 50.4526, Longitude = 30.5147, CityId = kyiv.Id },
+				new Place { Name = "Mystetskyi Arsenal",     Category = PlaceCategories.Museum,   PhotoUrl = PlacePhotoUrls["Mystetskyi Arsenal"], Latitude = 50.4425, Longitude = 30.5461, CityId = kyiv.Id },
+				new Place { Name = "Mariinsky Park",         Category = PlaceCategories.Park,     PhotoUrl = PlacePhotoUrls["Mariinsky Park"], Latitude = 50.4477, Longitude = 30.5442, CityId = kyiv.Id },
+				new Place { Name = "Ostannya Barykada",      Category = PlaceCategories.Restaurant, PhotoUrl = PlacePhotoUrls["Ostannya Barykada"], Latitude = 50.4488, Longitude = 30.5238, CityId = kyiv.Id },
+				new Place { Name = "TSUM Kyiv",              Category = PlaceCategories.Shopping, PhotoUrl = PlacePhotoUrls["TSUM Kyiv"], Latitude = 50.4479, Longitude = 30.5236, CityId = kyiv.Id },
 			]);
 		}
 
 		if (paris is not null)
 		{
 			places.AddRange([
-				new Place { Name = "Eiffel Tower",   Category = PlaceCategories.Landmark, Latitude = 48.8584, Longitude = 2.2945, CityId = paris.Id },
-				new Place { Name = "Louvre Museum",  Category = PlaceCategories.Museum,   Latitude = 48.8606, Longitude = 2.3376, CityId = paris.Id },
-				new Place { Name = "Jardin du Luxembourg", Category = PlaceCategories.Park, Latitude = 48.8462, Longitude = 2.3372, CityId = paris.Id },
-				new Place { Name = "Le Comptoir du Relais", Category = PlaceCategories.Restaurant, Latitude = 48.8523, Longitude = 2.3389, CityId = paris.Id },
+				new Place { Name = "Eiffel Tower",   Category = PlaceCategories.Landmark, PhotoUrl = PlacePhotoUrls["Eiffel Tower"], Latitude = 48.8584, Longitude = 2.2945, CityId = paris.Id },
+				new Place { Name = "Louvre Museum",  Category = PlaceCategories.Museum,   PhotoUrl = PlacePhotoUrls["Louvre Museum"], Latitude = 48.8606, Longitude = 2.3376, CityId = paris.Id },
+				new Place { Name = "Jardin du Luxembourg", Category = PlaceCategories.Park, PhotoUrl = PlacePhotoUrls["Jardin du Luxembourg"], Latitude = 48.8462, Longitude = 2.3372, CityId = paris.Id },
+				new Place { Name = "Le Comptoir du Relais", Category = PlaceCategories.Restaurant, PhotoUrl = PlacePhotoUrls["Le Comptoir du Relais"], Latitude = 48.8523, Longitude = 2.3389, CityId = paris.Id },
 			]);
 		}
 
 		if (rome is not null)
 		{
 			places.AddRange([
-				new Place { Name = "Colosseum",      Category = PlaceCategories.Landmark, Latitude = 41.8902, Longitude = 12.4922, CityId = rome.Id },
-				new Place { Name = "Vatican Museums", Category = PlaceCategories.Museum,  Latitude = 41.9065, Longitude = 12.4536, CityId = rome.Id },
-				new Place { Name = "Villa Borghese", Category = PlaceCategories.Park,     Latitude = 41.9142, Longitude = 12.4845, CityId = rome.Id },
+				new Place { Name = "Colosseum",      Category = PlaceCategories.Landmark, PhotoUrl = PlacePhotoUrls["Colosseum"], Latitude = 41.8902, Longitude = 12.4922, CityId = rome.Id },
+				new Place { Name = "Vatican Museums", Category = PlaceCategories.Museum,  PhotoUrl = PlacePhotoUrls["Vatican Museums"], Latitude = 41.9065, Longitude = 12.4536, CityId = rome.Id },
+				new Place { Name = "Villa Borghese", Category = PlaceCategories.Park,     PhotoUrl = PlacePhotoUrls["Villa Borghese"], Latitude = 41.9142, Longitude = 12.4845, CityId = rome.Id },
 			]);
 		}
 
 		if (bangkok is not null)
 		{
 			places.AddRange([
-				new Place { Name = "Grand Palace",   Category = PlaceCategories.Landmark, Latitude = 13.7500, Longitude = 100.4914, CityId = bangkok.Id },
-				new Place { Name = "Chatuchak Market", Category = PlaceCategories.Shopping, Latitude = 13.7999, Longitude = 100.5500, CityId = bangkok.Id },
-				new Place { Name = "Lumpini Park",   Category = PlaceCategories.Park,     Latitude = 13.7307, Longitude = 100.5418, CityId = bangkok.Id },
+				new Place { Name = "Grand Palace",   Category = PlaceCategories.Landmark, PhotoUrl = PlacePhotoUrls["Grand Palace"], Latitude = 13.7500, Longitude = 100.4914, CityId = bangkok.Id },
+				new Place { Name = "Chatuchak Market", Category = PlaceCategories.Shopping, PhotoUrl = PlacePhotoUrls["Chatuchak Market"], Latitude = 13.7999, Longitude = 100.5500, CityId = bangkok.Id },
+				new Place { Name = "Lumpini Park",   Category = PlaceCategories.Park,     PhotoUrl = PlacePhotoUrls["Lumpini Park"], Latitude = 13.7307, Longitude = 100.5418, CityId = bangkok.Id },
 			]);
 		}
 
@@ -206,6 +209,46 @@ public class DbInitializer(
 			await context.Places.AddRangeAsync(places, ct);
 			await context.SaveChangesAsync(ct);
 		}
+
+		await RefreshSeededPlacePhotosAsync(ct);
+	}
+
+	// Real, per-place photos (Wikimedia Commons) — replaces the earlier generic per-category stock photos.
+	private static readonly Dictionary<string, string> PlacePhotoUrls = new()
+	{
+		["Saint Sophia Cathedral"] = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/St.Sofia_in_night_02.JPG/960px-St.Sofia_in_night_02.JPG",
+		["Mystetskyi Arsenal"] = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Lavra_Wall%2C_Arts_Arsenal_in_Kiev.JPG/960px-Lavra_Wall%2C_Arts_Arsenal_in_Kiev.JPG",
+		["Mariinsky Park"] = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/2017_07_19_Kyiv.jpg/960px-2017_07_19_Kyiv.jpg",
+		["Ostannya Barykada"] = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Khreshchatyk_St_%288600735613%29.jpg/960px-Khreshchatyk_St_%288600735613%29.jpg",
+		["TSUM Kyiv"] = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/TSUM_Kyiv.png/960px-TSUM_Kyiv.png",
+		["Eiffel Tower"] = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/La_Tour_Eiffel_vue_de_la_Tour_Saint-Jacques%2C_Paris_ao%C3%BBt_2014_%282%29.jpg/960px-La_Tour_Eiffel_vue_de_la_Tour_Saint-Jacques%2C_Paris_ao%C3%BBt_2014_%282%29.jpg",
+		["Louvre Museum"] = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Louvre_Museum_Wikimedia_Commons.jpg/960px-Louvre_Museum_Wikimedia_Commons.jpg",
+		["Jardin du Luxembourg"] = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Jardin_du_Luxembourg_from_above.jpg/960px-Jardin_du_Luxembourg_from_above.jpg",
+		["Le Comptoir du Relais"] = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Boulevard_Saint-Germain%2C_Paris_June_2010.jpg/960px-Boulevard_Saint-Germain%2C_Paris_June_2010.jpg",
+		["Colosseum"] = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Colosseum_of_Rome%2C_Italy.jpg/960px-Colosseum_of_Rome%2C_Italy.jpg",
+		["Vatican Museums"] = "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Gallery_of_the_Maps%2C_Vatican_Museums_%283%29_%2848759327626%29.jpg/960px-Gallery_of_the_Maps%2C_Vatican_Museums_%283%29_%2848759327626%29.jpg",
+		["Villa Borghese"] = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Rome-villa-borghese-gardens.jpg/960px-Rome-villa-borghese-gardens.jpg",
+		["Grand Palace"] = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Grand_Palace_Bangkok%2C_Thailand.jpg/960px-Grand_Palace_Bangkok%2C_Thailand.jpg",
+		["Chatuchak Market"] = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Bangkok_Chatuchak_Market_1.jpg/960px-Bangkok_Chatuchak_Market_1.jpg",
+		["Lumpini Park"] = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Aerial_view_of_Lumphini_Park.jpg/960px-Aerial_view_of_Lumphini_Park.jpg",
+	};
+
+	// Applies real per-place photos to rows seeded before PhotoUrl existed, on an already-running DB.
+	private async Task RefreshSeededPlacePhotosAsync(CancellationToken ct)
+	{
+		var namesToUpdate = PlacePhotoUrls.Keys.ToList();
+		var existing = await context.Places.Where(p => namesToUpdate.Contains(p.Name)).ToListAsync(ct);
+		var changed = false;
+		foreach (var place in existing)
+		{
+			if (PlacePhotoUrls.TryGetValue(place.Name, out var url) && place.PhotoUrl != url)
+			{
+				place.PhotoUrl = url;
+				changed = true;
+			}
+		}
+		if (changed)
+			await context.SaveChangesAsync(ct);
 	}
 
 	private async Task SeedCountriesAndCitiesAsync(CancellationToken ct)

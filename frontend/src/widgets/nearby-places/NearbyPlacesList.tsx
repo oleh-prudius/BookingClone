@@ -74,7 +74,7 @@ export function NearbyPlacesList({ hotelId, cityId }: Props) {
                 }}
               >
                 <img
-                  src={CATEGORY_PHOTOS[place.category]}
+                  src={place.photoUrl ?? CATEGORY_PHOTOS[place.category]}
                   alt={place.name}
                   style={{ width: '100%', height: 140, objectFit: 'cover', display: 'block' }}
                 />
