@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -14,6 +14,7 @@ import {
   Empty,
   Spin,
 } from 'antd';
+import { CarOutlined, GatewayOutlined, RocketOutlined } from '@ant-design/icons';
 import dayjs, { type Dayjs } from 'dayjs';
 import { cityApi, type City } from '@entities/city';
 import { transportRouteApi, type TransportRoute, type TransportType } from '@entities/transport-route';
@@ -33,10 +34,11 @@ interface SearchFormValues {
 
 const TRANSPORT_TYPES: TransportType[] = ['Bus', 'Train', 'Plane'];
 
-const TRANSPORT_TYPE_ICONS: Record<TransportType, string> = {
-  Bus: '🚌',
-  Train: '🚆',
-  Plane: '✈️',
+// No dedicated bus/train icons exist in @ant-design/icons — closest available stand-ins.
+const TRANSPORT_TYPE_ICONS: Record<TransportType, ReactNode> = {
+  Bus: <CarOutlined />,
+  Train: <GatewayOutlined />,
+  Plane: <RocketOutlined />,
 };
 
 export function TransportPage() {
@@ -142,7 +144,10 @@ export function TransportPage() {
             allowClear
             placeholder={t('transport.anyType')}
             style={{ width: 140 }}
-            options={TRANSPORT_TYPES.map((v) => ({ value: v, label: `${TRANSPORT_TYPE_ICONS[v]} ${t(`transport.types.${v}`)}` }))}
+            options={TRANSPORT_TYPES.map((v) => ({
+              value: v,
+              label: <span>{TRANSPORT_TYPE_ICONS[v]} {t(`transport.types.${v}`)}</span>,
+            }))}
           />
         </Form.Item>
         <Form.Item>
