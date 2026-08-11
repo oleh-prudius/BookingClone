@@ -370,6 +370,22 @@ public class DbInitializer(
 			await context.SaveChangesAsync(ct);
 		}
 
+		// Added later for the "Комфорт"/"Спеціальні" filter sections — seeded individually
+		// (not inside the AnyAsync guard above) so it also runs against an already-seeded DB.
+		string[][] extraAmenities =
+		[
+			["Kitchen", "kitchen.svg"],
+			["TV", "tv.svg"],
+			["Breakfast Included", "breakfast.svg"],
+			["Work-friendly", "work.svg"],
+		];
+		foreach (var amenity in extraAmenities)
+		{
+			if (!await context.HotelAmenities.AnyAsync(a => a.Name == amenity[0], ct))
+				await context.HotelAmenities.AddAsync(new HotelAmenity { Name = amenity[0], Image = amenity[1] }, ct);
+		}
+		await context.SaveChangesAsync(ct);
+
 		if (!await context.RoomTypes.AnyAsync(ct))
 		{
 			await context.RoomTypes.AddRangeAsync([

@@ -47,6 +47,7 @@ public class HotelRepository(AppDbContext context) : IHotelRepository
         int? children,
         IReadOnlyList<long>? categoryIds,
         IReadOnlyList<int>? starRatings,
+        IReadOnlyList<long>? amenityIds,
         int page,
         int pageSize,
         CancellationToken ct = default)
@@ -77,6 +78,9 @@ public class HotelRepository(AppDbContext context) : IHotelRepository
 
         if (starRatings is { Count: > 0 })
             query = query.Where(h => starRatings.Contains(h.StarRating));
+
+        if (amenityIds is { Count: > 0 })
+            query = query.Where(h => amenityIds.All(id => h.HotelHotelAmenities.Any(hha => hha.HotelAmenityId == id)));
 
         query = sortBy switch
         {

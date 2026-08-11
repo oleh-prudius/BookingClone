@@ -44,6 +44,7 @@ function readFiltersFromParams(searchParams: URLSearchParams): HotelFilters {
     ],
     stars: parseNumberList(searchParams.get('stars')),
     categoryIds: parseNumberList(searchParams.get('categoryIds')),
+    amenityIds: parseNumberList(searchParams.get('amenityIds')),
   };
 }
 
@@ -86,6 +87,7 @@ export function HotelsPage() {
     if (debouncedFilters.priceRange[1] < PRICE_MAX) next.set('priceMax', String(debouncedFilters.priceRange[1]));
     if (debouncedFilters.stars.length) next.set('stars', debouncedFilters.stars.join(','));
     if (debouncedFilters.categoryIds.length) next.set('categoryIds', debouncedFilters.categoryIds.join(','));
+    if (debouncedFilters.amenityIds.length) next.set('amenityIds', debouncedFilters.amenityIds.join(','));
     if (sortBy !== DEFAULT_SORT) next.set('sortBy', sortBy);
     if (view !== DEFAULT_VIEW) next.set('view', view);
     if (page > 1) next.set('page', String(page));
@@ -109,6 +111,7 @@ export function HotelsPage() {
       priceMax: debouncedFilters.priceRange[1] < PRICE_MAX ? debouncedFilters.priceRange[1] : undefined,
       categoryIds: debouncedFilters.categoryIds.length ? debouncedFilters.categoryIds : undefined,
       starRatings: debouncedFilters.stars.length ? debouncedFilters.stars : undefined,
+      amenityIds: debouncedFilters.amenityIds.length ? debouncedFilters.amenityIds : undefined,
       sortBy,
     })
       .then(({ items, totalCount }) => {

@@ -24,6 +24,7 @@ public class GetAllHotelsHandler(IHotelRepository hotelRepository)
             children: request.Children,
             categoryIds: request.CategoryIds,
             starRatings: request.StarRatings,
+            amenityIds: request.AmenityIds,
             page: request.Page,
             pageSize: request.PageSize,
             ct: ct);
