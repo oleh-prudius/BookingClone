@@ -452,6 +452,13 @@
       "Museum": "Museum",
       "Park": "Park",
       "Shopping": "Shopping"
+    },
+    "descriptions": {
+      "Restaurant": "A cozy spot to try the local cuisine during your trip.",
+      "Landmark": "One of the landmarks worth visiting near your hotel.",
+      "Museum": "A museum where you can get closer to the city's history and culture.",
+      "Park": "A green area nearby — a nice place for a walk and to relax.",
+      "Shopping": "A place to shop for local goods and souvenirs."
     }
   }
 }
