@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {SearchForm} from "@features/search/ui/SearchForm";
+import { CategoryTabs } from './CategoryTabs';
 import { PopularDestinations } from './PopularDestinations';
 import { DealsSection } from './DealsSection';
 import { PropertyTypes } from './PropertyTypes';
@@ -27,6 +28,7 @@ export function HomePage() {
             {t('home.heroSubtitle')}
         </p>
         <Link to="/hotels" style={{ color: 'white', textDecoration: 'underline' }}>{t('home.browseHotels')}</Link>
+          <CategoryTabs />
           <SearchForm/>
       </section>
 
