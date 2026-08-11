@@ -24,6 +24,7 @@ public class HotelsController(IMediator mediator) : ControllerBase
         [FromQuery] long? categoryId = null,
         [FromQuery] long[]? categoryIds = null,
         [FromQuery] int[]? starRatings = null,
+        [FromQuery] long[]? amenityIds = null,
         [FromQuery] string? city = null,
         [FromQuery] string? country = null,
         [FromQuery] decimal? priceMin = null,
@@ -45,7 +46,8 @@ public class HotelsController(IMediator mediator) : ControllerBase
             PriceMax: priceMax,
             SortBy: sortBy,
             CategoryIds: categoryIds,
-            StarRatings: starRatings), ct)).ToActionResult();
+            StarRatings: starRatings,
+            AmenityIds: amenityIds), ct)).ToActionResult();
 
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetHotel(int id, CancellationToken ct)

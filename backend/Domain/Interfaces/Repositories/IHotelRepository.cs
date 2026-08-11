@@ -20,6 +20,7 @@ public interface IHotelRepository
         int? children,
         IReadOnlyList<long>? categoryIds,
         IReadOnlyList<int>? starRatings,
+        IReadOnlyList<long>? amenityIds,
         int page,
         int pageSize,
         CancellationToken ct = default);
