@@ -20,6 +20,7 @@ internal static class HotelMappings
         HotelCategoryName = h.HotelCategory?.Name ?? string.Empty,
         RealtorId = h.RealtorId,
         IsArchived = h.IsArchived,
+        IsVerified = h.IsVerified,
         StarRating = h.StarRating,
         ArrivalTimeUtcFrom = h.ArrivalTimeUtcFrom,
         ArrivalTimeUtcTo = h.ArrivalTimeUtcTo,
