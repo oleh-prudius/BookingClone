@@ -8,6 +8,8 @@ public class Place
 
     public string Category { get; set; } = null!;
 
+    public string? PhotoUrl { get; set; }
+
     public double Latitude { get; set; }
 
     public double Longitude { get; set; }

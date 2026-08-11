@@ -40,6 +40,7 @@ public class GetNearbyPlacesHandler(IPlaceRepository placeRepository, IHotelRepo
             Id = p.Id,
             Name = p.Name,
             Category = p.Category,
+            PhotoUrl = p.PhotoUrl,
             Latitude = p.Latitude,
             Longitude = p.Longitude,
             DistanceKm = refLatitude is not null && refLongitude is not null

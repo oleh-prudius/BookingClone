@@ -8,6 +8,7 @@ export interface Place {
   id: number;
   name: string;
   category: PlaceCategory;
+  photoUrl: string | null;
   latitude: number;
   longitude: number;
   distanceKm: number | null;
