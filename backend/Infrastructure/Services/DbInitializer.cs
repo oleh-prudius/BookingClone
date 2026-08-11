@@ -568,58 +568,178 @@ public class DbInitializer(
 		await context.SaveChangesAsync(ct);
 	}
 
-	// Real hotel photos (exteriors, lobbies, rooms, pools; sourced from Wikimedia Commons)
-	// rotated per hotel so every seeded hotel shows an actual hotel, not a city landmark
-	// or an unrelated stock photo.
-	private static readonly string[] HotelPhotoPool =
+	// Real hotel photos (exteriors/lobbies of actual named hotels, sourced from Wikimedia
+	// Commons) curated per seeded city, so every hotel shows a photo of a real hotel that
+	// actually sits in that city rather than a landmark or an unrelated stock photo.
+	private static readonly Dictionary<string, string[]> CityHotelPhotos = new()
+	{
+		["Kyiv"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/2019-07-14_Hotel_Slavutych%2C_Kyiv.jpg/1280px-2019-07-14_Hotel_Slavutych%2C_Kyiv.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Hotel_Ukraine%2C_Kyiv%2C_May_6%2C_2025.jpg/1280px-Hotel_Ukraine%2C_Kyiv%2C_May_6%2C_2025.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Rusanivka_Canal_and_Hotel_Slavutych._Kyiv%2C_Ukraine.jpg/1280px-Rusanivka_Canal_and_Hotel_Slavutych._Kyiv%2C_Ukraine.jpg",
+		],
+		["Lviv"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Grand_Hotel_Lviv_Facade.jpg/1280px-Grand_Hotel_Lviv_Facade.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Hotel_George_in_Lviv_%282%29.jpg/1280px-Hotel_George_in_Lviv_%282%29.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Hotel_Dnister_in_Lviv_2002.jpg/1280px-Hotel_Dnister_in_Lviv_2002.jpg",
+		],
+		["Odesa"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Hotel_Bristol%2C_Odesa_P1250467.jpg/1280px-Hotel_Bristol%2C_Odesa_P1250467.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Hotel_Odessa.jpg/1280px-Hotel_Odessa.jpg",
+		],
+		["Kharkiv"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Premier_Palace_Hotel_Kharkiv_12.2011_%2801%29.jpg/1280px-Premier_Palace_Hotel_Kharkiv_12.2011_%2801%29.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Staircase_To_Palace_Hotel_Kharkiv_Ukraine_%28121945121%29.jpeg/1280px-Staircase_To_Palace_Hotel_Kharkiv_Ukraine_%28121945121%29.jpeg",
+		],
+		["Paris"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Paris_75009_Place_de_l%27Op%C3%A9ra_20060829_Le_Grand_H%C3%B4tel.jpg/1280px-Paris_75009_Place_de_l%27Op%C3%A9ra_20060829_Le_Grand_H%C3%B4tel.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Paris_9_-_Le_Grand_H%C3%B4tel_boulevard_des_Capucines_-165.JPG/1280px-Paris_9_-_Le_Grand_H%C3%B4tel_boulevard_des_Capucines_-165.JPG",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Paris_9_-_Le_Grand_H%C3%B4tel_boulevard_des_Capucines_-166.JPG/1280px-Paris_9_-_Le_Grand_H%C3%B4tel_boulevard_des_Capucines_-166.JPG",
+		],
+		["Nice"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Negresco_Hotel%2C_Nice_-_France%2C_August_2001.JPG/1280px-Negresco_Hotel%2C_Nice_-_France%2C_August_2001.JPG",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Nice_Hotel_Negresco_hall_central.jpg/1280px-Nice_Hotel_Negresco_hall_central.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/H%C3%B4tel_West_End%2C_Nice.jpg/1280px-H%C3%B4tel_West_End%2C_Nice.jpg",
+		],
+		["Lyon"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Lyon_1er_-_Rue_Lanterne_-_Grand_h%C3%B4tel_des_Terreaux_-_Fa%C3%A7ade_de_nuit.jpg/1280px-Lyon_1er_-_Rue_Lanterne_-_Grand_h%C3%B4tel_des_Terreaux_-_Fa%C3%A7ade_de_nuit.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/L%27H%C3%B4tel_Ch%C3%A2teau-Perrache_%28Lyon%29_%2810679729913%29.jpg/1280px-L%27H%C3%B4tel_Ch%C3%A2teau-Perrache_%28Lyon%29_%2810679729913%29.jpg",
+		],
+		["Rome"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Hotel_Excelsior_in_Rome.jpg/1280px-Hotel_Excelsior_in_Rome.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/d/d5/Hotel_Bernini%2C_Rome_-_front_view%2C_illuminated.JPG",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Hotel_NH_Vittorio_Veneto_Roma.jpg/1280px-Hotel_NH_Vittorio_Veneto_Roma.jpg",
+		],
+		["Milan"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/4/4a/3668MilanoGrandHotel.JPG",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Milan_H%C3%B4tel_Barcelo_%288%29.jpg/1280px-Milan_H%C3%B4tel_Barcelo_%288%29.jpg",
+		],
+		["Venice"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/%28Venice%29_Hotel_Continental_-_facades_seen_from_the_Grand_Canal.jpg/1280px-%28Venice%29_Hotel_Continental_-_facades_seen_from_the_Grand_Canal.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Venice%2C_Canal_Grande%2C_Hotel_Bauer_and_Ca%27_Giustinian_1.jpg/1280px-Venice%2C_Canal_Grande%2C_Hotel_Bauer_and_Ca%27_Giustinian_1.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Venice%2C_Canal_Grande%2C_Hotel_Bauer_and_Ca%27_Giustinian_3.jpg/1280px-Venice%2C_Canal_Grande%2C_Hotel_Bauer_and_Ca%27_Giustinian_3.jpg",
+		],
+		["Florence"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Florence_-_Florence_Hotel_01.jpg/1280px-Florence_-_Florence_Hotel_01.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Florence_-_Hotel_Gasque_01.jpg/1280px-Florence_-_Hotel_Gasque_01.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/3/3f/Terrazza_Hotel_Laurus_al_Duomo.jpg",
+		],
+		["Barcelona"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Hotel_Arts%2C_Barcelona_-_panoramio.jpg/1280px-Hotel_Arts%2C_Barcelona_-_panoramio.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/2/2a/Hotel_AC_Barcelona_%28Catalonia%29.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Hotel_Renaissance_Barcelona_%28Pau_Claris_122%29.JPG/1280px-Hotel_Renaissance_Barcelona_%28Pau_Claris_122%29.JPG",
+		],
+		["Madrid"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Hotel_Four_Seasons_-_Madrid_01.jpg/1280px-Hotel_Four_Seasons_-_Madrid_01.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Hotel_InterContinental_%28Madrid%29_01.jpg/1280px-Hotel_InterContinental_%28Madrid%29_01.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Madrid_-_Hotel_Four_Seasons_%28Calle_Sevilla%2C_3%29_1.jpg/1280px-Madrid_-_Hotel_Four_Seasons_%28Calle_Sevilla%2C_3%29_1.jpg",
+		],
+		["Valencia"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Gran_Valencia_Hotel_%2806.10.2019%29.jpg/1280px-Gran_Valencia_Hotel_%2806.10.2019%29.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Hotel_Palace%2C_calle_la_Paz_de_Valencia_01.JPG/1280px-Hotel_Palace%2C_calle_la_Paz_de_Valencia_01.JPG",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Hotel_Westin%2C_Valencia%2C_Espa%C3%B1a%2C_2014-06-29%2C_DD_32.JPG/1280px-Hotel_Westin%2C_Valencia%2C_Espa%C3%B1a%2C_2014-06-29%2C_DD_32.JPG",
+		],
+		["Istanbul"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Hilton_Istanbul_Bosphorus.jpg/1280px-Hilton_Istanbul_Bosphorus.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Istanbul_Hilton.JPG/1280px-Istanbul_Hilton.JPG",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Looking_up_at_Renaissance_Polat_Istanbul_Hotel.jpg/1280px-Looking_up_at_Renaissance_Polat_Istanbul_Hotel.jpg",
+		],
+		["Antalya"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Regnum_Carya_Hotel%2C_Belek%2C_Serik_District%2C_Antalya%2C_Turkey%2C_11_March_2022.jpg/1280px-Regnum_Carya_Hotel%2C_Belek%2C_Serik_District%2C_Antalya%2C_Turkey%2C_11_March_2022.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Rixos_Hotel_Antalya_-_panoramio.jpg/1280px-Rixos_Hotel_Antalya_-_panoramio.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Ramada_Plaza_by_Wyndham_Antalya_01.jpg/1280px-Ramada_Plaza_by_Wyndham_Antalya_01.jpg",
+		],
+		["Bodrum"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Bodrum-hotel.jpg/1280px-Bodrum-hotel.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/2/20/Blue_Dreams_Resort_%26_Spa%2C_Bodrum%2C_Turkey.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Bodrum_Asarlik_Beach_Hotel_-_panoramio.jpg/1280px-Bodrum_Asarlik_Beach_Hotel_-_panoramio.jpg",
+		],
+		["Dubai"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Atlantis%2C_The_Palm_from_Le_Royal_M%C3%A9ridien_Beach_Resort_and_Spa_in_Dubai_3.jpg/1280px-Atlantis%2C_The_Palm_from_Le_Royal_M%C3%A9ridien_Beach_Resort_and_Spa_in_Dubai_3.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Hotel_Interior%2C_Dubai_%2812894027145%29.jpg/1280px-Hotel_Interior%2C_Dubai_%2812894027145%29.jpg",
+		],
+		["Abu Dhabi"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Emirates_Palace_-_interior_01.jpg/1280px-Emirates_Palace_-_interior_01.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Emirates_Palace_-_interior_02.jpg/1280px-Emirates_Palace_-_interior_02.jpg",
+		],
+		["Bangkok"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/The_Shangri-la_Hotel_Bangkok.jpg/1280px-The_Shangri-la_Hotel_Bangkok.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/InterContinental_Bangkok%2C_an_Ihg_Hotel.jpg/1280px-InterContinental_Bangkok%2C_an_Ihg_Hotel.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Baiyoke_Sky_Hotel%2C_Ratchaprarop_Road%2C_Ratchathewi%2C_Bangkok_%286906983176%29.jpg/1280px-Baiyoke_Sky_Hotel%2C_Ratchaprarop_Road%2C_Ratchathewi%2C_Bangkok_%286906983176%29.jpg",
+		],
+		["Phuket"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Secret_Cliff_Resort%2C_Phuket%2C_Thailand_-_Lobby%2C_December_2021.jpg/1280px-Secret_Cliff_Resort%2C_Phuket%2C_Thailand_-_Lobby%2C_December_2021.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Good_maintained_beautiful_courtyard_of_Katathani_Beach_Resort_Phuket_-_panoramio.jpg/1280px-Good_maintained_beautiful_courtyard_of_Katathani_Beach_Resort_Phuket_-_panoramio.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Phuket%2C_Holiday_Inn_Resort_Phuket_Busakorn_Wing_-_panoramio.jpg/1280px-Phuket%2C_Holiday_Inn_Resort_Phuket_Busakorn_Wing_-_panoramio.jpg",
+		],
+		["Chiang Mai"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Chiang_Mai_Plaza_Hotel_P1110853.JPG/1280px-Chiang_Mai_Plaza_Hotel_P1110853.JPG",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Chiang_Mai_Plaza_Hotel_P1110855.JPG/1280px-Chiang_Mai_Plaza_Hotel_P1110855.JPG",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Mercure_Chiang_Mai_Hotel.jpg/1280px-Mercure_Chiang_Mai_Hotel.jpg",
+		],
+		["Berlin"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Park_Inn_by_Radisson_Berlin_Alexanderplatz.jpg/1280px-Park_Inn_by_Radisson_Berlin_Alexanderplatz.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Ellington-Hotel_NuernbergerStr_Berlin_07-2014.jpg/1280px-Ellington-Hotel_NuernbergerStr_Berlin_07-2014.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Berlin_-_Park_Inn_Hotel1.jpg/1280px-Berlin_-_Park_Inn_Hotel1.jpg",
+		],
+		["Munich"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Arabella_Hochhaus_Munich_Facade.jpg/1280px-Arabella_Hochhaus_Munich_Facade.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Munich_Schillerstrasse_20_Hotel_Maison_Schiller.jpg/1280px-Munich_Schillerstrasse_20_Hotel_Maison_Schiller.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Hotel_Revo_Munich_1.jpg/1280px-Hotel_Revo_Munich_1.jpg",
+		],
+		["Athens"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Athens_Hotel_Grande_Bretagne_1874.jpg/1280px-Athens_Hotel_Grande_Bretagne_1874.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/The_Athens_Hilton_as_seen_from_the_neighbourhood_of_Pagrati.jpg/1280px-The_Athens_Hilton_as_seen_from_the_neighbourhood_of_Pagrati.jpg",
+		],
+		["Santorini"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Hotel_Daedalus_-_Fira_-_Santorini_-_Greece_-_02.jpg/1280px-Hotel_Daedalus_-_Fira_-_Santorini_-_Greece_-_02.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Santorini%2C_Fira%2C_Hotel_Astro_Palace.jpg/1280px-Santorini%2C_Fira%2C_Hotel_Astro_Palace.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Hotel_Anastasia_Princess_-_Perissa_-_Santorini_-_Greece_-_11.jpg/1280px-Hotel_Anastasia_Princess_-_Perissa_-_Santorini_-_Greece_-_11.jpg",
+		],
+		["Dubrovnik"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Dubrovnik_Grand_Hotel_Imperial_%2834227796111%29.jpg/1280px-Dubrovnik_Grand_Hotel_Imperial_%2834227796111%29.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Hilton_Imperial_Dubrovnik_%2830059758036%29.jpg/1280px-Hilton_Imperial_Dubrovnik_%2830059758036%29.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Hotel_dubrovnik_palace.jpg/1280px-Hotel_dubrovnik_palace.jpg",
+		],
+		["Split"] = [
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Exterior_detail_of_the_Briig_Boutique_Hotel%2C_Split%2C_Croatia_%28PPL1-Corrected%29_julesvernex2.jpg/1280px-Exterior_detail_of_the_Briig_Boutique_Hotel%2C_Split%2C_Croatia_%28PPL1-Corrected%29_julesvernex2.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Hotel_Slavija%2C_Split.jpg/1280px-Hotel_Slavija%2C_Split.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Hotel_Marjan%2CSplit%2C_Croatia_-_panoramio.jpg/1280px-Hotel_Marjan%2CSplit%2C_Croatia_-_panoramio.jpg",
+		],
+	};
+
+	// Falls back to a small generic-but-real hotel photo pool for any city not covered
+	// by CityHotelPhotos above, so a new city can still be added without a "No Photo" gap.
+	private static readonly string[] FallbackHotelPhotoPool =
 	[
 		"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/25hours_Hotel_The_Goldman%2C_Frankfurt_am_Main_%28P1032662%29.jpg/1280px-25hours_Hotel_The_Goldman%2C_Frankfurt_am_Main_%28P1032662%29.jpg",
 		"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Hotel_building_with_blue_sky_%2852829435864%29.jpg/1280px-Hotel_building_with_blue_sky_%2852829435864%29.jpg",
-		"https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Bavaro_%E2%80%94_Iberostar_%E2%80%94_main_building.JPG/1280px-Bavaro_%E2%80%94_Iberostar_%E2%80%94_main_building.JPG",
-		"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Modern_Hotel%2C_Baku_%28IMG_20190714_025335%29.jpg/1280px-Modern_Hotel%2C_Baku_%28IMG_20190714_025335%29.jpg",
-		"https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/AUS_Perth%2C_Fremantle%2C_Esplanade_Hotel_005.jpg/1280px-AUS_Perth%2C_Fremantle%2C_Esplanade_Hotel_005.jpg",
-		"https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Coop_Hotel%2C_Sofia_%28_1070739%29.jpg/1280px-Coop_Hotel%2C_Sofia_%28_1070739%29.jpg",
-		"https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Bucharest_-_Athenee_Palace_Hilton_lobby_01.jpg/1280px-Bucharest_-_Athenee_Palace_Hilton_lobby_01.jpg",
-		"https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Chinggis_Khaan_Hotel_-_Lobby.jpg/1280px-Chinggis_Khaan_Hotel_-_Lobby.jpg",
-		"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Lobby_Intercontinental_Addis.jpg/1280px-Lobby_Intercontinental_Addis.jpg",
-		"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Manila_Hotel_Lobby_Lounge.jpg/1280px-Manila_Hotel_Lobby_Lounge.jpg",
-		"https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Praha_Dejvice_Evropska_15_Hotel_Diplomat_vstupni_hala.jpg/1280px-Praha_Dejvice_Evropska_15_Hotel_Diplomat_vstupni_hala.jpg",
 		"https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Deluxe_Suite_bedroom.jpg/1280px-Deluxe_Suite_bedroom.jpg",
-		"https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Cozy_hotel_room_with_warm_lighting_and_refreshments_on_a_small_table.jpg/1280px-Cozy_hotel_room_with_warm_lighting_and_refreshments_on_a_small_table.jpg",
-		"https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Caravelle_Saigon_-_Signature_Studio_Room.jpg/1280px-Caravelle_Saigon_-_Signature_Studio_Room.jpg",
-		"https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Hotel_Italia_Palace_Luxury_bedroom.jpg/1280px-Hotel_Italia_Palace_Luxury_bedroom.jpg",
-		"https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Delmar_hotel_room_sea_side.jpg/1280px-Delmar_hotel_room_sea_side.jpg",
-		"https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/2013-01-15_Sangri-La_Cebu_Infinity_pool_pano.jpeg/1280px-2013-01-15_Sangri-La_Cebu_Infinity_pool_pano.jpeg",
-		"https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Best_Western_Swimming_pool%2C_Helen.jpg/1280px-Best_Western_Swimming_pool%2C_Helen.jpg",
-		"https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Alpenresort_Schwarz_-_interior_pool_%2824723499948%29.png/1280px-Alpenresort_Schwarz_-_interior_pool_%2824723499948%29.png",
-		"https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Atrium_of_Granada_Luxury_Belek_Hotel.jpg/1280px-Atrium_of_Granada_Luxury_Belek_Hotel.jpg",
-		"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/2016_-_Four_Seasons_Hotel_Hong_Kong_%28_Ank_Kumar_%29_01.jpg/1280px-2016_-_Four_Seasons_Hotel_Hong_Kong_%28_Ank_Kumar_%29_01.jpg",
-		"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/2016_-_Four_Seasons_Hotel_Hong_Kong_%28_Ank_Kumar_%29_02.jpg/1280px-2016_-_Four_Seasons_Hotel_Hong_Kong_%28_Ank_Kumar_%29_02.jpg",
-		"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Botanic_Sanctuary_Antwerp_gotische_bogen.jpg/1280px-Botanic_Sanctuary_Antwerp_gotische_bogen.jpg",
-		"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Keemala_Resort_Overview_at_Sunrise.jpg/1280px-Keemala_Resort_Overview_at_Sunrise.jpg",
+		"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Lobby_Intercontinental_Addis.jpg/1280px-Lobby_Intercontinental_Addis.jpg",
 	];
 
-	// Picks a deterministic-but-varied set of hotel photos per hotel id, so hotels in the
-	// same city don't all show the same picture and every photo actually depicts a hotel.
-	private static IEnumerable<HotelPhoto> BuildPhotos(long hotelId)
+	// Picks the curated real-hotel photos for a city, rotated per hotel id so hotels
+	// sharing a small curated set at least don't all show the identical cover photo.
+	private static IEnumerable<HotelPhoto> BuildPhotos(string cityName, long hotelId)
 	{
-		const int photosPerHotel = 3;
-		var start = (int)(hotelId * 5 % HotelPhotoPool.Length);
-		for (var i = 0; i < photosPerHotel; i++)
+		var pool = CityHotelPhotos.TryGetValue(cityName, out var urls) ? urls : FallbackHotelPhotoPool;
+		var count = Math.Min(3, pool.Length);
+		var start = (int)(hotelId % pool.Length);
+		for (var i = 0; i < count; i++)
 		{
-			var url = HotelPhotoPool[(start + i * 7) % HotelPhotoPool.Length];
+			var url = pool[(start + i) % pool.Length];
 			yield return new HotelPhoto { Name = url, Priority = i, HotelId = hotelId };
 		}
 	}
 
 	// Replaces whatever photos a seeded demo hotel currently has with a fresh pick from
-	// HotelPhotoPool. Only ever called for the fixed set of named demo hotels below, so
-	// it never touches photos a real host uploaded through the UI.
-	private async Task RefreshSeededHotelPhotosAsync(long hotelId, CancellationToken ct)
+	// the curated per-city set. Only ever called for the fixed set of named demo hotels
+	// below, so it never touches photos a real host uploaded through the UI.
+	private async Task RefreshSeededHotelPhotosAsync(string cityName, long hotelId, CancellationToken ct)
 	{
 		var existing = await context.HotelPhotos.Where(p => p.HotelId == hotelId).ToListAsync(ct);
 		context.HotelPhotos.RemoveRange(existing);
-		await context.HotelPhotos.AddRangeAsync(BuildPhotos(hotelId), ct);
+		await context.HotelPhotos.AddRangeAsync(BuildPhotos(cityName, hotelId), ct);
 		await context.SaveChangesAsync(ct);
 	}
 
@@ -628,7 +748,7 @@ public class DbInitializer(
 		var hotel = await context.Hotels.FirstOrDefaultAsync(h => h.Name == "Grand Kyiv Hotel", ct);
 		if (hotel is null) return;
 
-		await RefreshSeededHotelPhotosAsync(hotel.Id, ct);
+		await RefreshSeededHotelPhotosAsync("Kyiv", hotel.Id, ct);
 	}
 
 	private record HotelSeedSpec(
@@ -925,7 +1045,7 @@ public class DbInitializer(
 			var existingHotel = await context.Hotels.FirstOrDefaultAsync(h => h.Name == spec.HotelName, ct);
 			if (existingHotel is not null)
 			{
-				await RefreshSeededHotelPhotosAsync(existingHotel.Id, ct);
+				await RefreshSeededHotelPhotosAsync(spec.CityName, existingHotel.Id, ct);
 				continue;
 			}
 
@@ -994,7 +1114,7 @@ public class DbInitializer(
 			}
 			await context.SaveChangesAsync(ct);
 
-			await context.HotelPhotos.AddRangeAsync(BuildPhotos(hotel.Id), ct);
+			await context.HotelPhotos.AddRangeAsync(BuildPhotos(spec.CityName, hotel.Id), ct);
 			await context.SaveChangesAsync(ct);
 		}
 	}
