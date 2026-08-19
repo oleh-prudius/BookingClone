@@ -700,7 +700,7 @@ public class DbInitializer(
 		],
 		["Nice"] = [
 			"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Negresco_Hotel%2C_Nice_-_France%2C_August_2001.JPG/1280px-Negresco_Hotel%2C_Nice_-_France%2C_August_2001.JPG",
-			"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Nice_Hotel_Negresco_hall_central.jpg/1280px-Nice_Hotel_Negresco_hall_central.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Hotel_Negresco_from_the_promenade.jpg/1280px-Hotel_Negresco_from_the_promenade.jpg",
 			"https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/H%C3%B4tel_West_End%2C_Nice.jpg/1280px-H%C3%B4tel_West_End%2C_Nice.jpg",
 		],
 		["Lyon"] = [
@@ -758,19 +758,22 @@ public class DbInitializer(
 		],
 		["Dubai"] = [
 			"https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Atlantis%2C_The_Palm_from_Le_Royal_M%C3%A9ridien_Beach_Resort_and_Spa_in_Dubai_3.jpg/1280px-Atlantis%2C_The_Palm_from_Le_Royal_M%C3%A9ridien_Beach_Resort_and_Spa_in_Dubai_3.jpg",
-			"https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Hotel_Interior%2C_Dubai_%2812894027145%29.jpg/1280px-Hotel_Interior%2C_Dubai_%2812894027145%29.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Jumeirah_beach_hotel_-_panoramio_%281%29.jpg/1280px-Jumeirah_beach_hotel_-_panoramio_%281%29.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Burj_Al_Arab%2C_Dubai.jpg/1280px-Burj_Al_Arab%2C_Dubai.jpg",
 		],
+		// Single-item pool (only Corniche Abu Dhabi Hotel uses this city) — BuildPhotos'
+		// hotelId-based rotation would otherwise sometimes land on an interior shot as the
+		// cover photo, so this only carries the one exterior shot to guarantee it never does.
 		["Abu Dhabi"] = [
-			"https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Emirates_Palace_-_interior_01.jpg/1280px-Emirates_Palace_-_interior_01.jpg",
-			"https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Emirates_Palace_-_interior_02.jpg/1280px-Emirates_Palace_-_interior_02.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Emirates_Palace_%40_Abu_Dhabi_%2815856763830%29.jpg/1280px-Emirates_Palace_%40_Abu_Dhabi_%2815856763830%29.jpg",
 		],
 		["Bangkok"] = [
 			"https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/The_Shangri-la_Hotel_Bangkok.jpg/1280px-The_Shangri-la_Hotel_Bangkok.jpg",
 			"https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/InterContinental_Bangkok%2C_an_Ihg_Hotel.jpg/1280px-InterContinental_Bangkok%2C_an_Ihg_Hotel.jpg",
-			"https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Baiyoke_Sky_Hotel%2C_Ratchaprarop_Road%2C_Ratchathewi%2C_Bangkok_%286906983176%29.jpg/1280px-Baiyoke_Sky_Hotel%2C_Ratchaprarop_Road%2C_Ratchathewi%2C_Bangkok_%286906983176%29.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Baiyoke_Tower_II_in_Bangkok.jpg/1280px-Baiyoke_Tower_II_in_Bangkok.jpg",
 		],
 		["Phuket"] = [
-			"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Secret_Cliff_Resort%2C_Phuket%2C_Thailand_-_Lobby%2C_December_2021.jpg/1280px-Secret_Cliff_Resort%2C_Phuket%2C_Thailand_-_Lobby%2C_December_2021.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Katathani_Phuket_Beach_Resort_-_panoramio_%281%29.jpg/1280px-Katathani_Phuket_Beach_Resort_-_panoramio_%281%29.jpg",
 			"https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Good_maintained_beautiful_courtyard_of_Katathani_Beach_Resort_Phuket_-_panoramio.jpg/1280px-Good_maintained_beautiful_courtyard_of_Katathani_Beach_Resort_Phuket_-_panoramio.jpg",
 			"https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Phuket%2C_Holiday_Inn_Resort_Phuket_Busakorn_Wing_-_panoramio.jpg/1280px-Phuket%2C_Holiday_Inn_Resort_Phuket_Busakorn_Wing_-_panoramio.jpg",
 		],
@@ -790,7 +793,7 @@ public class DbInitializer(
 			"https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Hotel_Revo_Munich_1.jpg/1280px-Hotel_Revo_Munich_1.jpg",
 		],
 		["Athens"] = [
-			"https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Athens_Hotel_Grande_Bretagne_1874.jpg/1280px-Athens_Hotel_Grande_Bretagne_1874.jpg",
+			"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Athina_Hotel_Grande_Bretagne.jpg/1280px-Athina_Hotel_Grande_Bretagne.jpg",
 			"https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/The_Athens_Hilton_as_seen_from_the_neighbourhood_of_Pagrati.jpg/1280px-The_Athens_Hilton_as_seen_from_the_neighbourhood_of_Pagrati.jpg",
 		],
 		["Santorini"] = [

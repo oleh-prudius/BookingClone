@@ -52,8 +52,8 @@ export function LocationPicker({ latitude, longitude, onChange, height = 300, zo
     <div style={{ height, borderRadius: 8, overflow: 'hidden', border: '1px solid var(--border)' }}>
       <MapContainer center={position} zoom={zoom} style={{ height: '100%', width: '100%' }}>
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
         />
         <RecenterOnExternalChange position={position} />
         <ClickToMove onChange={onChange} />
