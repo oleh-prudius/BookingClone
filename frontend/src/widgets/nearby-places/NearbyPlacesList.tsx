@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { List, Tag, Select, Spin, Empty } from 'antd';
+import { Card, Segmented, Spin, Empty, Row, Col } from 'antd';
 import { EnvironmentOutlined } from '@ant-design/icons';
 import { placeApi, PLACE_CATEGORIES, type Place, type PlaceCategory } from '@entities/place';
 
@@ -24,7 +24,7 @@ const CATEGORY_PHOTOS: Record<PlaceCategory, string> = {
 
 export function NearbyPlacesList({ hotelId, cityId }: Props) {
   const { t } = useTranslation();
-  const [category, setCategory] = useState<PlaceCategory | undefined>(undefined);
+  const [category, setCategory] = useState<PlaceCategory | 'all'>('all');
   const [places, setPlaces] = useState<Place[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -35,21 +35,24 @@ export function NearbyPlacesList({ hotelId, cityId }: Props) {
     }
     setLoading(true);
     placeApi
-      .getNearby({ hotelId, cityId, category })
+      .getNearby({ hotelId, cityId, category: category === 'all' ? undefined : category })
       .then(setPlaces)
       .catch(() => setPlaces([]))
       .finally(() => setLoading(false));
   }, [hotelId, cityId, category]);
 
+  const categoryOptions = [
+    { label: t('nearby.allCategories'), value: 'all' as const },
+    ...PLACE_CATEGORIES.map((c) => ({ label: t(`nearby.categories.${c}`), value: c })),
+  ];
+
   return (
     <div>
-      <Select
-        allowClear
-        placeholder={t('nearby.allCategories')}
-        style={{ width: 200, marginBottom: 16 }}
+      <Segmented
+        options={categoryOptions}
         value={category}
-        onChange={setCategory}
-        options={PLACE_CATEGORIES.map((c) => ({ value: c, label: t(`nearby.categories.${c}`) }))}
+        onChange={(v) => setCategory(v as PlaceCategory | 'all')}
+        style={{ marginBottom: 20 }}
       />
 
       {loading ? (
@@ -59,45 +62,39 @@ export function NearbyPlacesList({ hotelId, cityId }: Props) {
       ) : places.length === 0 ? (
         <Empty description={t('nearby.noPlaces')} />
       ) : (
-        <List
-          grid={{ gutter: 16, xs: 1, sm: 2, md: 3 }}
-          dataSource={places}
-          renderItem={(place) => (
-            <List.Item>
-              <div
-                style={{
-                  borderRadius: 12,
-                  overflow: 'hidden',
-                  border: '1px solid var(--border)',
-                  background: 'var(--bg)',
-                  height: '100%',
-                }}
+        <Row gutter={[16, 16]}>
+          {places.map((place) => (
+            <Col key={place.id} xs={24} sm={12} md={8}>
+              <Card
+                hoverable
+                style={{ width: '100%' }}
+                styles={{ body: { padding: 14 } }}
+                cover={
+                  <img
+                    src={place.photoUrl ?? CATEGORY_PHOTOS[place.category]}
+                    alt={place.name}
+                    style={{ width: '100%', height: 160, objectFit: 'cover', display: 'block' }}
+                  />
+                }
               >
-                <img
-                  src={place.photoUrl ?? CATEGORY_PHOTOS[place.category]}
-                  alt={place.name}
-                  style={{ width: '100%', height: 140, objectFit: 'cover', display: 'block' }}
-                />
-                <div style={{ padding: 12 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
-                    <strong>{place.name}</strong>
-                    {place.distanceKm != null && (
-                      <span style={{ whiteSpace: 'nowrap', fontSize: 12, color: 'var(--text-h)' }}>
-                        <EnvironmentOutlined /> {t('nearby.distanceKm', { km: place.distanceKm })}
-                      </span>
-                    )}
-                  </div>
-                  <div style={{ margin: '6px 0' }}>
-                    <Tag>{t(`nearby.categories.${place.category}`)}</Tag>
-                  </div>
-                  <p style={{ margin: 0, fontSize: 13, color: 'var(--text-h)' }}>
-                    {t(`nearby.descriptions.${place.category}`)}
-                  </p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+                  <strong style={{ fontSize: 15 }}>{place.name}</strong>
+                  {place.distanceKm != null && (
+                    <span style={{ whiteSpace: 'nowrap', fontSize: 12, color: 'var(--text-h)', flexShrink: 0 }}>
+                      <EnvironmentOutlined /> {t('nearby.distanceKm', { km: place.distanceKm })}
+                    </span>
+                  )}
                 </div>
-              </div>
-            </List.Item>
-          )}
-        />
+                <div style={{ marginTop: 2, marginBottom: 6, fontSize: 12, color: 'var(--triply-textAccent)', fontWeight: 500 }}>
+                  {t(`nearby.categories.${place.category}`)}
+                </div>
+                <p style={{ margin: 0, fontSize: 13, color: 'var(--text)', lineHeight: 1.4 }}>
+                  {place.description ?? t(`nearby.descriptions.${place.category}`)}
+                </p>
+              </Card>
+            </Col>
+          ))}
+        </Row>
       )}
     </div>
   );

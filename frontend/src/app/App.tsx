@@ -37,6 +37,7 @@ export default function App() {
             <AuthProvider>
               <FavoritesProvider>
               <ChatNotificationsProvider>
+                <div className="site-shell">
                 <Header />
                 <main>
                   <Routes>
@@ -70,6 +71,7 @@ export default function App() {
                   </Routes>
                 </main>
                 <Footer />
+                </div>
               </ChatNotificationsProvider>
               </FavoritesProvider>
             </AuthProvider>

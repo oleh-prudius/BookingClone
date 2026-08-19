@@ -1,6 +1,7 @@
 import { Refine, Authenticated } from '@refinedev/core';
 import {
   ThemedLayout,
+  ThemedTitle,
   useNotificationProvider,
   AuthPage,
   ErrorComponent,
@@ -9,12 +10,16 @@ import routerProvider, {
   CatchAllNavigate,
   NavigateToResource,
 } from '@refinedev/react-router';
-import { App as AntdApp } from 'antd';
-import { Routes, Route, Outlet } from 'react-router-dom';
+import { App as AntdApp, Button, ConfigProvider } from 'antd';
+import { ArrowLeftOutlined } from '@ant-design/icons';
+import { Routes, Route, Outlet, Link } from 'react-router-dom';
 import '@refinedev/antd/dist/reset.css';
 
 import { dataProvider } from '@shared/api/refineDataProvider';
 import { authProvider } from '@shared/api/refineAuthProvider';
+import { colors } from '@shared/theme/tokens';
+import emblemUrl from '@shared/assets/triply-emblem.svg';
+import './admin.css';
 
 import { HotelList } from './hotels/HotelList';
 import { HotelCreate } from './hotels/HotelCreate';
@@ -39,6 +44,23 @@ import { DashboardPage } from './dashboard/DashboardPage';
 
 export function AdminApp() {
   return (
+    <ConfigProvider
+      theme={{
+        components: {
+          Layout: {
+            siderBg: colors.navyDarkest,
+            headerBg: '#ffffff',
+          },
+          Menu: {
+            darkItemBg: colors.navyDarkest,
+            darkItemSelectedBg: colors.primary,
+            darkItemColor: 'rgba(255, 255, 255, 0.75)',
+            darkItemHoverColor: '#ffffff',
+            darkItemSelectedColor: '#ffffff',
+          },
+        },
+      }}
+    >
     <AntdApp>
       <Refine
         routerProvider={routerProvider}
@@ -110,7 +132,22 @@ export function AdminApp() {
                 key="admin-auth"
                 fallback={<CatchAllNavigate to="/admin/login" />}
               >
-                <ThemedLayout>
+                <ThemedLayout
+                  Title={({ collapsed }) => (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                      <ThemedTitle
+                        collapsed={collapsed}
+                        text="Triply Admin"
+                        icon={<img src={emblemUrl} alt="" style={{ height: 24, width: 24 }} />}
+                      />
+                      <Link to="/" style={{ marginLeft: collapsed ? 0 : 8 }}>
+                        <Button type="text" size="small" icon={<ArrowLeftOutlined />}>
+                          {!collapsed && 'На сайт'}
+                        </Button>
+                      </Link>
+                    </div>
+                  )}
+                >
                   <Outlet />
                 </ThemedLayout>
               </Authenticated>
@@ -165,5 +202,6 @@ export function AdminApp() {
         </Routes>
       </Refine>
     </AntdApp>
+    </ConfigProvider>
   );
 }

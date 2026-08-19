@@ -1,0 +1,36 @@
+/* Brand the Refine/AntD scaffold to match the Triply design system instead of the
+   AntD-default light sider — Refine's Sider sets an inline background color that
+   ConfigProvider's Layout.siderBg token can't reach, so this needs !important. */
+
+.ant-layout-sider {
+  background-color: var(--triply-navyDarkest) !important;
+}
+
+.ant-layout-sider .ant-menu {
+  background: transparent !important;
+}
+
+.ant-layout-sider .ant-menu-item,
+.ant-layout-sider .ant-menu-submenu-title {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.ant-layout-sider .ant-menu-item:hover,
+.ant-layout-sider .ant-menu-submenu-title:hover,
+.ant-layout-sider .ant-menu-item a {
+  color: #ffffff !important;
+}
+
+.ant-layout-sider .ant-menu-item-selected {
+  background-color: var(--triply-primary) !important;
+  color: #ffffff !important;
+}
+
+.ant-layout-sider .ant-menu-item .anticon,
+.ant-layout-sider .ant-menu-submenu-title .anticon {
+  color: inherit;
+}
+
+.ant-layout-sider a {
+  color: inherit !important;
+}

@@ -6,7 +6,7 @@ import { useChatNotifications } from '@features/chat';
 import { Logo } from "@shared/ui/Logo";
 import { SettingsMenu } from "@shared/ui";
 import { Drawer, Button, Badge, Avatar } from "antd";
-import { UserOutlined, SendOutlined, MenuOutlined } from '@ant-design/icons';
+import { UserOutlined, SendOutlined, MenuOutlined, DashboardOutlined } from '@ant-design/icons';
 
 
 export function Header() {
@@ -73,6 +73,16 @@ export function Header() {
               {user!.roles.includes('Realtor') && (
                 <NavLink to="/host" style={navLinkStyle}>{t('header.myHotels')}</NavLink>
               )}
+              {user!.roles.includes('Admin') && (
+                <Button
+                  shape="round"
+                  icon={<DashboardOutlined />}
+                  style={iconButtonStyle}
+                  onClick={() => navigate('/admin')}
+                >
+                  {t('header.adminPanel')}
+                </Button>
+              )}
               <Badge count={unreadCount} size="small" offset={[-4, 4]}>
                 <Button
                   type="text"
@@ -122,6 +132,11 @@ export function Header() {
             {isAuthenticated ? (
                 <>
                     {user!.roles.includes('Realtor') && <Button href="/host">{t('header.myHotels')}</Button>}
+                    {user!.roles.includes('Admin') && (
+                      <Button icon={<DashboardOutlined />} onClick={() => { setIsOpen(false); navigate('/admin'); }}>
+                        {t('header.adminPanel')}
+                      </Button>
+                    )}
                     <Button href="/profile">{t('header.myAccount')}</Button>
                 </>
             ) : (
