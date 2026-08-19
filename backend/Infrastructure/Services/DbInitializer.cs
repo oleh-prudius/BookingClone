@@ -563,9 +563,39 @@ public class DbInitializer(
 		}
 	}
 
+	private static readonly string[] GrandKyivAmenityNames = ["Wi-Fi", "Restaurant", "Air Conditioning", "Parking", "Gym"];
+
+	// Idempotent — also fixes it on an already-seeded DB where Grand Kyiv Hotel was
+	// created before amenities were added to this seeder.
+	private async Task RefreshGrandKyivAmenitiesAsync(CancellationToken ct)
+	{
+		var hotel = await context.Hotels.FirstOrDefaultAsync(h => h.Name == "Grand Kyiv Hotel", ct);
+		if (hotel is null) return;
+
+		var existingAmenityIds = await context.HotelHotelAmenities
+			.Where(ha => ha.HotelId == hotel.Id)
+			.Select(ha => ha.HotelAmenityId)
+			.ToListAsync(ct);
+
+		var amenitiesToAdd = await context.HotelAmenities
+			.Where(a => GrandKyivAmenityNames.Contains(a.Name) && !existingAmenityIds.Contains(a.Id))
+			.ToListAsync(ct);
+
+		if (amenitiesToAdd.Count == 0) return;
+
+		foreach (var amenity in amenitiesToAdd)
+			await context.HotelHotelAmenities.AddAsync(new HotelHotelAmenity { HotelId = hotel.Id, HotelAmenityId = amenity.Id }, ct);
+
+		await context.SaveChangesAsync(ct);
+	}
+
 	private async Task SeedTestHotelAsync(CancellationToken ct)
 	{
-		if (await context.Hotels.AnyAsync(ct)) return;
+		if (await context.Hotels.AnyAsync(ct))
+		{
+			await RefreshGrandKyivAmenitiesAsync(ct);
+			return;
+		}
 
 		// Realtor
 		var realtorEmail = "realtor@booking.test";
@@ -668,6 +698,8 @@ public class DbInitializer(
 			},
 		], ct);
 		await context.SaveChangesAsync(ct);
+
+		await RefreshGrandKyivAmenitiesAsync(ct);
 	}
 
 	// Real hotel photos (exteriors/lobbies of actual named hotels, sourced from Wikimedia

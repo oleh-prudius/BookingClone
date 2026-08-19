@@ -35,10 +35,18 @@ interface SearchFormValues {
 const TRANSPORT_TYPES: TransportType[] = ['Bus', 'Train', 'Plane'];
 
 // No dedicated bus/train icons exist in @ant-design/icons — closest available stand-ins.
+// Used for small inline mentions (type select, buy-ticket modal); route cards use a real photo instead.
 const TRANSPORT_TYPE_ICONS: Record<TransportType, ReactNode> = {
   Bus: <CarOutlined />,
   Train: <GatewayOutlined />,
   Plane: <RocketOutlined />,
+};
+
+// Real photos of the relevant vehicle type, shown as the route card's cover image.
+const TRANSPORT_TYPE_PHOTOS: Record<TransportType, string> = {
+  Train: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/High-speed_train_at_platform_in_Milano_Stazione_Centrale.jpg/960px-High-speed_train_at_platform_in_Milano_Stazione_Centrale.jpg',
+  Bus: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/FlixBus_%28Cardiff%29_in_2025.02.jpg/960px-FlixBus_%28Cardiff%29_in_2025.02.jpg',
+  Plane: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Air_France_Airbus_A320_%28F-HEPF%29_taking_off_at_Martinique_Aim%C3%A9_C%C3%A9saire_International_Airport_%281%29.jpg/960px-Air_France_Airbus_A320_%28F-HEPF%29_taking_off_at_Martinique_Aim%C3%A9_C%C3%A9saire_International_Airport_%281%29.jpg',
 };
 
 export function TransportPage() {
@@ -175,19 +183,17 @@ export function TransportPage() {
                 padding: 16,
               }}
             >
-              <div style={{
-                width: 245,
-                height: 150,
-                flexShrink: 0,
-                borderRadius: 10,
-                background: 'var(--triply-backgroundLight)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 64,
-              }}>
-                {TRANSPORT_TYPE_ICONS[route.type]}
-              </div>
+              <img
+                src={TRANSPORT_TYPE_PHOTOS[route.type]}
+                alt={t(`transport.types.${route.type}`)}
+                style={{
+                  width: 245,
+                  height: 150,
+                  flexShrink: 0,
+                  borderRadius: 10,
+                  objectFit: 'cover',
+                }}
+              />
 
               <div style={{ flex: 1, minWidth: 220, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 6 }}>
                 <div style={{ fontSize: 24, fontWeight: 600 }}>
