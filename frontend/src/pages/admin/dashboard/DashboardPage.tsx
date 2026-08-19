@@ -23,11 +23,17 @@ interface BookingStatusCountEntry {
   count: number;
 }
 
+const BRAND_PRIMARY = '#2563EB';
+const BRAND_REVENUE = '#0ca30c';
+
+// Fixed status palette (never themed) — Pending/Confirmed/Cancelled map to the
+// design system's warning/good/critical steps; Completed is a neutral terminal
+// state, so it takes the brand identity color instead of a status hue.
 const STATUS_COLORS: Record<string, string> = {
-  Pending: '#faad14',
-  Confirmed: '#52c41a',
-  Cancelled: '#f5222d',
-  Completed: '#1677ff',
+  Pending: '#fab219',
+  Confirmed: '#0ca30c',
+  Cancelled: '#d03b3b',
+  Completed: BRAND_PRIMARY,
 };
 
 export function DashboardPage() {
@@ -78,21 +84,35 @@ export function DashboardPage() {
       </Row>
 
       <Row gutter={16} style={{ marginBottom: 24 }}>
-        <Col span={16}>
-          <Card title="Bookings & revenue over time">
+        <Col span={8}>
+          <Card title="Bookings over time">
             {stats.bookingsOverTime.length === 0 ? (
               <Empty description="No bookings in this period" />
             ) : (
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={260}>
                 <LineChart data={stats.bookingsOverTime}>
-                  <CartesianGrid strokeDasharray="3 3" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="date" />
-                  <YAxis yAxisId="left" />
-                  <YAxis yAxisId="right" orientation="right" />
+                  <YAxis />
                   <Tooltip />
-                  <Legend />
-                  <Line yAxisId="left" type="monotone" dataKey="count" name="Bookings" stroke="#1677ff" />
-                  <Line yAxisId="right" type="monotone" dataKey="revenue" name="Revenue ($)" stroke="#52c41a" />
+                  <Line type="monotone" dataKey="count" name="Bookings" stroke={BRAND_PRIMARY} strokeWidth={2} dot={false} />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card title="Revenue over time">
+            {stats.bookingsOverTime.length === 0 ? (
+              <Empty description="No bookings in this period" />
+            ) : (
+              <ResponsiveContainer width="100%" height={260}>
+                <LineChart data={stats.bookingsOverTime}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip formatter={(v) => `$${Number(v).toFixed(2)}`} />
+                  <Line type="monotone" dataKey="revenue" name="Revenue ($)" stroke={BRAND_REVENUE} strokeWidth={2} dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             )}
@@ -103,13 +123,14 @@ export function DashboardPage() {
             {stats.bookingStatusBreakdown.length === 0 ? (
               <Empty description="No bookings yet" />
             ) : (
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={260}>
                 <PieChart>
                   <Pie
                     data={stats.bookingStatusBreakdown}
                     dataKey="count"
                     nameKey="status"
-                    outerRadius={100}
+                    outerRadius={90}
+                    innerRadius={50}
                     label={(entry: BookingStatusCountEntry) => `${entry.status}: ${entry.count}`}
                   >
                     {stats.bookingStatusBreakdown.map((entry) => (
@@ -117,6 +138,7 @@ export function DashboardPage() {
                     ))}
                   </Pie>
                   <Tooltip />
+                  <Legend />
                 </PieChart>
               </ResponsiveContainer>
             )}
@@ -132,11 +154,11 @@ export function DashboardPage() {
             ) : (
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={stats.topHotels} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" />
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
                   <XAxis type="number" />
                   <YAxis type="category" dataKey="hotelName" width={140} />
-                  <Tooltip />
-                  <Bar dataKey="revenue" name="Revenue ($)" fill="#2F86F0" />
+                  <Tooltip formatter={(v) => `$${Number(v).toFixed(2)}`} />
+                  <Bar dataKey="revenue" name="Revenue ($)" fill={BRAND_PRIMARY} radius={[0, 4, 4, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             )}

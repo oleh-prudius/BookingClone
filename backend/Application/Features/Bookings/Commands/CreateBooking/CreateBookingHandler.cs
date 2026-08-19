@@ -14,11 +14,15 @@ public class CreateBookingHandler(
     IRoomVariantRepository roomVariantRepository,
     IRoomRepository roomRepository,
     IHotelBreakfastRepository hotelBreakfastRepository,
+    ICustomerRepository customerRepository,
     IPublisher publisher)
     : IRequestHandler<CreateBookingCommand, Result<BookingDto>>
 {
     public async Task<Result<BookingDto>> Handle(CreateBookingCommand request, CancellationToken ct)
     {
+        if (!await customerRepository.ExistsAsync(request.CustomerId, ct))
+            return Error.Forbidden("Only customer accounts can create bookings. Log in with a customer account to book.");
+
         if (request.CheckOut <= request.CheckIn)
             return Error.Validation("CheckOut must be later than CheckIn.");
 

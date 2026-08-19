@@ -32,7 +32,7 @@ public class CreateBookingHandlerTests(DatabaseFixture fixture) : IAsyncLifetime
     {
         var (customer, variant) = await SeedHelper.SeedBookingChainAsync(_ctx);
         var repo = new BookingRepository(_ctx);
-        var handler = new CreateBookingHandler(repo, new RoomVariantRepository(_ctx), new RoomRepository(_ctx), new HotelBreakfastRepository(_ctx), _publisher.Object);
+        var handler = new CreateBookingHandler(repo, new RoomVariantRepository(_ctx), new RoomRepository(_ctx), new HotelBreakfastRepository(_ctx), new CustomerRepository(_ctx), _publisher.Object);
 
         var command = new CreateBookingCommand(
             CustomerId: customer.Id,
@@ -55,7 +55,7 @@ public class CreateBookingHandlerTests(DatabaseFixture fixture) : IAsyncLifetime
     {
         var (customer, variant) = await SeedHelper.SeedBookingChainAsync(_ctx);
         var repo = new BookingRepository(_ctx);
-        var handler = new CreateBookingHandler(repo, new RoomVariantRepository(_ctx), new RoomRepository(_ctx), new HotelBreakfastRepository(_ctx), _publisher.Object);
+        var handler = new CreateBookingHandler(repo, new RoomVariantRepository(_ctx), new RoomRepository(_ctx), new HotelBreakfastRepository(_ctx), new CustomerRepository(_ctx), _publisher.Object);
 
         var command = new CreateBookingCommand(
             CustomerId: customer.Id,
@@ -79,7 +79,7 @@ public class CreateBookingHandlerTests(DatabaseFixture fixture) : IAsyncLifetime
     {
         var (customer, variant) = await SeedHelper.SeedBookingChainAsync(_ctx);
         var repo = new BookingRepository(_ctx);
-        var handler = new CreateBookingHandler(repo, new RoomVariantRepository(_ctx), new RoomRepository(_ctx), new HotelBreakfastRepository(_ctx), _publisher.Object);
+        var handler = new CreateBookingHandler(repo, new RoomVariantRepository(_ctx), new RoomRepository(_ctx), new HotelBreakfastRepository(_ctx), new CustomerRepository(_ctx), _publisher.Object);
 
         var command = new CreateBookingCommand(
             CustomerId: customer.Id,
@@ -108,7 +108,7 @@ public class CreateBookingHandlerTests(DatabaseFixture fixture) : IAsyncLifetime
             new DateOnly(2027, 7, 10),
             new DateOnly(2027, 7, 20));
 
-        var handler = new CreateBookingHandler(repo, new RoomVariantRepository(_ctx), new RoomRepository(_ctx), new HotelBreakfastRepository(_ctx), _publisher.Object);
+        var handler = new CreateBookingHandler(repo, new RoomVariantRepository(_ctx), new RoomRepository(_ctx), new HotelBreakfastRepository(_ctx), new CustomerRepository(_ctx), _publisher.Object);
 
         var command = new CreateBookingCommand(
             CustomerId: customer.Id,
@@ -140,7 +140,7 @@ public class CreateBookingHandlerTests(DatabaseFixture fixture) : IAsyncLifetime
         await _ctx.SaveChangesAsync();
 
         var repo = new BookingRepository(_ctx);
-        var handler = new CreateBookingHandler(repo, new RoomVariantRepository(_ctx), new RoomRepository(_ctx), new HotelBreakfastRepository(_ctx), _publisher.Object);
+        var handler = new CreateBookingHandler(repo, new RoomVariantRepository(_ctx), new RoomRepository(_ctx), new HotelBreakfastRepository(_ctx), new CustomerRepository(_ctx), _publisher.Object);
 
         var command = new CreateBookingCommand(
             CustomerId: customer.Id,
@@ -170,7 +170,7 @@ public class CreateBookingHandlerTests(DatabaseFixture fixture) : IAsyncLifetime
         await _ctx.SaveChangesAsync();
 
         var repo = new BookingRepository(_ctx);
-        var handler = new CreateBookingHandler(repo, new RoomVariantRepository(_ctx), new RoomRepository(_ctx), new HotelBreakfastRepository(_ctx), _publisher.Object);
+        var handler = new CreateBookingHandler(repo, new RoomVariantRepository(_ctx), new RoomRepository(_ctx), new HotelBreakfastRepository(_ctx), new CustomerRepository(_ctx), _publisher.Object);
 
         var command = new CreateBookingCommand(
             CustomerId: customer.Id,
@@ -187,5 +187,29 @@ public class CreateBookingHandlerTests(DatabaseFixture fixture) : IAsyncLifetime
 
         result.IsSuccess.Should().BeFalse();
         result.Error.Code.Should().Be("Validation");
+    }
+
+    [Fact]
+    public async Task Handle_CustomerRowDoesNotExist_ReturnsForbiddenError()
+    {
+        var (_, variant) = await SeedHelper.SeedBookingChainAsync(_ctx);
+        var repo = new BookingRepository(_ctx);
+        var handler = new CreateBookingHandler(repo, new RoomVariantRepository(_ctx), new RoomRepository(_ctx), new HotelBreakfastRepository(_ctx), new CustomerRepository(_ctx), _publisher.Object);
+
+        var command = new CreateBookingCommand(
+            CustomerId: 999_999,
+            RoomVariantId: variant.Id,
+            Quantity: 1,
+            CheckIn: new DateTime(2027, 10, 10),
+            CheckOut: new DateTime(2027, 10, 15),
+            TotalPrice: 500m,
+            PersonalWishes: null
+        );
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Code.Should().Be("Forbidden");
+        _publisher.Verify(p => p.Publish(It.IsAny<BookingCreatedEvent>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }

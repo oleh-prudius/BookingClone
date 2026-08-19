@@ -49,6 +49,15 @@ body {
 }
 
 #root {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* Marketing/customer-facing shell only — the admin panel (/admin/*) renders full-width
+   instead, since a centered 1126px column with text-align:center wrecks Refine's layout. */
+.site-shell {
   width: 1126px;
   max-width: 100%;
   margin: 0 auto;
