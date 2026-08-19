@@ -76,11 +76,9 @@ export function Header() {
               {user!.roles.includes('Admin') && (
                 <Button
                   shape="round"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="/admin"
                   icon={<DashboardOutlined />}
                   style={iconButtonStyle}
+                  onClick={() => navigate('/admin')}
                 >
                   {t('header.adminPanel')}
                 </Button>
@@ -135,7 +133,7 @@ export function Header() {
                 <>
                     {user!.roles.includes('Realtor') && <Button href="/host">{t('header.myHotels')}</Button>}
                     {user!.roles.includes('Admin') && (
-                      <Button target="_blank" rel="noopener noreferrer" href="/admin" icon={<DashboardOutlined />}>
+                      <Button icon={<DashboardOutlined />} onClick={() => { setIsOpen(false); navigate('/admin'); }}>
                         {t('header.adminPanel')}
                       </Button>
                     )}

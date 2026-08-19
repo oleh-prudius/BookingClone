@@ -4,8 +4,8 @@ import { httpClient } from './httpClient';
 // Refine v5 DataProvider has invariant generics that require `as unknown as DataProvider`
 export const dataProvider = {
   getList: async ({ resource, pagination, filters }: Parameters<DataProvider['getList']>[0]) => {
-    const p = pagination as { current?: number; page?: number; pageSize?: number } | undefined;
-    const page = p?.current ?? p?.page ?? 1;
+    const p = pagination as { currentPage?: number; current?: number; page?: number; pageSize?: number } | undefined;
+    const page = p?.currentPage ?? p?.current ?? p?.page ?? 1;
     const pageSize = p?.pageSize ?? 10;
     const params: Record<string, unknown> = { page, pageSize };
     for (const filter of filters ?? []) {
