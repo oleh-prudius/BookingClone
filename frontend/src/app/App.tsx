@@ -22,7 +22,6 @@ import { ResendConfirmationPage } from '@pages/resend-confirmation';
 import { AdminApp } from '@pages/admin';
 import { Page404 } from '@pages/Page404';
 import { ComingSoonPage } from '@pages/coming-soon/ComingSoonPage';
-import { UiKitPage } from '@pages/ui-kit';
 import { TransportPage } from '@pages/transport';
 import { MyTicketsPage } from '@pages/tickets';
 import { NearbyPage } from '@pages/nearby';
@@ -57,7 +56,6 @@ export default function App() {
                     <Route path="/messages" element={<MessagesPage />} />
                     <Route path="/host" element={<HostDashboardPage />} />
                     <Route path="/host/hotels/:id" element={<HostHotelDetailPage />} />
-                    <Route path="/ui-kit" element={<UiKitPage />} />
                     <Route path="/tickets" element={<MyTicketsPage />} />
                     <Route path="/transport" element={<TransportPage />} />
                     <Route path="/nearby" element={<NearbyPage />} />
