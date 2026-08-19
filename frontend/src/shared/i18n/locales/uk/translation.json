@@ -138,6 +138,8 @@
     "save": "Зберегти",
     "saved": "Збережено",
     "book": "Забронювати",
+    "messageHost": "Написати власнику",
+    "messageHostError": "Не вдалося відкрити чат із власником",
     "aboutThisHotel": "Про цей готель",
     "amenities": "Зручності",
     "noAmenitiesListed": "Зручності не вказані",

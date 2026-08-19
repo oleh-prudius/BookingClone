@@ -128,6 +128,8 @@
     "save": "Save",
     "saved": "Saved",
     "book": "Book",
+    "messageHost": "Message host",
+    "messageHostError": "Could not open a chat with the host",
     "aboutThisHotel": "About this hotel",
     "amenities": "Amenities",
     "noAmenitiesListed": "No amenities listed",

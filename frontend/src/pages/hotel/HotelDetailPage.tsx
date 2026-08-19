@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Typography, Rate, Tag, Carousel, Skeleton, Result, Empty, Divider } from 'antd';
-import { EnvironmentOutlined, HeartOutlined, HeartFilled, StarFilled } from '@ant-design/icons';
+import { EnvironmentOutlined, HeartOutlined, HeartFilled, StarFilled, MessageOutlined } from '@ant-design/icons';
 import { hotelApi } from '@entities/hotel';
 import { hotelPhotoApi, type HotelPhoto } from '@entities/hotel-photo';
+import { chatApi } from '@entities/chat';
 import { MapPanel } from '@widgets/hotel-map';
 import { NearbyPlacesList } from '@widgets/nearby-places';
 import type { Hotel } from '@shared/types';
@@ -15,6 +16,7 @@ import { localizeCityName, localizeCountryName } from '@shared/lib/geoNames';
 import { useCurrency } from '@shared/theme/CurrencyContext';
 import { useAuth } from '@features/auth';
 import { useFavorites } from '@features/favorites';
+import { notifyError } from '@shared/lib/notify';
 import { ReviewsSection } from './ReviewsSection';
 
 export function HotelDetailPage() {
@@ -22,7 +24,7 @@ export function HotelDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const hotelId = Number(id);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { isFavorite, toggleFavorite } = useFavorites();
   const { currency } = useCurrency();
 
@@ -30,6 +32,24 @@ export function HotelDetailPage() {
   const [photos, setPhotos] = useState<HotelPhoto[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [contactingHost, setContactingHost] = useState(false);
+
+  const isCustomer = user?.roles.includes('Customer') ?? false;
+
+  const handleMessageHost = async () => {
+    if (!hotel || !user) return;
+    setContactingHost(true);
+    try {
+      const existingChats = await chatApi.getByCustomerId(user.id);
+      const existing = existingChats.find((c) => c.realtorId === hotel.realtorId);
+      const chat = existing ?? (await chatApi.create(user.id, hotel.realtorId));
+      navigate('/messages', { state: { chatId: chat.id } });
+    } catch {
+      notifyError(t('hotel.messageHostError'));
+    } finally {
+      setContactingHost(false);
+    }
+  };
 
   const reloadHotel = () => {
     hotelApi.getById(hotelId)
@@ -125,6 +145,16 @@ export function HotelDetailPage() {
                 onClick={() => toggleFavorite(hotel.id)}
               >
                 {isFavorite(hotel.id) ? t('hotel.saved') : t('hotel.save')}
+              </AppButton>
+            )}
+            {isCustomer && (
+              <AppButton
+                variant="secondary"
+                icon={<MessageOutlined />}
+                loading={contactingHost}
+                onClick={handleMessageHost}
+              >
+                {t('hotel.messageHost')}
               </AppButton>
             )}
             <AppButton variant="primary" onClick={() => navigate(`/hotels/${hotel.id}/book`)}>
