@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Typography, List, Empty, Input, Spin } from 'antd';
 import { SendOutlined } from '@ant-design/icons';
@@ -13,10 +13,12 @@ export function MessagesPage() {
   const { t } = useTranslation();
   const { isAuthenticated, user } = useAuth();
   const { markChatRead } = useChatNotifications();
+  const location = useLocation();
+  const requestedChatId = (location.state as { chatId?: number } | null)?.chatId ?? null;
 
   const [chats, setChats] = useState<Chat[]>([]);
   const [loadingChats, setLoadingChats] = useState(true);
-  const [selectedChatId, setSelectedChatId] = useState<number | null>(null);
+  const [selectedChatId, setSelectedChatId] = useState<number | null>(requestedChatId);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [draft, setDraft] = useState('');
